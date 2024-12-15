@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,6 +11,30 @@ namespace CommunityToolkit.Diagnostics;
 
 public static partial class ThrowHelper
 {
+    [DoesNotReturn]
+    public static void ThrowUnreachableException(string message)
+    {
+        throw new UnreachableException($"{UnreachableException.DefaultMessage}{message}");
+    }
+
+    [DoesNotReturn]
+    public static T ThrowUnreachableException<T>(string message)
+    {
+        throw new UnreachableException($"{UnreachableException.DefaultMessage}{message}");
+    }
+
+    [DoesNotReturn]
+    public static void ThrowUnreachableException()
+    {
+        throw new UnreachableException();
+    }
+
+    [DoesNotReturn]
+    public static T ThrowUnreachableException<T>()
+    {
+        throw new UnreachableException();
+    }
+
     /// <summary>
     /// Throws a new <see cref="ArrayTypeMismatchException"/>.
     /// </summary>
