@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <DebugType>embedded</DebugType>
+
+    <PackageId>PropertyBitPack</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>2Xpro-pop</Authors>
+    <Description>Provides attributes and a source generator to pack properties into bits efficiently.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PropertyBitPack.SourceGen\PropertyBitPack.SourceGen.csproj" GeneratePathProperty="true" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)\PropertyBitPack.SourceGen.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+</Project>
