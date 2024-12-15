@@ -8,7 +8,7 @@ namespace PropertyBitPack;
 
 public sealed class ExtendedBitFieldAttribute : BitsMappingAttributeBase
 {
-    public string? GetterLargeSizeValueName
+    public required string? GetterLargeSizeValueName
     {
         get; set;
     }
