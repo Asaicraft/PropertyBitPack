@@ -28,7 +28,7 @@ public sealed record PropertyToBitInfo(
     ISymbol? GetterLargeSizeValueSymbol,
     SyntaxTokenList SetterOrInitModifiers,
     IPropertySymbol PropertySymbol,
-    int? BitsCount,
+    int BitsCount,
     string? FieldName,
     ITypeSymbol PropertyType,
     ITypeSymbol Owner

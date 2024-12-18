@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CommunityToolkit.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
@@ -13,7 +14,7 @@ public static class PropertyToBitInfoProccessor
 {
     public static Result<PropertyToBitInfo>? Process(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
-        if(context.Node is not PropertyDeclarationSyntax propertyDeclaration)
+        if (context.Node is not PropertyDeclarationSyntax propertyDeclaration)
         {
             Debug.Assert(false, "The provided syntax node is not a property declaration.");
             return null;
@@ -22,9 +23,8 @@ public static class PropertyToBitInfoProccessor
         using var diaognosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
 
         var semanticModel = context.SemanticModel;
-        var propertySymbol = semanticModel.GetDeclaredSymbol(propertyDeclaration);
 
-        if (propertySymbol is null)
+        if (semanticModel.GetDeclaredSymbol(propertyDeclaration) is not IPropertySymbol propertySymbol)
         {
             Debug.Assert(false, "Failed to retrieve the symbol for the property declaration.");
             return null;
@@ -73,10 +73,43 @@ public static class PropertyToBitInfoProccessor
             return null;
         }
 
-        if(!AttributeParsedResult.TryParse(attribute, semanticModel, in diaognosticsBuilder, out var attributeParsedResult))
+        if (!AttributeParsedResult.TryParse(attribute, propertyDeclaration, semanticModel, in diaognosticsBuilder, out var attributeParsedResult))
         {
-            return Result<PropertyToBitInfo>.Failure(diaognosticsBuilder.ToImmutable());
+            return new(null, diaognosticsBuilder.ToImmutable());
         }
+
+        var propertyToBitInfo = new PropertyToBitInfo(
+            attributeType,
+            attributeParsedResult is ParsedExtendedBitFiledAttribute extendedBitFiledAttribute
+                ? extendedBitFiledAttribute.SymbolGetterLargeSizeValue
+                : null,
+            propertyDeclaration.Modifiers,
+            propertySymbol,
+            attributeParsedResult.BitsCount ?? GetDefaultBitsCount(propertySymbol.Type),
+            attributeParsedResult.FieldName,
+            propertySymbol.Type,
+            owner
+        );
+
+        return new(propertyToBitInfo, diaognosticsBuilder.ToImmutable());
     }
 
+
+    public static int GetDefaultBitsCount(ITypeSymbol type)
+    {
+        return type.SpecialType switch
+        {
+            SpecialType.System_Boolean => 1,
+            SpecialType.System_Byte => 8,
+            SpecialType.System_SByte => 8,
+            SpecialType.System_UInt16 => 16,
+            SpecialType.System_Int16 => 16,
+            SpecialType.System_UInt32 => 32,
+            SpecialType.System_Int32 => 32,
+            SpecialType.System_UInt64 => 64,
+            SpecialType.System_Int64 => 64,
+            _ => ThrowHelper.ThrowNotSupportedException<int>($"The type '{type.Name}' is not supported.")
+        };
+
+    }
 }

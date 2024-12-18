@@ -38,8 +38,9 @@ public abstract class AttributeParsedResult
         get;
     }
 
-    public static bool TryParse(AttributeData attributeData, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
+    public static bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
     {
+        result = null;
         var attributeType = attributeData.AttributeClass?.Name switch
         {
             BitFieldAttribute => BitsMappingAttributeType.BitField,
@@ -49,7 +50,6 @@ public abstract class AttributeParsedResult
 
         if (attributeType == BitsMappingAttributeType.Unknown)
         {
-            result = null;
             return false;
         }
 
@@ -60,8 +60,10 @@ public abstract class AttributeParsedResult
 
         if(attributeType == BitsMappingAttributeType.ExtendedBitField)
         {
-            return ParsedExtendedBitFiledAttribute.TryParseExtendedBitFieldAttribute(attributeData, semanticModel, in diagnostics, out result);
+            return ParsedExtendedBitFiledAttribute.TryParseExtendedBitFieldAttribute(attributeData, propertyDeclarationSyntax, semanticModel, in diagnostics, out result);
         }
+
+        return false;
     }
 
     

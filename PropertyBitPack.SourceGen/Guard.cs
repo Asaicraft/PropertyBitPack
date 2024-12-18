@@ -26,4 +26,22 @@ public static class Guard
             .GetDiagnostics()
             .Any(d => d.Severity == DiagnosticSeverity.Error);
 
+
+    public static bool IsSupportedTypeForBitsCount(ITypeSymbol typeSymbol)
+    {
+        return typeSymbol.SpecialType switch
+        {
+            SpecialType.System_Boolean => true,
+            SpecialType.System_Byte => true,
+            SpecialType.System_SByte => true,
+            SpecialType.System_Int16 => true,
+            SpecialType.System_UInt16 => true,
+            SpecialType.System_Int32 => true,
+            SpecialType.System_UInt32 => true,
+            SpecialType.System_Int64 => true,
+            SpecialType.System_UInt64 => true,
+            _ => false
+        };
+    }
+
 }

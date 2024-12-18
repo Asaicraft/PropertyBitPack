@@ -64,14 +64,16 @@ public static class PropertyBitPackDiagnostics
         isEnabledByDefault: true
     );
 
+
     public static readonly DiagnosticDescriptor MethodWithParametersNotAllowed = new(
         id: "PRBITS007",
         title: "Method with parameters is not allowed in 'GetterLargeSizeValueName'",
-        messageFormat: "The method '{0}' referenced in 'GetterLargeSizeValueName' must not have any parameters",
+        messageFormat: "The method '{0}' referenced in 'GetterLargeSizeValueName' must either have no parameters or only parameters with default values",
         category: "PropertyBitPack",
         defaultSeverity: DiagnosticSeverity.Error,
-        description: "The method referenced by 'GetterLargeSizeValueName' must be parameterless to ensure compatibility with bit field logic.",
+        description: "The method referenced by 'GetterLargeSizeValueName' must either be parameterless or have only parameters with default values to ensure compatibility with bit field logic.",
         isEnabledByDefault: true
     );
+
 
 }

@@ -15,9 +15,8 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
     private ParsedExtendedBitFiledAttribute(
         AttributeParsedResult attributeParsedResult,
         ISymbol symbolGetterLargeSizeValue)
-        : base(BitsMappingAttributeType.ExtendedBitField, attributeParsedResult.BitsCount, attributeParsedResult.FieldName)
+        : this(attributeParsedResult.BitsCount, attributeParsedResult.FieldName, symbolGetterLargeSizeValue)
     {
-        SymbolGetterLargeSizeValue = symbolGetterLargeSizeValue;
     }
 
     private ParsedExtendedBitFiledAttribute(
@@ -37,16 +36,16 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
 
     public static bool TryParseExtendedBitFieldAttribute(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
     {
-        if (attributeData.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attributeSyntax)
+        result = null;
+
+        if (semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax) is not IPropertySymbol targetPropertySymbol)
         {
-            result = null;
+            ThrowHelper.ThrowUnreachableException();
             return false;
         }
 
-        if (attributeSyntax.Parent?.Parent is not PropertyDeclarationSyntax propertyDeclarationSyntax)
+        if (attributeData.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attributeSyntax)
         {
-            ThrowHelper.ThrowUnreachableException();
-            result = null;
             return false;
         }
 
@@ -54,7 +53,6 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
         if (attributeSyntax.ArgumentList is null)
         {
             diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MissingGetterLargeSizeValue, attributeSyntax.GetLocation(), propertyDeclarationSyntax));
-            result = null;
             return false;
         }
 
@@ -64,7 +62,6 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
         if (getterLargeSizeValueNameSyntax is null)
         {
             diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MissingGetterLargeSizeValue, attributeSyntax.GetLocation(), propertyDeclarationSyntax));
-            result = null;
             return false;
         }
 
@@ -73,7 +70,6 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
         if (getterLargeSizeValueOperation is not INameOfOperation nameOfOperation)
         {
             diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MandatoryOfNameofInGetterLargeSizeValueName, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax));
-            result = null;
             return false;
         }
 
@@ -83,7 +79,6 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
             nameofArgument is not IMethodReferenceOperation)
         {
             diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.InvalidReferenceInGetterLargeSizeValueName, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax));
-            result = null;
             return false;
         }
 
@@ -91,7 +86,11 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
         {
             var propertySymbol = propertyReference.Property;
 
-
+            if (!targetPropertySymbol.Type.Equals(propertySymbol.Type, SymbolEqualityComparer.Default))
+            {
+                diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.InvalidTypeForPropertyReference, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax, targetPropertySymbol.Type.ToDisplayString()));
+                return false;
+            }
 
             if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, out var parsed))
             {
@@ -100,11 +99,48 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
             }
             else
             {
-                result = null;
                 return false;
             }
         }
 
-        if (nameofArgument is IMethod)
+        if(nameofArgument is IMethodReferenceOperation methodReference)
+        {
+            var methodSymbol = methodReference.Method;
+
+            if(!methodSymbol.ReturnType.Equals(targetPropertySymbol.Type, SymbolEqualityComparer.Default))
+            {
+                diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.InvalidReturnTypeForMethodReference, getterLargeSizeValueNameSyntax.GetLocation(), methodSymbol.Name, targetPropertySymbol.Type.ToDisplayString()));
+                return false;
+            }
+
+            var isOnlyDefaultParameters = true;
+            foreach (var parameter in methodSymbol.Parameters)
+            {
+                if (!parameter.HasExplicitDefaultValue)
+                {
+                    isOnlyDefaultParameters = false;
+                    break;
+                }
+            }
+
+            if(!isOnlyDefaultParameters)
+            {
+                diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MethodWithParametersNotAllowed, getterLargeSizeValueNameSyntax.GetLocation(), methodSymbol.Name));
+                return false;
+            }
+
+            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, out var parsed))
+            {
+                result = new ParsedExtendedBitFiledAttribute(parsed, methodSymbol);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
     }
+
 }
