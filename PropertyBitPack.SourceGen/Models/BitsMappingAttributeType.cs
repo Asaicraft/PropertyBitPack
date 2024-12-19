@@ -7,5 +7,5 @@ public enum BitsMappingAttributeType
 {
     Unknown = -1,
     BitField,
-    ExtendedBitField
+    ExtendedBitField,
 }

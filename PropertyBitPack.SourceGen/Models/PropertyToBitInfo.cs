@@ -15,6 +15,9 @@ namespace PropertyBitPack.SourceGen.Models;
 /// A symbol representing the method or property to retrieve large values for ExtendedBitField attributes.
 /// Null for simple BitField attributes.
 /// </param>
+/// <param name="IsInit">
+/// Is init or setter property. If true, the property is an init-only property.
+/// </param>
 /// <param name="SetterOrInitModifiers">
 /// A list of modifiers for the setter or initializer of the property, if applicable (e.g., readonly, private, etc.).
 /// </param>
@@ -26,6 +29,7 @@ namespace PropertyBitPack.SourceGen.Models;
 public sealed record PropertyToBitInfo(
     BitsMappingAttributeType AttributeType,
     ISymbol? GetterLargeSizeValueSymbol,
+    bool IsInit,
     SyntaxTokenList SetterOrInitModifiers,
     IPropertySymbol PropertySymbol,
     int BitsCount,
