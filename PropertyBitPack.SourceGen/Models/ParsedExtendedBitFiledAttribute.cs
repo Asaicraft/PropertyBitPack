@@ -92,7 +92,7 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
                 return false;
             }
 
-            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, out var parsed))
+            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, propertyDeclarationSyntax, in diagnostics, out var parsed))
             {
                 result = new ParsedExtendedBitFiledAttribute(parsed, propertySymbol);
                 return true;
@@ -129,7 +129,7 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
                 return false;
             }
 
-            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, out var parsed))
+            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, propertyDeclarationSyntax, in diagnostics, out var parsed))
             {
                 result = new ParsedExtendedBitFiledAttribute(parsed, methodSymbol);
                 return true;

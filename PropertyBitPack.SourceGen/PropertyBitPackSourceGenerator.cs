@@ -36,18 +36,17 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         {
             ImmutableArray<PropertyToBitInfo> filteredResults = default;
 
-            using (var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent())
+            using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
+
+            filteredResults = FilterAndCollectDiagnostics(properties, diagnosticsBuilder);
+
+            if (diagnosticsBuilder.Count > 0)
             {
-                filteredResults = FilterAndCollectDiagnostics(properties, diagnosticsBuilder);
+                var diagnostics = diagnosticsBuilder.ToImmutable();
 
-                if (diagnosticsBuilder.Count > 0)
+                foreach (var diagnostic in diagnostics)
                 {
-                    var diagnostics = diagnosticsBuilder.ToImmutable();
-
-                    foreach (var diagnostic in diagnostics)
-                    {
-                        context.ReportDiagnostic(diagnostic);
-                    }
+                    context.ReportDiagnostic(diagnostic);
                 }
             }
 
@@ -56,6 +55,8 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 return;
             }
 
+
+            var packedFieldStorages = PackedFieldStorageAggregator.Aggregate(filteredResults, diagnosticsBuilder);
         });
     }
 

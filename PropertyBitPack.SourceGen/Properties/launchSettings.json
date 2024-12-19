@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PropertyBitPack.SourceGen": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\PropertyBitPack.Example\\PropertyBitPack.Example.csproj"
+    }
+  }
+}

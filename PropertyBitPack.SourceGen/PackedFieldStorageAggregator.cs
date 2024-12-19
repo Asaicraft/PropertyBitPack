@@ -12,7 +12,9 @@ using CommunityToolkit.Diagnostics;
 namespace PropertyBitPack.SourceGen;
 public static class PackedFieldStorageAggregator
 {
-    public static ImmutableArray<PackedFieldStorage> Aggregate(ImmutableArray<PropertyToBitInfo> propertyToBitInfos, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+    public static ImmutableArray<PackedFieldStorage> Aggregate(
+        ImmutableArray<PropertyToBitInfo> propertyToBitInfos,
+        in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
     {
         var availableTypes = new (TypeSyntax TypeSyntax, int Bits)[] {
             (SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ByteKeyword)), 8),
@@ -23,14 +25,15 @@ public static class PackedFieldStorageAggregator
 
         if (propertyToBitInfos.IsEmpty)
         {
-            return [];
+            return ImmutableArray<PackedFieldStorage>.Empty;
         }
 
+        // Валидируем BitsCount
         using (var validateBuilder = ImmutableArrayBuilder<PropertyToBitInfo>.Rent(propertyToBitInfos.Length))
-        { 
+        {
             foreach (var property in propertyToBitInfos)
             {
-                if (property.BitsCount == 0)
+                if (property.BitsCount <= 0)
                 {
                     diagnosticsBuilder.Add(Diagnostic.Create(
                         PropertyBitPackDiagnostics.InvalidBitsCount,
@@ -46,33 +49,42 @@ public static class PackedFieldStorageAggregator
             propertyToBitInfos = validateBuilder.ToImmutable();
         }
 
+        // Если после фильтрации нет свойств — выходим
+        if (propertyToBitInfos.IsEmpty)
+        {
+            return ImmutableArray<PackedFieldStorage>.Empty;
+        }
+
         var properties = propertyToBitInfos.OrderByDescending(p => p.BitsCount).ToList();
 
+        // Группы с FieldName
         var withFieldNameGroups = properties
             .Where(p => p.FieldName is not null)
             .GroupBy(p => p.FieldName!)
             .ToList();
 
+        // Свойства без FieldName
         var withoutFieldName = properties.Where(p => p.FieldName is null).ToList();
 
         var wagonsBuilder = ImmutableArrayBuilder<PackedFieldStorage>.Rent(Math.Max((int)Math.Sqrt(propertyToBitInfos.Length), 8));
-        try 
+        try
         {
-
+            // Обрабатываем группы с FieldName (каждая группа в своем поле)
             foreach (var group in withFieldNameGroups)
             {
                 var groupProperties = group.ToList();
                 var totalBitsRequired = groupProperties.Sum(p => p.BitsCount);
 
+                // Находим минимально подходящий тип для всей группы
                 var chosenType = availableTypes.FirstOrDefault(t => t.Bits >= totalBitsRequired);
                 if (chosenType.TypeSyntax is null)
                 {
+                    // Не помещается ни в один тип — фиксируем диагностику
                     diagnosticsBuilder.Add(Diagnostic.Create(
                         PropertyBitPackDiagnostics.TooManyBitsForAnyType,
                         Location.None,
                         group.Key,
                         totalBitsRequired));
-
                     continue;
                 }
 
@@ -81,67 +93,100 @@ public static class PackedFieldStorageAggregator
                     group.Key,
                     chosenType.TypeSyntax,
                     chosenType.Bits,
+                    totalBitsRequired,
                     propsArray
                 ));
 
+                // Удаляем эти свойства из списка без FieldName
                 foreach (var gp in groupProperties)
                 {
                     withoutFieldName.Remove(gp);
                 }
             }
 
-            while (withoutFieldName.Count > 0)
+            // Теперь обрабатываем свойства без FieldName
+            if (withoutFieldName.Count > 0)
             {
-                var largestProperty = withoutFieldName[0];
-                var largestBits = largestProperty.BitsCount;
-                var chosenType = availableTypes.FirstOrDefault(t => t.Bits >= largestBits);
-                if (chosenType.TypeSyntax is null)
-                {
-                    diagnosticsBuilder.Add(Diagnostic.Create(
-                        PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                        Location.None,
-                        largestProperty.FieldName ?? largestProperty.PropertySymbol.Name,
-                        largestBits));
+                // Считаем суммарные биты
+                var totalWithoutFieldNameBits = withoutFieldName.Sum(p => p.BitsCount);
 
-                    withoutFieldName.RemoveAt(0);
-                    continue;
+                // Пытаемся уместить ВСЕ свойства без FieldName в один доступный тип
+                var singleType = availableTypes.FirstOrDefault(t => t.Bits >= totalWithoutFieldNameBits);
+                if (singleType.TypeSyntax is not null)
+                {
+                    // Все свойства без FieldName помещаются в один тип
+                    var propsArray = withoutFieldName.ToImmutableArray();
+                    var fieldName = string.Join("__", propsArray.Select(p => p.PropertySymbol.Name));
+
+                    wagonsBuilder.Add(new PackedFieldStorage(
+                        fieldName,
+                        singleType.TypeSyntax,
+                        singleType.Bits,
+                        totalWithoutFieldNameBits,
+                        propsArray
+                    ));
                 }
-
-                using var currentPropertiesBuilder = ImmutableArrayBuilder<PropertyToBitInfo>.Rent();
-                var currentBitsUsed = 0;
-
-                currentPropertiesBuilder.Add(largestProperty);
-                currentBitsUsed += largestBits;
-                withoutFieldName.RemoveAt(0);
-
-                for (var i = 0; i < withoutFieldName.Count;)
+                else
                 {
-                    var bits = withoutFieldName[i].BitsCount;
-                    if (currentBitsUsed + bits <= chosenType.Bits)
+                    // Не можем уместить все свойства в один тип.
+                    // Тогда подбираем тип по самому крупному свойству:
+                    var largestProperty = withoutFieldName[0];
+                    var largestBits = largestProperty.BitsCount;
+                    var minimalSuitableType = availableTypes.FirstOrDefault(t => t.Bits >= largestBits);
+                    if (minimalSuitableType.TypeSyntax is null)
                     {
-                        currentPropertiesBuilder.Add(withoutFieldName[i]);
-                        currentBitsUsed += bits;
-                        withoutFieldName.RemoveAt(i);
+                        // Есть свойство, которое не помещается ни в один тип
+                        diagnosticsBuilder.Add(Diagnostic.Create(
+                            PropertyBitPackDiagnostics.TooManyBitsForAnyType,
+                            Location.None,
+                            largestProperty.FieldName ?? largestProperty.PropertySymbol.Name,
+                            largestBits));
+
+                        // Ничего не упаковываем
                     }
                     else
                     {
-                        i++;
+                        // Разбиваем на несколько полей выбранного типа
+                        var chosenBits = minimalSuitableType.Bits;
+                        // Снова сортируем по убыванию (должно быть уже так, но на всякий случай)
+                        withoutFieldName.Sort((a, b) => b.BitsCount.CompareTo(a.BitsCount));
+
+                        while (withoutFieldName.Count > 0)
+                        {
+                            using var currentPropertiesBuilder = ImmutableArrayBuilder<PropertyToBitInfo>.Rent();
+                            var currentBitsUsed = 0;
+
+                            for (var i = 0; i < withoutFieldName.Count;)
+                            {
+                                var bits = withoutFieldName[i].BitsCount;
+                                if (currentBitsUsed + bits <= chosenBits)
+                                {
+                                    currentPropertiesBuilder.Add(withoutFieldName[i]);
+                                    currentBitsUsed += bits;
+                                    withoutFieldName.RemoveAt(i);
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+                            }
+
+                            var currentProperties = currentPropertiesBuilder.ToImmutable();
+                            var fieldName = string.Join("__", currentProperties.Select(p => p.PropertySymbol.Name));
+
+                            wagonsBuilder.Add(new PackedFieldStorage(
+                                fieldName,
+                                minimalSuitableType.TypeSyntax,
+                                chosenBits,
+                                currentBitsUsed,
+                                currentProperties
+                            ));
+                        }
                     }
                 }
-
-                var currentProperties = currentPropertiesBuilder.ToImmutable();
-                var fieldName = string.Join("__", currentProperties.Select(p => p.PropertySymbol.Name));
-
-                wagonsBuilder.Add(new PackedFieldStorage(
-                    fieldName,
-                    chosenType.TypeSyntax,
-                    chosenType.Bits,
-                    currentProperties
-                ));
             }
 
             return wagonsBuilder.ToImmutable();
-
         }
         finally
         {

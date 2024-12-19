@@ -27,5 +27,6 @@ public sealed record PackedFieldStorage(
     string FieldName,
     TypeSyntax TypeSyntax,
     int TypeBitsCount,
+    int StoredBitsCount,
     ImmutableArray<PropertyToBitInfo> PropertiesWhichDataStored
 );
