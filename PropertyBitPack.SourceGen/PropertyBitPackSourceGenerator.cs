@@ -56,8 +56,6 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 return;
             }
 
-
-
         });
     }
 

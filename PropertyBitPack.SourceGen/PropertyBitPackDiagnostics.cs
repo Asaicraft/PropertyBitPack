@@ -75,5 +75,12 @@ public static class PropertyBitPackDiagnostics
         isEnabledByDefault: true
     );
 
-
+    public static readonly DiagnosticDescriptor TooManyBitsForAnyType = new(
+       id: "PRBITS008",
+       title: "Too many bits required",
+       messageFormat: "Properties with FieldName '{0}' require {1} bits, which is more than the largest available type (64 bits)",
+       category: "PropertyBitPack",
+       defaultSeverity: DiagnosticSeverity.Error,
+       isEnabledByDefault: true
+   );
 }

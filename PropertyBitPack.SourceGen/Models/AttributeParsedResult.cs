@@ -55,7 +55,7 @@ public abstract class AttributeParsedResult
 
         if(attributeType == BitsMappingAttributeType.BitField)
         {
-            return ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, out result);
+            return ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, propertyDeclarationSyntax, in diagnostics, out result);
         }
 
         if(attributeType == BitsMappingAttributeType.ExtendedBitField)
