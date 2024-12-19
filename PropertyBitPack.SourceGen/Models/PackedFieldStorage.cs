@@ -23,7 +23,7 @@ namespace PropertyBitPack.SourceGen.Models;
 /// A collection of properties whose data is stored within this backing field.
 /// Each property has its own bit allocation, which is part of the total bits in the field.
 /// </param>
-public sealed record BitsFieldStorage(
+public sealed record PackedFieldStorage(
     string FieldName,
     TypeSyntax TypeSyntax,
     int TypeBitsCount,

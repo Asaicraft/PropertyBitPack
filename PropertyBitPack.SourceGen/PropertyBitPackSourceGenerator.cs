@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using PropertyBitPack.SourceGen.Models;
+using System.Collections.Immutable;
+using PropertyBitPack.SourceGen.Collections;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -28,7 +30,35 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 }
             )
             .Where(x => x is not null)
-            .Select(static (x, _) => x!);
+            .Collect();
+
+        context.RegisterSourceOutput(propertiesWithAttributes, static (context, properties) =>
+        {
+            ImmutableArray<PropertyToBitInfo> filteredResults = default;
+
+            using (var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent())
+            {
+                filteredResults = FilterAndCollectDiagnostics(properties, diagnosticsBuilder);
+
+                if (diagnosticsBuilder.Count > 0)
+                {
+                    var diagnostics = diagnosticsBuilder.ToImmutable();
+
+                    foreach (var diagnostic in diagnostics)
+                    {
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                }
+            }
+
+            if (filteredResults.IsEmpty)
+            {
+                return;
+            }
+
+
+
+        });
     }
 
     private static bool IsCandidateProperty(SyntaxNode syntaxNode)
@@ -47,6 +77,38 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         {
             return attributeList.Attributes.Any();
         }
+    }
+
+    private static ImmutableArray<PropertyToBitInfo> FilterAndCollectDiagnostics(ImmutableArray<Result<PropertyToBitInfo>?> results, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+    {
+        using var validatedResults = ImmutableArrayBuilder<PropertyToBitInfo>.Rent(results.Length / 2);
+
+        foreach (var result in results)
+        {
+            if (result is not Result<PropertyToBitInfo> notNullResult)
+            {
+                continue;
+            }
+
+            if (notNullResult.Diagnostics is ImmutableArray<Diagnostic> diagnostics)
+            {
+                diagnosticsBuilder.AddRange(diagnostics.AsSpan());
+            }
+
+            if (notNullResult.IsError)
+            {
+                continue;
+            }
+
+            if (notNullResult.IsEmpty)
+            {
+                continue;
+            }
+
+            validatedResults.Add(notNullResult.Value);
+        }
+
+        return validatedResults.ToImmutable();
     }
 
 }

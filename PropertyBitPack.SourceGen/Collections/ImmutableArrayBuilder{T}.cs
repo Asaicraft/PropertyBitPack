@@ -27,6 +27,15 @@ public ref struct ImmutableArrayBuilder<T>
     }
 
     /// <summary>
+    /// Creates a <see cref="ImmutableArrayBuilder{T}"/> value with a pooled underlying data writer.
+    /// </summary>
+    /// <returns>A <see cref="ImmutableArrayBuilder{T}"/> instance to write data to.</returns>
+    public static ImmutableArrayBuilder<T> Rent(int initialCapacity)
+    {
+        return new(new Writer(initialCapacity));
+    }
+
+    /// <summary>
     /// Creates a new <see cref="ImmutableArrayBuilder{T}"/> object with the specified parameters.
     /// </summary>
     /// <param name="writer">The target data writer to use.</param>
@@ -130,6 +139,12 @@ public ref struct ImmutableArrayBuilder<T>
         public Writer()
         {
             array = ArrayPool<T?>.Shared.Rent(typeof(T) == typeof(char) ? 1024 : 8);
+            index = 0;
+        }
+
+        public Writer(int initialCapacity)
+        {
+            array = ArrayPool<T?>.Shared.Rent(initialCapacity);
             index = 0;
         }
 
