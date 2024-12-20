@@ -135,10 +135,10 @@ public static class SyntaxGenerator
     }
 
     private static PropertyDeclarationSyntax CreateBitFieldPropertyDeclarationSyntax(
-        string fieldName,
-        PropertyToBitInfo propertyToBitInfo,
-        BitsSpan bitsSpan,
-        TypeSyntax backingFieldType)
+    string fieldName,
+    PropertyToBitInfo propertyToBitInfo,
+    BitsSpan bitsSpan,
+    TypeSyntax backingFieldType)
     {
         var propertyTypeName = propertyToBitInfo.PropertyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         var propertyName = propertyToBitInfo.PropertySymbol.Name;
@@ -154,7 +154,7 @@ public static class SyntaxGenerator
         var startLiteral = NumericLiteralInt(start);
         var lengthLiteral = NumericLiteralInt(length);
 
-        // mask = ( (1U << length) - 1U );
+        // mask = ((1U << length) - 1U);
         var maskDeclaration = LocalVar(
             "mask",
             PredefinedTypeUInt(),
@@ -164,23 +164,27 @@ public static class SyntaxGenerator
                     SyntaxKind.SubtractExpression,
                     NumericLiteral(1U))));
 
+        var fieldAsUInt = CastExpression(PredefinedTypeUInt(), fieldIdentifier);
+
         // Getter
         AccessorDeclarationSyntax getter;
         if (isBoolean)
         {
-            // return ((fieldName >> start) & mask) != 0U;
-            var fieldShifted = Parenthesized(BinaryExpr(fieldIdentifier, SyntaxKind.RightShiftExpression, startLiteral));
+            // return (((uint)fieldName >> start) & mask) != 0U;
+            var fieldShifted = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.RightShiftExpression, startLiteral));
             var fieldAndMask = Parenthesized(BinaryExpr(fieldShifted, SyntaxKind.BitwiseAndExpression, IdentifierName("mask")));
             var comparison = BinaryExpr(fieldAndMask, SyntaxKind.NotEqualsExpression, NumericLiteral(0U));
+
             getter = AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                 .WithBody(Block(maskDeclaration, ReturnStatement(comparison)));
         }
         else
         {
-            // return (PropertyType)((fieldName >> start) & mask);
-            var fieldShifted = Parenthesized(BinaryExpr(fieldIdentifier, SyntaxKind.RightShiftExpression, startLiteral));
+            // return (PropertyType)(((uint)fieldName >> start) & mask);
+            var fieldShifted = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.RightShiftExpression, startLiteral));
             var fieldAndMask = Parenthesized(BinaryExpr(fieldShifted, SyntaxKind.BitwiseAndExpression, IdentifierName("mask")));
             var castToProperty = CastExpression(propertyTypeSyntax, fieldAndMask);
+
             getter = AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                 .WithBody(Block(maskDeclaration, ReturnStatement(castToProperty)));
         }
@@ -189,14 +193,24 @@ public static class SyntaxGenerator
         AccessorDeclarationSyntax setterOrInitter;
         if (isBoolean)
         {
-            // if (value) fieldName |= (1U << start); else fieldName &= ~(1U << start);
+            // if (value)
+            //   fieldName = (FieldType)(((uint)fieldName) | (1U << start));
+            // else
+            //   fieldName = (FieldType)(((uint)fieldName) & ~(1U << start));
+
             var oneShifted = Parenthesized(BinaryExpr(NumericLiteral(1U), SyntaxKind.LeftShiftExpression, startLiteral));
+
+            var orExpr = BinaryExpr(fieldAsUInt, SyntaxKind.BitwiseOrExpression, oneShifted);
+            var orCastToFieldType = CastExpression(backingFieldType, Parenthesized(orExpr));
+
+            var notOneShifted = PrefixUnaryExpression(SyntaxKind.BitwiseNotExpression, oneShifted);
+            var andExpr = BinaryExpr(fieldAsUInt, SyntaxKind.BitwiseAndExpression, notOneShifted);
+            var andCastToFieldType = CastExpression(backingFieldType, Parenthesized(andExpr));
+
             var ifStmt = IfStatement(
                 valueIdentifier,
-                Block(ExpressionStatement(AssignmentExpression(SyntaxKind.OrAssignmentExpression, fieldIdentifier, oneShifted))),
-                ElseClause(Block(ExpressionStatement(
-                    AssignmentExpression(SyntaxKind.AndAssignmentExpression, fieldIdentifier,
-                        PrefixUnaryExpression(SyntaxKind.BitwiseNotExpression, oneShifted))))));
+                Block(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, orCastToFieldType))),
+                ElseClause(Block(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, andCastToFieldType)))));
 
             setterOrInitter = AccessorDeclaration(propertyToBitInfo.IsInit ? SyntaxKind.InitAccessorDeclaration : SyntaxKind.SetAccessorDeclaration)
                 .WithBody(Block(ifStmt));
@@ -208,8 +222,23 @@ public static class SyntaxGenerator
         }
         else
         {
-            // fieldName = (fieldName & ~(mask << start)) | (((uint)value & mask) << start);
+            // Если (uint)value > mask, установить value = (PropertyType)mask
             var maskRef = IdentifierName("mask");
+            var uintValueCast = CastExpression(PredefinedTypeUInt(), valueIdentifier);
+            var conditionValueGreaterThanMax = BinaryExpr(uintValueCast, SyntaxKind.GreaterThanExpression, maskRef);
+
+            // value = (PropertyType)(object)(uint)mask; - т.к. propertyTypeSyntax может быть разным, 
+            // можно просто сделать двойное приведение: к uint, а потом к нужному типу
+            // но учитывая, что mask уже uint, можно сразу: (PropertyType)mask
+            var setValueToMax = ExpressionStatement(
+                AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    valueIdentifier,
+                    CastExpression(propertyTypeSyntax, maskRef)
+                )
+            );
+
+            // fieldName = (FieldType)(((uint)fieldName & ~(mask << start)) | (((uint)value & mask) << start));
             var maskShifted = Parenthesized(BinaryExpr(maskRef, SyntaxKind.LeftShiftExpression, startLiteral));
             var notMaskShifted = PrefixUnaryExpression(SyntaxKind.BitwiseNotExpression, maskShifted);
 
@@ -217,14 +246,22 @@ public static class SyntaxGenerator
             var valueAndMask = Parenthesized(BinaryExpr(uintValue, SyntaxKind.BitwiseAndExpression, maskRef));
             var valueShifted = Parenthesized(BinaryExpr(valueAndMask, SyntaxKind.LeftShiftExpression, startLiteral));
 
-            var fieldCleared = Parenthesized(BinaryExpr(fieldIdentifier, SyntaxKind.BitwiseAndExpression, notMaskShifted));
-            var fieldFinal = Parenthesized(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, valueShifted));
+            var fieldCleared = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.BitwiseAndExpression, notMaskShifted));
+            var fieldFinalExpr = Parenthesized(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, valueShifted));
+            var fieldFinalCast = CastExpression(backingFieldType, fieldFinalExpr);
 
             var assignStmt = ExpressionStatement(
-                AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, fieldFinal));
+                AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, fieldFinalCast));
+
+            // Добавляем if для проверки и клампинга
+            var ifClampStmt = IfStatement(
+                conditionValueGreaterThanMax,
+                Block(setValueToMax),
+                null
+            );
 
             setterOrInitter = AccessorDeclaration(propertyToBitInfo.IsInit ? SyntaxKind.InitAccessorDeclaration : SyntaxKind.SetAccessorDeclaration)
-                .WithBody(Block(maskDeclaration, assignStmt));
+                .WithBody(Block(maskDeclaration, ifClampStmt, assignStmt));
 
             if (propertyToBitInfo.SetterOrInitModifiers.Count != 0)
             {
@@ -245,7 +282,6 @@ public static class SyntaxGenerator
         BitsSpan bitsSpan,
         TypeSyntax backingFieldType)
     {
-        // Логика сходна с BitField, но в геттере и сеттере учитываем "большое значение"
         var propertyTypeName = propertyToBitInfo.PropertyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         var propertyName = propertyToBitInfo.PropertySymbol.Name;
         var start = bitsSpan.Start;
@@ -278,11 +314,13 @@ public static class SyntaxGenerator
                     SyntaxKind.SubtractExpression,
                     NumericLiteral(1))));
 
-        // Геттер для ExtendedBitField:
-        // int extractedValue = (int)((fieldName >> start) & mask);
+        // Геттер:
+        // int extractedValue = (int)(((uint)fieldName >> start) & mask);
         // return extractedValue == maxValue ? GetLargeValue() : extractedValue;
 
-        var fieldShifted = Parenthesized(BinaryExpr(fieldIdentifier, SyntaxKind.RightShiftExpression, startLiteral));
+        var fieldAsUInt = CastExpression(PredefinedTypeUInt(), fieldIdentifier);
+
+        var fieldShifted = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.RightShiftExpression, startLiteral));
         var fieldAndMask = Parenthesized(BinaryExpr(fieldShifted, SyntaxKind.BitwiseAndExpression, IdentifierName("mask")));
 
         var extractedValueDecl = LocalVar(
@@ -290,7 +328,6 @@ public static class SyntaxGenerator
             PredefinedType(Token(SyntaxKind.IntKeyword)),
             CastExpression(PredefinedType(Token(SyntaxKind.IntKeyword)), fieldAndMask));
 
-        // Вызов GetterLargeSizeValueSymbol. Предположим, что это метод без параметров.
         var largeValueCall = IdentifierName(propertyToBitInfo.GetterLargeSizeValueSymbol!.Name);
         var invocation = InvocationExpression(largeValueCall);
 
@@ -299,16 +336,10 @@ public static class SyntaxGenerator
         var getter = AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
             .WithBody(Block(maskDeclaration, maxValueDeclaration, extractedValueDecl, ReturnStatement(ternary)));
 
-        // Сеттер для ExtendedBitField:
-        // if (value > maxValue)
-        // {
-        //   // sentinel
-        //   fieldName = (fieldName & ~(mask << start)) | ((uint)maxValue << start);
-        // }
-        // else
-        // {
-        //   fieldName = (fieldName & ~(mask << start)) | (((uint)value & mask) << start);
-        // }
+        // Сеттер:
+        // Если value > maxValue, то value = maxValue
+        // После этого:
+        // fieldName = (FieldType)(((uint)fieldName & ~(mask << start)) | (((uint)value & mask) << start));
 
         var maskRef = IdentifierName("mask");
         var maskShifted = Parenthesized(BinaryExpr(maskRef, SyntaxKind.LeftShiftExpression, startLiteral));
@@ -318,23 +349,34 @@ public static class SyntaxGenerator
         var valueAndMask = Parenthesized(BinaryExpr(uintValue, SyntaxKind.BitwiseAndExpression, maskRef));
         var valueShifted = Parenthesized(BinaryExpr(valueAndMask, SyntaxKind.LeftShiftExpression, startLiteral));
 
-        var fieldCleared = Parenthesized(BinaryExpr(fieldIdentifier, SyntaxKind.BitwiseAndExpression, notMaskShifted));
+        var fieldCleared = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.BitwiseAndExpression, notMaskShifted));
+        var fieldFinalExpr = Parenthesized(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, valueShifted));
+        var fieldFinalCast = CastExpression(backingFieldType, fieldFinalExpr);
 
-        // sentinel
-        var maxValueRef = IdentifierName("maxValue");
-        var maxValueUInt = CastExpression(PredefinedTypeUInt(), maxValueRef);
-        var sentinelShifted = Parenthesized(BinaryExpr(maxValueUInt, SyntaxKind.LeftShiftExpression, startLiteral));
-        var sentinelFieldFinal = Parenthesized(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, sentinelShifted));
+        var conditionValueGreaterThanMax = BinaryExpr(
+            CastExpression(PredefinedType(Token(SyntaxKind.IntKeyword)), valueIdentifier),
+            SyntaxKind.GreaterThanExpression,
+            IdentifierName("maxValue"));
 
-        var normalFieldFinal = Parenthesized(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, valueShifted));
+        var setValueToMax = ExpressionStatement(
+            AssignmentExpression(
+                SyntaxKind.SimpleAssignmentExpression,
+                valueIdentifier,
+                CastExpression(propertyTypeSyntax, IdentifierName("maxValue"))
+            )
+        );
 
-        var ifSetStmt = IfStatement(
-            BinaryExpr(valueIdentifier, SyntaxKind.GreaterThanExpression, IdentifierName("maxValue")),
-            Block(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, sentinelFieldFinal))),
-            ElseClause(Block(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, normalFieldFinal)))));
+        var ifClampStmt = IfStatement(
+            conditionValueGreaterThanMax,
+            Block(setValueToMax),
+            null
+        );
+
+        var assignStmt = ExpressionStatement(
+            AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, fieldFinalCast));
 
         var setter = AccessorDeclaration(propertyToBitInfo.IsInit ? SyntaxKind.InitAccessorDeclaration : SyntaxKind.SetAccessorDeclaration)
-            .WithBody(Block(maskDeclaration, maxValueDeclaration, ifSetStmt));
+            .WithBody(Block(maskDeclaration, maxValueDeclaration, ifClampStmt, assignStmt));
 
         if (propertyToBitInfo.SetterOrInitModifiers.Count != 0)
         {

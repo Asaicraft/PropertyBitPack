@@ -22,7 +22,6 @@ public struct SimpleStruct
         get; set;
     }
 
-
     public short Short2
     {
         get; set;
@@ -34,6 +33,21 @@ public struct SimpleStruct
     }
 
     public int Int2
+    {
+        get; set;
+    }
+
+    public byte Hi
+    {
+        get; set;
+    }
+
+    public byte Hi2
+    {
+        get; set;
+    }
+
+    public bool HiBool
     {
         get; set;
     }
