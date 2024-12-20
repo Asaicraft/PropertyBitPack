@@ -81,3 +81,19 @@ Console.WriteLine($"{nameof(simpleStruct)}.{nameof(simpleStruct.Hi2),-nameWidth}
 Console.WriteLine($"{nameof(simpleStruct)}.{nameof(simpleStruct.HiBool),-nameWidth}: {simpleStruct.HiBool,-valueWidth} " +
                   $"{nameof(packedStruct)}.{nameof(packedStruct.HiBool),-nameWidth}: {packedStruct.HiBool,-valueWidth} " +
                   $"{nameof(packedStruct)}{nameof(BitFieldAttribute.BitsCount),-bitFieldWidth}: 1");
+
+Console.WriteLine();
+
+var extendedBitFieldExample = new ExtendedBitFieldExample
+{
+    // The maximum value for 11 bits is 2047. Setting SlotCount to 123.
+    SlotCount = 123
+};
+
+Console.WriteLine("SlotCount without exceeding the maximum value: " + extendedBitFieldExample.SlotCount);
+
+// Setting SlotCount to a value greater than the 11-bit maximum (2047).
+// The resulting value will be calculated as: 123 * 6 + 2^11 = 123 * 6 + 2048 = 738 + 2048 = 2786.
+extendedBitFieldExample.SlotCount = 3000;
+
+Console.WriteLine("SlotCount after exceeding the maximum value: " + extendedBitFieldExample.SlotCount);

@@ -44,6 +44,8 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
             return false;
         }
 
+        var owner = targetPropertySymbol.ContainingType;
+
         if (attributeData.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attributeSyntax)
         {
             return false;
@@ -61,7 +63,7 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
         // It's impossible to have an ExtendedBitField attribute without a getterLargeSizeValue argument. Because it's property is required.
         if (getterLargeSizeValueNameSyntax is null)
         {
-            diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MissingGetterLargeSizeValue, attributeSyntax.GetLocation(), propertyDeclarationSyntax));
+            diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MissingGetterLargeSizeValue, attributeSyntax.GetLocation(), propertyDeclarationSyntax.Identifier));
             return false;
         }
 
@@ -69,75 +71,24 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
 
         if (getterLargeSizeValueOperation is not INameOfOperation nameOfOperation)
         {
-            diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MandatoryOfNameofInGetterLargeSizeValueName, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax));
+            diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MandatoryOfNameofInGetterLargeSizeValueName, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax.Identifier));
             return false;
         }
 
         var nameofArgument = nameOfOperation.Argument;
 
-        if (nameofArgument is not IPropertyReferenceOperation ||
-            nameofArgument is not IMethodReferenceOperation)
+
+        var nameofArgumentSymbol = SemanticModelHelper.GetCandidateGetterLargeSizeValueNameSymbol(owner, nameOfOperation, targetPropertySymbol, propertyDeclarationSyntax, getterLargeSizeValueNameSyntax, attributeData, in diagnostics);
+
+        if(nameofArgumentSymbol is null)
         {
-            diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.InvalidReferenceInGetterLargeSizeValueName, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax));
             return false;
         }
 
-        if (nameofArgument is IPropertyReferenceOperation propertyReference)
+        if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, propertyDeclarationSyntax, in diagnostics, out var parsed))
         {
-            var propertySymbol = propertyReference.Property;
-
-            if (!targetPropertySymbol.Type.Equals(propertySymbol.Type, SymbolEqualityComparer.Default))
-            {
-                diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.InvalidTypeForPropertyReference, getterLargeSizeValueNameSyntax.GetLocation(), propertyDeclarationSyntax, targetPropertySymbol.Type.ToDisplayString()));
-                return false;
-            }
-
-            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, propertyDeclarationSyntax, in diagnostics, out var parsed))
-            {
-                result = new ParsedExtendedBitFiledAttribute(parsed, propertySymbol);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        if(nameofArgument is IMethodReferenceOperation methodReference)
-        {
-            var methodSymbol = methodReference.Method;
-
-            if(!methodSymbol.ReturnType.Equals(targetPropertySymbol.Type, SymbolEqualityComparer.Default))
-            {
-                diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.InvalidReturnTypeForMethodReference, getterLargeSizeValueNameSyntax.GetLocation(), methodSymbol.Name, targetPropertySymbol.Type.ToDisplayString()));
-                return false;
-            }
-
-            var isOnlyDefaultParameters = true;
-            foreach (var parameter in methodSymbol.Parameters)
-            {
-                if (!parameter.HasExplicitDefaultValue)
-                {
-                    isOnlyDefaultParameters = false;
-                    break;
-                }
-            }
-
-            if(!isOnlyDefaultParameters)
-            {
-                diagnostics.Add(Diagnostic.Create(PropertyBitPackDiagnostics.MethodWithParametersNotAllowed, getterLargeSizeValueNameSyntax.GetLocation(), methodSymbol.Name));
-                return false;
-            }
-
-            if (ParsedBitFiledAttribute.TryParseBitFieldAttribute(attributeData, propertyDeclarationSyntax, in diagnostics, out var parsed))
-            {
-                result = new ParsedExtendedBitFiledAttribute(parsed, methodSymbol);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            result = new ParsedExtendedBitFiledAttribute(parsed, nameofArgumentSymbol);
+            return true;
         }
 
         return false;

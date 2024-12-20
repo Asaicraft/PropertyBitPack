@@ -8,6 +8,7 @@ using PropertyBitPack.SourceGen.Models;
 using System.Collections.Immutable;
 using PropertyBitPack.SourceGen.Collections;
 using Microsoft.CodeAnalysis.Text;
+using System.Diagnostics;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -72,6 +73,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 foreach (var diagnostic in diagnostics)
                 {
                     context.ReportDiagnostic(diagnostic);
+                    Debug.WriteLine(diagnostic);
                 }
             }
             return;

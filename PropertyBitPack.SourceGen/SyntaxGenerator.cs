@@ -135,10 +135,10 @@ public static class SyntaxGenerator
     }
 
     private static PropertyDeclarationSyntax CreateBitFieldPropertyDeclarationSyntax(
-    string fieldName,
-    PropertyToBitInfo propertyToBitInfo,
-    BitsSpan bitsSpan,
-    TypeSyntax backingFieldType)
+        string fieldName,
+        PropertyToBitInfo propertyToBitInfo,
+        BitsSpan bitsSpan,
+        TypeSyntax backingFieldType)
     {
         var propertyTypeName = propertyToBitInfo.PropertyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         var propertyName = propertyToBitInfo.PropertySymbol.Name;
@@ -280,7 +280,7 @@ public static class SyntaxGenerator
         string fieldName,
         PropertyToBitInfo propertyToBitInfo,
         BitsSpan bitsSpan,
-        TypeSyntax backingFieldType)
+    TypeSyntax backingFieldType)
     {
         var propertyTypeName = propertyToBitInfo.PropertyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         var propertyName = propertyToBitInfo.PropertySymbol.Name;
@@ -295,6 +295,7 @@ public static class SyntaxGenerator
         var lengthLiteral = NumericLiteralInt(length);
 
         // mask = ((1U << length) - 1U);
+        // Приведение не нужно, так как mask = uint
         var maskDeclaration = LocalVar(
             "mask",
             PredefinedTypeUInt(),
@@ -304,25 +305,26 @@ public static class SyntaxGenerator
                     SyntaxKind.SubtractExpression,
                     NumericLiteral(1U))));
 
-        // maxValue = (int)((1 << length) - 1);
+        // maxValue = (int)((1U << length) - 1U);
+        // Явно приводим к int
         var maxValueDeclaration = LocalVar(
             "maxValue",
             PredefinedType(Token(SyntaxKind.IntKeyword)),
-            Parenthesized(
-                BinaryExpr(
-                    Parenthesized(BinaryExpr(NumericLiteral(1), SyntaxKind.LeftShiftExpression, lengthLiteral)),
-                    SyntaxKind.SubtractExpression,
-                    NumericLiteral(1))));
+            CastExpression(
+                PredefinedType(Token(SyntaxKind.IntKeyword)),
+                Parenthesized(
+                    BinaryExpr(
+                        Parenthesized(BinaryExpr(NumericLiteral(1U), SyntaxKind.LeftShiftExpression, lengthLiteral)),
+                        SyntaxKind.SubtractExpression,
+                        NumericLiteral(1U)))));
 
         // Геттер:
         // int extractedValue = (int)(((uint)fieldName >> start) & mask);
         // return extractedValue == maxValue ? GetLargeValue() : extractedValue;
 
-        var fieldAsUInt = CastExpression(PredefinedTypeUInt(), fieldIdentifier);
-
-        var fieldShifted = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.RightShiftExpression, startLiteral));
-        var fieldAndMask = Parenthesized(BinaryExpr(fieldShifted, SyntaxKind.BitwiseAndExpression, IdentifierName("mask")));
-
+        var fieldAsUInt = ParenthesizedExpression(CastExpression(PredefinedTypeUInt(), fieldIdentifier));
+        var fieldShifted = ParenthesizedExpression(BinaryExpr(fieldAsUInt, SyntaxKind.RightShiftExpression, startLiteral));
+        var fieldAndMask = ParenthesizedExpression(BinaryExpr(fieldShifted, SyntaxKind.BitwiseAndExpression, IdentifierName("mask")));
         var extractedValueDecl = LocalVar(
             "extractedValue",
             PredefinedType(Token(SyntaxKind.IntKeyword)),
@@ -337,20 +339,19 @@ public static class SyntaxGenerator
             .WithBody(Block(maskDeclaration, maxValueDeclaration, extractedValueDecl, ReturnStatement(ternary)));
 
         // Сеттер:
-        // Если value > maxValue, то value = maxValue
-        // После этого:
+        // if ((int)value > maxValue) value = (PropertyType)maxValue;
         // fieldName = (FieldType)(((uint)fieldName & ~(mask << start)) | (((uint)value & mask) << start));
 
         var maskRef = IdentifierName("mask");
-        var maskShifted = Parenthesized(BinaryExpr(maskRef, SyntaxKind.LeftShiftExpression, startLiteral));
+        var maskShifted = ParenthesizedExpression(BinaryExpr(maskRef, SyntaxKind.LeftShiftExpression, startLiteral));
         var notMaskShifted = PrefixUnaryExpression(SyntaxKind.BitwiseNotExpression, maskShifted);
 
-        var uintValue = CastExpression(PredefinedTypeUInt(), valueIdentifier);
-        var valueAndMask = Parenthesized(BinaryExpr(uintValue, SyntaxKind.BitwiseAndExpression, maskRef));
-        var valueShifted = Parenthesized(BinaryExpr(valueAndMask, SyntaxKind.LeftShiftExpression, startLiteral));
+        var uintValue = ParenthesizedExpression(CastExpression(PredefinedTypeUInt(), valueIdentifier));
+        var valueAndMask = ParenthesizedExpression(BinaryExpr(uintValue, SyntaxKind.BitwiseAndExpression, maskRef));
+        var valueShifted = ParenthesizedExpression(BinaryExpr(valueAndMask, SyntaxKind.LeftShiftExpression, startLiteral));
 
-        var fieldCleared = Parenthesized(BinaryExpr(fieldAsUInt, SyntaxKind.BitwiseAndExpression, notMaskShifted));
-        var fieldFinalExpr = Parenthesized(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, valueShifted));
+        var fieldCleared = ParenthesizedExpression(BinaryExpr(fieldAsUInt, SyntaxKind.BitwiseAndExpression, notMaskShifted));
+        var fieldFinalExpr = ParenthesizedExpression(BinaryExpr(fieldCleared, SyntaxKind.BitwiseOrExpression, valueShifted));
         var fieldFinalCast = CastExpression(backingFieldType, fieldFinalExpr);
 
         var conditionValueGreaterThanMax = BinaryExpr(
@@ -366,12 +367,7 @@ public static class SyntaxGenerator
             )
         );
 
-        var ifClampStmt = IfStatement(
-            conditionValueGreaterThanMax,
-            Block(setValueToMax),
-            null
-        );
-
+        var ifClampStmt = IfStatement(conditionValueGreaterThanMax, Block(setValueToMax));
         var assignStmt = ExpressionStatement(
             AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, fieldIdentifier, fieldFinalCast));
 
@@ -389,6 +385,7 @@ public static class SyntaxGenerator
 
         return propertyDeclaration;
     }
+
 
     private readonly struct BitsSpan(int start, int length)
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -19,14 +20,21 @@ namespace PropertyBitPack.SourceGen.Models;
 /// <param name="TypeBitsCount">
 /// The total number of bits available in the backing field type (e.g., 32 for <c>uint</c>, 64 for <c>ulong</c>).
 /// </param>
+/// <param name="StoredBitsCount">
+/// The total number of bits actually used by the properties in this field.
+/// </param>
 /// <param name="PropertiesWhichDataStored">
 /// A collection of properties whose data is stored within this backing field.
 /// Each property has its own bit allocation, which is part of the total bits in the field.
+/// </param>
+/// <param name="Owner">
+/// The type symbol representing the class or struct that owns these properties.
 /// </param>
 public sealed record PackedFieldStorage(
     string FieldName,
     TypeSyntax TypeSyntax,
     int TypeBitsCount,
     int StoredBitsCount,
-    ImmutableArray<PropertyToBitInfo> PropertiesWhichDataStored
+    ImmutableArray<PropertyToBitInfo> PropertiesWhichDataStored,
+    ITypeSymbol Owner
 );
