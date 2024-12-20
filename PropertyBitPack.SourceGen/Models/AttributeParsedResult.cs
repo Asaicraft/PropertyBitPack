@@ -10,33 +10,25 @@ using System.Text;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
 namespace PropertyBitPack.SourceGen.Models;
-public abstract class AttributeParsedResult
+public abstract class AttributeParsedResult(
+    BitsMappingAttributeType attributeType,
+    int? bitsCount,
+    string? fieldName)
 {
-
-    protected AttributeParsedResult(
-        BitsMappingAttributeType attributeType,
-        int? bitsCount,
-        string? fieldName)
-    {
-        AttributeType = attributeType;
-        BitsCount = bitsCount;
-        FieldName = fieldName;
-    }
-
     public BitsMappingAttributeType AttributeType
     {
         get;
-    }
+    } = attributeType;
 
     public int? BitsCount
     {
         get;
-    }
+    } = bitsCount;
 
     public string? FieldName
     {
         get;
-    }
+    } = fieldName;
 
     public static bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
     {

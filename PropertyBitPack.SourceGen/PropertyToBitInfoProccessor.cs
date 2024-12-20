@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
@@ -78,12 +79,20 @@ public static class PropertyToBitInfoProccessor
             return new(null, diaognosticsBuilder.ToImmutable());
         }
 
+        var isInit = propertyDeclaration.AccessorList?.Accessors.Any(static accessor => accessor.IsKind(SyntaxKind.InitAccessorDeclaration)) ?? false;
+        var setterOrInitModifiers = propertyDeclaration.AccessorList?.Accessors
+            .Where(static accessor =>
+                accessor.IsKind(SyntaxKind.InitAccessorDeclaration) ||
+                accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
+            .Select(static accessor => accessor.Modifiers).FirstOrDefault() ?? default;
+
         var propertyToBitInfo = new PropertyToBitInfo(
             attributeType,
             attributeParsedResult is ParsedExtendedBitFiledAttribute extendedBitFiledAttribute
                 ? extendedBitFiledAttribute.SymbolGetterLargeSizeValue
                 : null,
-            propertyDeclaration.Modifiers,
+            isInit,
+            setterOrInitModifiers,
             propertySymbol,
             attributeParsedResult.BitsCount ?? GetDefaultBitsCount(propertySymbol.Type),
             attributeParsedResult.FieldName,

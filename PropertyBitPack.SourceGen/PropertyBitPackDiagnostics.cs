@@ -76,11 +76,20 @@ public static class PropertyBitPackDiagnostics
     );
 
     public static readonly DiagnosticDescriptor TooManyBitsForAnyType = new(
-       id: "PRBITS008",
-       title: "Too many bits required",
-       messageFormat: "Properties with FieldName '{0}' require {1} bits, which is more than the largest available type (64 bits)",
-       category: "PropertyBitPack",
-       defaultSeverity: DiagnosticSeverity.Error,
-       isEnabledByDefault: true
-   );
+        id: "PRBITS008",
+        title: "Too many bits required",
+        messageFormat: "Properties with FieldName '{0}' require {1} bits, which is more than the largest available type (64 bits)",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true
+    );
+
+    public static readonly DiagnosticDescriptor UnsoportedOwnerType = new(
+        id: "PRBITS009",
+        title: "Unsupported owner type",
+        messageFormat: "The owner type '{0}' is not supported. Only classes and structs are supported.",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true
+    );
 }

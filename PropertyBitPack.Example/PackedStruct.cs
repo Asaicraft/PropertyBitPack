@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PropertyBitPack.Example;
-public struct PackedStruct
+public partial struct PackedStruct
 {
     [BitField]
     public partial bool Bool1

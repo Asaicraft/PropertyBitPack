@@ -7,6 +7,7 @@ using System.Text;
 using PropertyBitPack.SourceGen.Models;
 using System.Collections.Immutable;
 using PropertyBitPack.SourceGen.Collections;
+using Microsoft.CodeAnalysis.Text;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -40,6 +41,30 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
             filteredResults = FilterAndCollectDiagnostics(properties, diagnosticsBuilder);
 
+            if (filteredResults.IsEmpty)
+            {
+                goto showDiagnostics;
+            }
+
+
+            var packedFieldStorages = PackedFieldStorageAggregator.Aggregate(filteredResults, diagnosticsBuilder);
+
+            foreach (var packedFieldStorage in packedFieldStorages)
+            {
+                var ast = SyntaxGenerator.GenerateFieldAndBindedProperties(packedFieldStorage, diagnosticsBuilder);
+
+                if(ast is not null)
+                {
+                    var curentClassName = packedFieldStorage.PropertiesWhichDataStored[0].Owner.ToDisplayParts(SymbolDisplayFormat.FullyQualifiedFormat).Skip(2).ToImmutableArray().ToDisplayString();
+                    var fieldAndClassName = $"{curentClassName}.{packedFieldStorage.FieldName}.g.cs";
+                    var sourceText = ast.NormalizeWhitespace().ToFullString();
+
+                    context.AddSource(fieldAndClassName, sourceText);
+                }
+            }
+
+
+        showDiagnostics:
             if (diagnosticsBuilder.Count > 0)
             {
                 var diagnostics = diagnosticsBuilder.ToImmutable();
@@ -49,14 +74,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                     context.ReportDiagnostic(diagnostic);
                 }
             }
-
-            if (filteredResults.IsEmpty)
-            {
-                return;
-            }
-
-
-            var packedFieldStorages = PackedFieldStorageAggregator.Aggregate(filteredResults, diagnosticsBuilder);
+            return;
         });
     }
 

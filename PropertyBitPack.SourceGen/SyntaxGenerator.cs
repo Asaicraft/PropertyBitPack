@@ -1,38 +1,61 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace PropertyBitPack.SourceGen;
 public static class SyntaxGenerator
 {
-    public static CompilationUnitSyntax GenerateFieldAndBindedProperties(PackedFieldStorage packedFieldStorage)
+    public static CompilationUnitSyntax? GenerateFieldAndBindedProperties(PackedFieldStorage packedFieldStorage, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
     {
         var owner = packedFieldStorage.PropertiesWhichDataStored[0].Owner;
 
-        var namespaceSyntax = NamespaceDeclaration(ParseName(owner.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
+        var namespaceSyntax = NamespaceDeclaration(ParseName(owner.ContainingNamespace.ToDisplayString()));
 
-        var classSyntax = ClassDeclaration(
-                owner.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
-            )
-            .WithModifiers(
-                TokenList(Token(SyntaxKind.PartialKeyword))
-            );
+        var ownerName = owner.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+
+        TypeDeclarationSyntax? ownerSyntax = owner.TypeKind switch
+        {
+            TypeKind.Class => !owner.IsRecord ? ClassDeclaration(ownerName) : RecordDeclaration(SyntaxKind.RecordDeclaration, Token(SyntaxKind.RecordKeyword) ,ownerName),
+            TypeKind.Struct => !owner.IsRecord ? StructDeclaration(ownerName) : RecordDeclaration(SyntaxKind.RecordStructDeclaration, Token(SyntaxKind.RecordKeyword), ownerName),
+            _ => null
+        };
+
+        if(ownerSyntax is null)
+        {
+            diagnosticsBuilder.Add(Diagnostic.Create(PropertyBitPackDiagnostics.UnsoportedOwnerType, owner.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax()?.GetLocation()));
+            return null;
+        }
+            
+        ownerSyntax = ownerSyntax.WithModifiers(
+            TokenList(Token(SyntaxKind.PartialKeyword))
+        );
 
         var fieldDeclaration = GenerateFieldDeclaration(packedFieldStorage);
-        classSyntax = classSyntax.AddMembers(fieldDeclaration);
+        ownerSyntax = ownerSyntax.AddMembers(fieldDeclaration);
 
         var properties = GenerateProperties(packedFieldStorage);
 
-        classSyntax = classSyntax.AddMembers([.. properties]);
+        ownerSyntax = ownerSyntax.AddMembers([.. properties]);
 
-        namespaceSyntax = namespaceSyntax.AddMembers(classSyntax);
+        namespaceSyntax = namespaceSyntax.AddMembers(ownerSyntax);
 
         var compilationUnit = CompilationUnit().AddMembers(namespaceSyntax);
+
+#if DEBUG
+        var debugAst = compilationUnit.NormalizeWhitespace().ToFullString();
+        Debug.WriteLine(
+            $"Generating properties for: {owner.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)} \n" +
+            $"Properties Count: {packedFieldStorage.PropertiesWhichDataStored.Length} \n" +
+            $"Fileds Count: {packedFieldStorage.PropertiesWhichDataStored.Length} \n\n" +
+            $"{debugAst} \n\n\n");
+#endif
 
         return compilationUnit;
     }
@@ -69,10 +92,9 @@ public static class SyntaxGenerator
     {
         var fieldName = packedFieldStorage.FieldName;
         var properties = packedFieldStorage.PropertiesWhichDataStored;
-        var members = new System.Collections.Generic.List<MemberDeclarationSyntax>(properties.Length);
+        var members = new List<MemberDeclarationSyntax>(properties.Length);
 
-        // Определяем смещения
-        int offset = 0;
+        var offset = 0;
         foreach (var prop in properties)
         {
             var length = prop.BitsCount;
@@ -93,10 +115,10 @@ public static class SyntaxGenerator
     {
         var fieldName = packedFieldStorage.FieldName;
         var properties = packedFieldStorage.PropertiesWhichDataStored;
-        var members = new System.Collections.Generic.List<MemberDeclarationSyntax>(properties.Length);
+        var members = new List<MemberDeclarationSyntax>(properties.Length);
 
         // Определяем смещения
-        int offset = 0;
+        var offset = 0;
         foreach (var prop in properties)
         {
             var length = prop.BitsCount;
