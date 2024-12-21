@@ -78,61 +78,39 @@ public static class SyntaxGenerator
 
     public static SeparatedSyntaxList<MemberDeclarationSyntax> GenerateProperties(PackedFieldStorage packedFieldStorage)
     {
-        if (packedFieldStorage.PropertiesWhichDataStored[0].AttributeType == BitsMappingAttributeType.BitField)
-        {
-            return GenerateBitFieldProperties(packedFieldStorage);
-        }
-        else
-        {
-            return GenerateExtendedBitFieldProperties(packedFieldStorage);
-        }
-    }
-
-    private static SeparatedSyntaxList<MemberDeclarationSyntax> GenerateBitFieldProperties(PackedFieldStorage packedFieldStorage)
-    {
         var fieldName = packedFieldStorage.FieldName;
         var properties = packedFieldStorage.PropertiesWhichDataStored;
         var members = new List<MemberDeclarationSyntax>(properties.Length);
 
         var offset = 0;
-        foreach (var prop in properties)
+        foreach (var property in properties)
         {
-            var length = prop.BitsCount;
+            var length = property.BitsCount;
             var start = offset;
             offset += length;
 
             var bitsSpan = new BitsSpan(start, length);
 
-            var propertyDecl = CreateBitFieldPropertyDeclarationSyntax(fieldName, prop, bitsSpan, packedFieldStorage.TypeSyntax);
-            members.Add(propertyDecl);
+            PropertyDeclarationSyntax? propertyDeclaration;
+
+            if (property.AttributeType == BitsMappingAttributeType.BitField)
+            {
+                propertyDeclaration = CreateBitFieldPropertyDeclarationSyntax(fieldName, property, bitsSpan, packedFieldStorage.TypeSyntax);
+            }
+            else
+            {
+                propertyDeclaration = CreateExtendedBitFieldPropertyDeclarationSyntax(fieldName, property, bitsSpan, packedFieldStorage.TypeSyntax);
+            }
+            
+            if(propertyDeclaration is not null)
+            {
+                members.Add(propertyDeclaration);
+            }
         }
 
         return SeparatedList(members);
     }
 
-
-    private static SeparatedSyntaxList<MemberDeclarationSyntax> GenerateExtendedBitFieldProperties(PackedFieldStorage packedFieldStorage)
-    {
-        var fieldName = packedFieldStorage.FieldName;
-        var properties = packedFieldStorage.PropertiesWhichDataStored;
-        var members = new List<MemberDeclarationSyntax>(properties.Length);
-
-        // Определяем смещения
-        var offset = 0;
-        foreach (var prop in properties)
-        {
-            var length = prop.BitsCount;
-            var start = offset;
-            offset += length;
-
-            var bitsSpan = new BitsSpan(start, length);
-
-            var propertyDecl = CreateExtendedBitFieldPropertyDeclarationSyntax(fieldName, prop, bitsSpan, packedFieldStorage.TypeSyntax);
-            members.Add(propertyDecl);
-        }
-
-        return SeparatedList(members);
-    }
 
     private static PropertyDeclarationSyntax CreateBitFieldPropertyDeclarationSyntax(
         string fieldName,
