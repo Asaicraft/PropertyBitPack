@@ -23,7 +23,7 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
         int? bitsCount,
         string? fieldName,
         ISymbol symbolGetterLargeSizeValue)
-        : base(BitsMappingAttributeType.ExtendedBitField, bitsCount, fieldName)
+        : base(BitsMappingAttributeType.IExtendedBitField, bitsCount, fieldName)
     {
         SymbolGetterLargeSizeValue = symbolGetterLargeSizeValue;
     }
@@ -58,7 +58,7 @@ public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
             return false;
         }
 
-        var getterLargeSizeValueNameSyntax = attributeSyntax.ArgumentList.Arguments.FirstOrDefault(x => x.NameEquals?.Name.Identifier.Text == ExtendedBitFieldAttributeGetterLargeSizeValueName);
+        var getterLargeSizeValueNameSyntax = attributeSyntax.ArgumentList.Arguments.FirstOrDefault(x => x.NameEquals?.Name.Identifier.Text == IExtendedBitFieldAttributeGetterLargeSizeValueName);
 
         // It's impossible to have an ExtendedBitField attribute without a getterLargeSizeValue argument. Because it's property is required.
         if (getterLargeSizeValueNameSyntax is null)

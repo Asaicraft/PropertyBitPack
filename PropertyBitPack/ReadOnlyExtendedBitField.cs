@@ -11,7 +11,7 @@ public sealed class ReadOnlyExtendedBitField : BitsMappingAttributeBase, IReadOn
     {
         get; set;
     }
-    public required string? GetterLargeSizeValueName
+    public required string GetterLargeSizeValueName
     {
         get; set;
     }

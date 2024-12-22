@@ -2,5 +2,5 @@
 
 public interface IExtendedBitFieldAttribute
 {
-    string? GetterLargeSizeValueName { get; set; }
+    public string GetterLargeSizeValueName { get; set; }
 }

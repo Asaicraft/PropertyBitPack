@@ -40,7 +40,7 @@ public static class PropertyToBitInfoProccessor
             return null;
         }
 
-        var attribute = attributeData.FirstOrDefault(static attr => CandidateAttributes.Contains(attr.AttributeClass?.Name));
+        var attribute = attributeData.FirstOrDefault(static attr => AttributeParsedResult.Predicate(attr));
 
         // after enumerating mb we should check cancellationToken
         if (cancellationToken.IsCancellationRequested)
@@ -52,19 +52,6 @@ public static class PropertyToBitInfoProccessor
         {
             // It's normal for a property to not have any bit-mapping attributes.
             // Do not log an error or warning.
-            return null;
-        }
-
-        var attributeType = attribute.AttributeClass?.Name switch
-        {
-            BitFieldAttribute => BitsMappingAttributeType.BitField,
-            ExtendedBitFieldAttribute => BitsMappingAttributeType.ExtendedBitField,
-            _ => BitsMappingAttributeType.Unknown
-        };
-
-        if (attributeType == BitsMappingAttributeType.Unknown)
-        {
-            // The attribute type is unknown.
             return null;
         }
 
@@ -87,7 +74,7 @@ public static class PropertyToBitInfoProccessor
             .Select(static accessor => accessor.Modifiers).FirstOrDefault() ?? default;
 
         var propertyToBitInfo = new PropertyToBitInfo(
-            attributeType,
+            attributeParsedResult.AttributeType,
             attributeParsedResult is ParsedExtendedBitFiledAttribute extendedBitFiledAttribute
                 ? extendedBitFiledAttribute.SymbolGetterLargeSizeValue
                 : null,
