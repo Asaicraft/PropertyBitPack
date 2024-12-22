@@ -21,6 +21,12 @@ public partial class ExtendedBitFieldExample
         get; protected set;
     }
 
+    [ExtendedBitField(BitsCount = BitsCountSlotCountProperty, GetterLargeSizeValueName = nameof(GetLargeSlotCount))]
+    public partial int SlotCount3
+    {
+        get; protected set;
+    }
+
     public static int GetLargeSlotCount(int a = 6)
     {
         return ((int)Math.Pow(2, 11)) + 123 * a;
