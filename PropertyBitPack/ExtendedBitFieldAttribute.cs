@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PropertyBitPack;
 
-public sealed class ExtendedBitFieldAttribute : BitsMappingAttributeBase
+public sealed class ExtendedBitFieldAttribute : BitsMappingAttributeBase, IExtendedBitFieldAttribute
 {
     public required string? GetterLargeSizeValueName
     {

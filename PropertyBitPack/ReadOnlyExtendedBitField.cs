@@ -5,10 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PropertyBitPack;
-public sealed class ReadOnlyBitFieldAttribute : BitsMappingAttributeBase, IReadOnlyBitFieldAttribute
+public sealed class ReadOnlyExtendedBitField : BitsMappingAttributeBase, IReadOnlyBitFieldAttribute, IExtendedBitFieldAttribute
 {
     public AccessModifier ConstructorAccessModifier
     {
         get; set;
-    } = AccessModifier.Private;
+    }
+    public required string? GetterLargeSizeValueName
+    {
+        get; set;
+    }
 }
