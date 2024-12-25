@@ -61,6 +61,7 @@ public abstract class PropertyBitPackGeneratorContextBuilder
         return new PropertyBitPackGeneratorContext.PropertyBitPackGeneratorContextImplementation(
             attributeParsersBuilder.ToImmutable(),
             bitFieldPropertyParsersBuilder.ToImmutable(),
+            bitFieldPropertyAggregatorsBuilder.ToImmutable(),
             propertiesSyntaxGeneratorsBuilder.ToImmutable());
     }
 
