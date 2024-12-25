@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen;
+namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 public interface IBitFieldPropertyAggregator
 {
     /// <summary>

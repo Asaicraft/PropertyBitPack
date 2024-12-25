@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen;
+namespace PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 public interface IBitFieldPropertyParser
 {
     public BitFieldPropertyInfo? Parse(
-        PropertyDeclarationSyntax propertyDeclarationSyntax, 
-        SemanticModel semanticModel, 
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics);
 }

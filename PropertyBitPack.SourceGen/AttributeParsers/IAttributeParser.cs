@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen;
+namespace PropertyBitPack.SourceGen.AttributeParsers;
 public interface IAttributeParser
 {
     /// <summary>

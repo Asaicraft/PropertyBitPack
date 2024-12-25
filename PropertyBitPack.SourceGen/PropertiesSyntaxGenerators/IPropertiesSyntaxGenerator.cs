@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen;
+namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 public interface IPropertiesSyntaxGenerator
 {
     /// <summary>
