@@ -10,23 +10,16 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public abstract class AttributeParsedResult
+public abstract class AttributeParsedResult(string? fieldName, int bitsCount)
 {
-
-    public AttributeParsedResult(string? fieldName, int bitsCount)
-    {
-        FieldName = fieldName;
-        BitsCount = bitsCount;
-    }
-
     public string? FieldName
     {
         get;
-    }
+    } = fieldName;
 
     public int? BitsCount
     {
         get;
-    }
+    } = bitsCount;
 
 }
