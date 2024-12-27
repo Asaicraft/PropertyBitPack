@@ -109,24 +109,25 @@ public abstract partial class PropertyBitPackGeneratorContext
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<BitFieldPropertyInfo> properties)
     {
-        var requests = ImmutableArray.CreateBuilder<GenerateSourceRequest>();
+        var requests = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
         for (var i = 0; i < BitFieldPropertyAggregators.Length; i++)
         {
             var aggregator = BitFieldPropertyAggregators[i];
             var aggregatedRequests = aggregator.Aggregate(semanticModel, properties);
-            requests.AddRange(aggregatedRequests);
+            requests.AddRange(aggregatedRequests.AsSpan());
         }
         return requests.ToImmutable();
     }
 
     public virtual ImmutableArray<SourceText> GeneratePropertySyntax(in ImmutableArrayBuilder<GenerateSourceRequest> request)
     {
-        var sourceTexts = ImmutableArray.CreateBuilder<SourceText>();
+        var sourceTexts = ImmutableArrayBuilder<SourceText>.Rent();
+
         for (var i = 0; i < PropertySyntaxGenerators.Length; i++)
         {
             var generator = PropertySyntaxGenerators[i];
             var generatedTexts = generator.Generate(request);
-            sourceTexts.AddRange(generatedTexts);
+            sourceTexts.AddRange(generatedTexts.AsSpan());
         }
         return sourceTexts.ToImmutable();
     }
