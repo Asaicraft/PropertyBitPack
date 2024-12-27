@@ -15,6 +15,16 @@ namespace PropertyBitPack.SourceGen;
 [Generator(LanguageNames.CSharp)]
 public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 {
+    private static readonly PropertyBitPackGeneratorContext _context;
+
+    static PropertyBitPackSourceGenerator()
+    {
+        var builder = PropertyBitPackGeneratorContextBuilder.Create();
+
+
+        
+        _context = builder.Build();
+    }
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

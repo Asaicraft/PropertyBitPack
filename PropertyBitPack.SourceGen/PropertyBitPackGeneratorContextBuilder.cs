@@ -65,6 +65,11 @@ public abstract class PropertyBitPackGeneratorContextBuilder
             propertiesSyntaxGeneratorsBuilder.ToImmutable());
     }
 
+    public static PropertyBitPackGeneratorContextBuilder Create()
+    {
+        return new PropertyBitPackGeneratorContextBuilderImplementation();
+    }
+
     private sealed class PropertyBitPackGeneratorContextBuilderImplementation : PropertyBitPackGeneratorContextBuilder
     {
         public override ILinkedList<IAttributeParser> AttributeParsers
