@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.AttributeParsers;
+
 /// <summary>
 /// Defines the contract for attribute parsers used by the property bit pack generator.
 /// Each parser can check whether it is a candidate for a given attribute and

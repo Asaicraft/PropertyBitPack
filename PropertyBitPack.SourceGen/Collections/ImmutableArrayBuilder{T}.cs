@@ -35,6 +35,8 @@ public ref struct ImmutableArrayBuilder<T>
         return new(new Writer(initialCapacity));
     }
 
+    public readonly bool IsDefault => writer is null;
+
     /// <summary>
     /// Creates a new <see cref="ImmutableArrayBuilder{T}"/> object with the specified parameters.
     /// </summary>
@@ -43,6 +45,8 @@ public ref struct ImmutableArrayBuilder<T>
     {
         this.writer = writer;
     }
+
+
 
     /// <inheritdoc cref="ImmutableArray{T}.Builder.Count"/>
     public readonly int Count

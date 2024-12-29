@@ -29,7 +29,7 @@ public static class SyntaxGenerator
 
         if(ownerSyntax is null)
         {
-            diagnosticsBuilder.Add(Diagnostic.Create(PropertyBitPackDiagnostics.UnsoportedOwnerType, owner.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax()?.GetLocation()));
+            diagnosticsBuilder.Add(Diagnostic.Create(PropertyBitPackDiagnostics.UnsupportedOwnerType, owner.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax()?.GetLocation()));
             return null;
         }
             

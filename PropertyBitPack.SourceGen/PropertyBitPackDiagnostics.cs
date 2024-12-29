@@ -84,10 +84,19 @@ public static class PropertyBitPackDiagnostics
         isEnabledByDefault: true
     );
 
-    public static readonly DiagnosticDescriptor UnsoportedOwnerType = new(
+    public static readonly DiagnosticDescriptor UnsupportedOwnerType = new(
         id: "PRBITS009",
         title: "Unsupported owner type",
         messageFormat: "The owner type '{0}' is not supported. Only classes and structs are supported.",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true
+    );
+
+    public static readonly DiagnosticDescriptor InvalidReferenceInFieldName = new(
+        id: "PRBITS010",
+        title: "Invalid reference in 'FieldName'",
+        messageFormat: "The 'FieldName' for property '{0}' must reference a valid field when using the nameof operation",
         category: "PropertyBitPack",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true

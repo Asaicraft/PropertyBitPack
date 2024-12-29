@@ -10,10 +10,7 @@ using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 namespace PropertyBitPack.SourceGen.Models;
 public sealed class ParsedBitFiledAttribute : AttributeParsedResult
 {
-    private ParsedBitFiledAttribute(
-        int? bitsCount,
-        string? fieldName)
-        : base(BitsMappingAttributeType.BitField, bitsCount, fieldName)
+    public ParsedBitFiledAttribute(IFieldName? fieldName, int? bitsCount): base(fieldName, bitsCount)
     {
     }
 
