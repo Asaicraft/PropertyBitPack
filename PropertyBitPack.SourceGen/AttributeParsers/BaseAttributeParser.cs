@@ -451,7 +451,7 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     /// <param name="attributeData">The attribute data to analyze.</param>
     /// <param name="attributeFullName">The full name of the attribute to compare against.</param>
     /// <returns>True if the attribute's full name matches the provided name; otherwise, false.</returns>
-    protected static bool MatchesAttributeName(AttributeData attributeData, string attributeFullName)
+    protected static bool MatchesAttributeFullName(AttributeData attributeData, string attributeFullName)
     {
         return GetAttributeFullName(attributeData) == attributeFullName;
     }

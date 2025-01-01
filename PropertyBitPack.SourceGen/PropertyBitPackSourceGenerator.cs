@@ -9,6 +9,7 @@ using System.Collections.Immutable;
 using PropertyBitPack.SourceGen.Collections;
 using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics;
+using PropertyBitPack.SourceGen.AttributeParsers;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -21,7 +22,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
     {
         var builder = PropertyBitPackGeneratorContextBuilder.Create();
 
-
+        builder.AttributeParsers.AddFirst(new ParsedBitFieldAttributeParser());
         
         _context = builder.Build();
     }
@@ -38,7 +39,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         return default;
                     }
 
-                    return PropertyToBitInfoProccessor.Process(context, cancellationToken);
+                    return new object();
                 }
             )
             .Where(x => x is not null)
@@ -46,33 +47,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(propertiesWithAttributes, static (context, properties) =>
         {
-            ImmutableArray<PropertyToBitInfo> filteredResults = default;
-
-            using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
-
-            filteredResults = FilterAndCollectDiagnostics(properties, diagnosticsBuilder);
-
-            if (filteredResults.IsEmpty)
-            {
-                goto showDiagnostics;
-            }
-
-
-            var packedFieldStorages = PackedFieldStorageAggregator.Aggregate(filteredResults, diagnosticsBuilder);
-
-            foreach (var packedFieldStorage in packedFieldStorages)
-            {
-                var ast = SyntaxGenerator.GenerateFieldAndBindedProperties(packedFieldStorage, diagnosticsBuilder);
-
-                if(ast is not null)
-                {
-                    var curentClassName = packedFieldStorage.PropertiesWhichDataStored[0].Owner.ToDisplayParts(SymbolDisplayFormat.FullyQualifiedFormat).Skip(2).ToImmutableArray().ToDisplayString();
-                    var fieldAndClassName = $"{curentClassName}.{packedFieldStorage.FieldName}.g.cs";
-                    var sourceText = ast.NormalizeWhitespace().ToFullString();
-
-                    context.AddSource(fieldAndClassName, sourceText);
-                }
-            }
+            var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
 
 
         showDiagnostics:
@@ -107,37 +82,4 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             return attributeList.Attributes.Any();
         }
     }
-
-    private static ImmutableArray<PropertyToBitInfo> FilterAndCollectDiagnostics(ImmutableArray<Result<PropertyToBitInfo>?> results, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
-    {
-        using var validatedResults = ImmutableArrayBuilder<PropertyToBitInfo>.Rent(results.Length / 2);
-
-        foreach (var result in results)
-        {
-            if (result is not Result<PropertyToBitInfo> notNullResult)
-            {
-                continue;
-            }
-
-            if (notNullResult.Diagnostics is ImmutableArray<Diagnostic> diagnostics)
-            {
-                diagnosticsBuilder.AddRange(diagnostics.AsSpan());
-            }
-
-            if (notNullResult.IsError)
-            {
-                continue;
-            }
-
-            if (notNullResult.IsEmpty)
-            {
-                continue;
-            }
-
-            validatedResults.Add(notNullResult.Value);
-        }
-
-        return validatedResults.ToImmutable();
-    }
-
 }

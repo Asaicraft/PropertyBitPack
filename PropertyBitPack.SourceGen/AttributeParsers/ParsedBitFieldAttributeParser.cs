@@ -13,7 +13,7 @@ public sealed class ParsedBitFieldAttributeParser : BaseAttributeParser
 {
     public override bool IsCandidate(AttributeData attributeData)
     {
-        return MatchesAttributeName(attributeData, BitFieldAttribute);
+        return MatchesAttributeFullName(attributeData, BitFieldAttribute);
     }
 
     public override bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)

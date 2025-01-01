@@ -33,7 +33,7 @@ public abstract partial class PropertyBitPackGeneratorContext
         public PropertyBitPackGeneratorContextImplementation(
             ImmutableArray<IAttributeParser> attributeParsers,
             ImmutableArray<IBitFieldPropertyParser> bitFieldPropertyParsers,
-            ImmutableArray<IBitFieldPropertyAggregator> bitFieldPropertyAggregators
+            ImmutableArray<IBitFieldPropertyAggregator> bitFieldPropertyAggregators,
             ImmutableArray<IPropertiesSyntaxGenerator> bitFieldPropertyGenerators
             )
         {
