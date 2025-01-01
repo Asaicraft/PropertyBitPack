@@ -22,8 +22,9 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
     {
         var builder = PropertyBitPackGeneratorContextBuilder.Create();
 
-        builder.AttributeParsers.AddFirst(new ParsedBitFieldAttributeParser());
-        
+        builder.AttributeParsers.Add(new ReadOnlyBitFieldAttributeParser());
+        builder.AttributeParsers.Add(new ParsedBitFieldAttributeParser());
+
         _context = builder.Build();
     }
 
@@ -32,22 +33,85 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         var propertiesWithAttributes = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (syntaxNode, _) => IsCandidateProperty(syntaxNode),
-                transform: static (context, cancellationToken) =>
+                transform: static Result<PropertyDeclarationSyntax>? (context, cancellationToken) =>
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        return default;
+                        return null;
                     }
 
-                    return new object();
+                    var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
+
+                    var semanticModel = context.SemanticModel;
+
+                    using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
+
+                    var attributeLists = propertyDeclaration.AttributeLists;
+
+
+                    using var attributeDatas = ImmutableArrayBuilder<AttributeData>.Rent();
+
+
+                    if (semanticModel.GetDeclaredSymbol(propertyDeclaration) is not IPropertySymbol propertySymbol)
+                    {
+                        return null;
+                    }
+
+                    var attributes = propertySymbol.GetAttributes();
+
+                    var candidates = GetCandidadates(attributes);
+
+                    if (candidates.Length == 0)
+                    {
+                        return null;
+                    }
+
+                    if (candidates.Length != 1)
+                    {
+                        diagnosticsBuilder.Add(
+                            Diagnostic.Create(
+                                PropertyBitPackDiagnostics.AttributeConflict,
+                                propertyDeclaration.GetLocation(),
+                                string.Join(
+                                    ", ",
+                                    candidates.Select(x => x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                                )
+                            )
+                        );
+
+                        return Result.Failure<PropertyDeclarationSyntax>(diagnosticsBuilder.ToImmutable());
+                    }
+
+                    return Result.Success(propertyDeclaration);
+
+
+
+                    static ImmutableArray<AttributeData> GetCandidadates(ImmutableArray<AttributeData> attributeDatas)
+                    {
+                        using var candidates = ImmutableArrayBuilder<AttributeData>.Rent();
+
+                        for (var i = 0; i < attributeDatas.Length; i++)
+                        {
+                            var attributeData = attributeDatas[i];
+
+                            if (_context.IsCandidateAttribute(attributeData))
+                            {
+                                candidates.Add(attributeData);
+                            }
+                        }
+
+                        return candidates.ToImmutable();
+                    }
                 }
             )
             .Where(x => x is not null)
+            .Select((x, _) => (Result<PropertyDeclarationSyntax>)x!)
             .Collect();
 
-        context.RegisterSourceOutput(propertiesWithAttributes, static (context, properties) =>
+        context.RegisterSourceOutput(propertiesWithAttributes, static (context, results) =>
         {
-            var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
+            using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
+            var properties = ValidateAndReport(results, in diagnosticsBuilder);
 
 
         showDiagnostics:
@@ -62,6 +126,31 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 }
             }
             return;
+
+            static ImmutableArray<PropertyDeclarationSyntax> ValidateAndReport(ImmutableArray<Result<PropertyDeclarationSyntax>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+            {
+                using var properties = ImmutableArrayBuilder<PropertyDeclarationSyntax>.Rent();
+
+                for (var i = 0; i < candidates.Length; i++)
+                {
+                    var candidate = candidates[i];
+
+                    if (candidate.IsError)
+                    {
+                        diagnosticsBuilder.AddRange(candidate.Diagnostics.Value.AsSpan());
+                        continue;
+                    }
+
+                    if (candidate.Value is not PropertyDeclarationSyntax propertyDeclaration)
+                    {
+                        continue;
+                    }
+
+                    properties.Add(candidate.Value);
+                }
+
+                return properties.ToImmutable();
+            }
         });
     }
 

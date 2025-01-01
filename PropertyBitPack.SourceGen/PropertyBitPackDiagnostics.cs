@@ -101,4 +101,14 @@ public static class PropertyBitPackDiagnostics
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true
     );
+
+    public static readonly DiagnosticDescriptor AttributeConflict = new(
+        id: "PRBITS011",
+        title: "Conflict between attributes",
+        messageFormat: "Conflict between attributes: {0}. Choose only one of them.",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        description: "Attributes causing conflict cannot be used together. Ensure only one attribute from the conflicting group is applied.",
+        isEnabledByDefault: true
+    );
 }

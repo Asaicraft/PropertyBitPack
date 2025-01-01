@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PropertyBitPack.Example;
 public partial struct PackedStruct
 {
-    [BitField]
+    [BitField, ReadOnlyBitField]
     public partial bool Bool1
     {
         get; set;

@@ -36,6 +36,19 @@ public abstract partial class PropertyBitPackGeneratorContext
         get;
     }
 
+    public virtual bool IsCandidateAttribute(AttributeData attributeData)
+    {
+        for (var i = 0; i < AttributeParsers.Length; i++)
+        {
+            var parser = AttributeParsers[i];
+            if (parser.IsCandidate(attributeData))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public virtual bool TryParseAttribute(
         AttributeData attributeData,
         PropertyDeclarationSyntax propertyDeclarationSyntax,
