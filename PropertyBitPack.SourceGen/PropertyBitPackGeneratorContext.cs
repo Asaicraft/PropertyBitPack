@@ -100,7 +100,7 @@ public abstract partial class PropertyBitPackGeneratorContext
         return false;
     }
 
-    public virtual BitFieldPropertyInfo? ParseBitFieldProperty(
+    public virtual BaseBitFieldPropertyInfo? ParseBitFieldProperty(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics)
@@ -119,7 +119,7 @@ public abstract partial class PropertyBitPackGeneratorContext
     }
 
     public virtual ImmutableArray<GenerateSourceRequest> AggregateBitFieldProperties(
-        ILinkedList<BitFieldPropertyInfo> properties)
+        ILinkedList<BaseBitFieldPropertyInfo> properties)
     {
         var requests = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
         for (var i = 0; i < BitFieldPropertyAggregators.Length; i++)

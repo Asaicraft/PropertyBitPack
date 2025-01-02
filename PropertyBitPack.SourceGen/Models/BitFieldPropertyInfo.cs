@@ -4,34 +4,16 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public abstract class BitFieldPropertyInfo
+public sealed class BitFieldPropertyInfo(
+    AttributeParsedResult attributeParsedResult,
+    bool isInit,
+    bool hasInitOrSet,
+    SyntaxTokenList setterOrInitModifiers,
+    IPropertySymbol propertySymbol) : BaseBitFieldPropertyInfo
 {
-    public abstract AttributeParsedResult AttributeParsedResult
-    {
-        get;
-    }
-
-    public abstract bool IsInit
-    {
-        get;
-    }
-
-    public abstract bool HasInitOrSet
-    {
-        get;
-    }
-
-    public abstract SyntaxTokenList SetterOrInitModifiers
-    {
-        get;
-    }
-
-    public abstract IPropertySymbol PropertySymbol
-    {
-        get;
-    }
-
-    public ITypeSymbol PropertyType => PropertySymbol.Type;
-
-    public INamedTypeSymbol Owner => PropertyType.ContainingType;
+    public override AttributeParsedResult AttributeParsedResult { get; } = attributeParsedResult;
+    public override bool IsInit { get; } = isInit;
+    public override bool HasInitOrSet { get; } = hasInitOrSet;
+    public override SyntaxTokenList SetterOrInitModifiers { get; } = setterOrInitModifiers;
+    public override IPropertySymbol PropertySymbol { get; } = propertySymbol;
 }

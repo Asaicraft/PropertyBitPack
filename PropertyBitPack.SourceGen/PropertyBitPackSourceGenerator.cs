@@ -33,7 +33,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         var propertiesWithAttributes = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (syntaxNode, _) => IsCandidateProperty(syntaxNode),
-                transform: static Result<BitFieldPropertyInfo>? (context, cancellationToken) =>
+                transform: static Result<BaseBitFieldPropertyInfo>? (context, cancellationToken) =>
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -81,7 +81,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                             )
                         );
 
-                        return Result.Failure<BitFieldPropertyInfo>(diagnosticsBuilder.ToImmutable());
+                        return Result.Failure<BaseBitFieldPropertyInfo>(diagnosticsBuilder.ToImmutable());
                     }
 
                     var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, semanticModel, in diagnosticsBuilder);
@@ -112,7 +112,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 }
             )
             .Where(x => x is not null)
-            .Select((x, _) => (Result<BitFieldPropertyInfo>)x!)
+            .Select((x, _) => (Result<BaseBitFieldPropertyInfo>)x!)
             .Collect();
         
         context.RegisterSourceOutput(propertiesWithAttributes, static (context, results) =>
@@ -120,7 +120,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
 
             var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results, in diagnosticsBuilder);
-            var bitFieldPropertyInfoList = new SimpleLinkedList<BitFieldPropertyInfo>(bitFieldPropertyInfos);
+            var bitFieldPropertyInfoList = new SimpleLinkedList<BaseBitFieldPropertyInfo>(bitFieldPropertyInfos);
 
             var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList);
 
@@ -152,10 +152,10 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             // - ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder: A builder for accumulating diagnostics during validation.
             // Returns:
             // - ImmutableArray<PropertyAttributePair>: An immutable array containing valid property-attribute pairs.
-            static ImmutableArray<BitFieldPropertyInfo> ValidateAndAccumulateProperties(ImmutableArray<Result<BitFieldPropertyInfo>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+            static ImmutableArray<BaseBitFieldPropertyInfo> ValidateAndAccumulateProperties(ImmutableArray<Result<BaseBitFieldPropertyInfo>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
             {
                 // Create a temporary builder for storing valid property-attribute pairs.
-                using var properties = ImmutableArrayBuilder<BitFieldPropertyInfo>.Rent();
+                using var properties = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
 
                 // Iterate through all the candidates.
                 for (var i = 0; i < candidates.Length; i++)
@@ -170,7 +170,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                     }
 
                     // Skip candidates where the property declaration is not a valid PropertyDeclarationSyntax.
-                    if (candidate.Value is not BitFieldPropertyInfo bitFieldPropertyInfo)
+                    if (candidate.Value is not BaseBitFieldPropertyInfo bitFieldPropertyInfo)
                     {
                         continue;
                     }

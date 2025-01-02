@@ -28,6 +28,7 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
             return _context!;
         }
     }
+
     public virtual bool FallbackOnCandidateFailure => false;
 
     public void BindContext(PropertyBitPackGeneratorContext context)

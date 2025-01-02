@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BitFieldPropertyInfo bitFieldPropertyInfo)
+public sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFieldPropertyInfo bitFieldPropertyInfo)
 {
     private readonly BitsSpan _bitsSpan = bitsSpan;
-    private readonly BitFieldPropertyInfo _bitFieldPropertyInfo = bitFieldPropertyInfo;
+    private readonly BaseBitFieldPropertyInfo _bitFieldPropertyInfo = bitFieldPropertyInfo;
 
     public BitsSpan BitsSpan => _bitsSpan;
 
-    public BitFieldPropertyInfo BitFieldPropertyInfo => _bitFieldPropertyInfo;
+    public BaseBitFieldPropertyInfo BitFieldPropertyInfo => _bitFieldPropertyInfo;
 
     public AttributeParsedResult AttributeParsedResult => _bitFieldPropertyInfo.AttributeParsedResult;
 

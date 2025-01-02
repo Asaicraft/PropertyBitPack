@@ -9,8 +9,9 @@ using System.Text;
 namespace PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 public interface IBitFieldPropertyParser
 {
-    public BitFieldPropertyInfo? Parse(
+    public BaseBitFieldPropertyInfo? Parse(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics);
 }
