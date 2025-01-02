@@ -33,7 +33,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         var propertiesWithAttributes = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (syntaxNode, _) => IsCandidateProperty(syntaxNode),
-                transform: static Result<PropertyDeclarationSyntax>? (context, cancellationToken) =>
+                transform: static Result<BitFieldPropertyInfo>? (context, cancellationToken) =>
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -66,6 +66,8 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         return null;
                     }
 
+                    var attributeData = candidates[0];
+
                     if (candidates.Length != 1)
                     {
                         diagnosticsBuilder.Add(
@@ -79,10 +81,15 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                             )
                         );
 
-                        return Result.Failure<PropertyDeclarationSyntax>(diagnosticsBuilder.ToImmutable());
+                        return Result.Failure<BitFieldPropertyInfo>(diagnosticsBuilder.ToImmutable());
                     }
 
-                    return Result.Success(propertyDeclaration);
+                    var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, semanticModel, in diagnosticsBuilder);
+                    var diagnostics = diagnosticsBuilder.ToImmutable();
+
+                    ImmutableArray<Diagnostic>? nullableDiagnostics = diagnostics.IsDefaultOrEmpty ? null : diagnostics;
+
+                    return new(bitFieldPropertyInfo, nullableDiagnostics);
 
 
 
@@ -105,14 +112,26 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 }
             )
             .Where(x => x is not null)
-            .Select((x, _) => (Result<PropertyDeclarationSyntax>)x!)
+            .Select((x, _) => (Result<BitFieldPropertyInfo>)x!)
             .Collect();
-
+        
         context.RegisterSourceOutput(propertiesWithAttributes, static (context, results) =>
         {
             using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
-            var properties = ValidateAndReport(results, in diagnosticsBuilder);
 
+            var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results, in diagnosticsBuilder);
+            var bitFieldPropertyInfoList = new SimpleLinkedList<BitFieldPropertyInfo>(bitFieldPropertyInfos);
+
+            var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList);
+
+            var generateSourceRequests = new SimpleLinkedList<GenerateSourceRequest>(aggregatedBitFieldProperties);
+
+            var generatedPropertySyntax = _context.GeneratePropertySyntax(generateSourceRequests);
+
+            foreach (var generatedProperty in generatedPropertySyntax)
+            {
+                context.AddSource(generatedProperty.FileName, generatedProperty.SourceText);
+            }
 
         showDiagnostics:
             if (diagnosticsBuilder.Count > 0)
@@ -127,28 +146,40 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             }
             return;
 
-            static ImmutableArray<PropertyDeclarationSyntax> ValidateAndReport(ImmutableArray<Result<PropertyDeclarationSyntax>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+            // This method validates and accumulates property-attribute pairs from the given candidates.
+            // Parameters:
+            // - ImmutableArray<Result<PropertyAttributePair>> candidates: A collection of candidates to validate.
+            // - ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder: A builder for accumulating diagnostics during validation.
+            // Returns:
+            // - ImmutableArray<PropertyAttributePair>: An immutable array containing valid property-attribute pairs.
+            static ImmutableArray<BitFieldPropertyInfo> ValidateAndAccumulateProperties(ImmutableArray<Result<BitFieldPropertyInfo>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
             {
-                using var properties = ImmutableArrayBuilder<PropertyDeclarationSyntax>.Rent();
+                // Create a temporary builder for storing valid property-attribute pairs.
+                using var properties = ImmutableArrayBuilder<BitFieldPropertyInfo>.Rent();
 
+                // Iterate through all the candidates.
                 for (var i = 0; i < candidates.Length; i++)
                 {
                     var candidate = candidates[i];
 
+                    // If the candidate has errors, add the associated diagnostics to the diagnosticsBuilder.
                     if (candidate.IsError)
                     {
                         diagnosticsBuilder.AddRange(candidate.Diagnostics.Value.AsSpan());
                         continue;
                     }
 
-                    if (candidate.Value is not PropertyDeclarationSyntax propertyDeclaration)
+                    // Skip candidates where the property declaration is not a valid PropertyDeclarationSyntax.
+                    if (candidate.Value is not BitFieldPropertyInfo bitFieldPropertyInfo)
                     {
                         continue;
                     }
 
+                    // Add the valid candidate to the properties builder.
                     properties.Add(candidate.Value);
                 }
 
+                // Convert the builder to an immutable array and return the result.
                 return properties.ToImmutable();
             }
         });

@@ -11,8 +11,8 @@ namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 public interface IPropertiesSyntaxGenerator
 {
     /// <summary>
-    /// Remove properties in <paramref name="properties"/> which aggregated
+    /// Remove properties in <paramref name="request"/> which aggregated
     /// </summary>
-    public ImmutableArray<SourceText> Generate(in ImmutableArrayBuilder<GenerateSourceRequest> request);
+    public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<GenerateSourceRequest> request);
 
 }

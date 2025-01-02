@@ -12,5 +12,5 @@ public interface IBitFieldPropertyAggregator
     /// <summary>
     /// Remove properties in <paramref name="properties"/> which aggregated 
     /// </summary>
-    public ImmutableArray<GenerateSourceRequest> Aggregate(SemanticModel semanticModel, in ImmutableArrayBuilder<BitFieldPropertyInfo> properties);
+    public ImmutableArray<GenerateSourceRequest> Aggregate(ILinkedList<BitFieldPropertyInfo> properties);
 }
