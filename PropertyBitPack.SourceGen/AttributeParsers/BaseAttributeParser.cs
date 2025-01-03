@@ -13,7 +13,7 @@ using System.Text;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
 namespace PropertyBitPack.SourceGen.AttributeParsers;
-public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
+internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
 {
     protected static readonly SymbolDisplayFormat SymbolDisplayFormatNameAndContainingTypesAndNamespaces = new(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 

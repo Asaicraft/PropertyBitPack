@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFieldPropertyInfo bitFieldPropertyInfo)
+internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFieldPropertyInfo bitFieldPropertyInfo)
 {
     private readonly BitsSpan _bitsSpan = bitsSpan;
     private readonly BaseBitFieldPropertyInfo _bitFieldPropertyInfo = bitFieldPropertyInfo;

@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
-public interface IPropertiesSyntaxGenerator
+internal interface IPropertiesSyntaxGenerator
 {
     /// <summary>
     /// Remove properties in <paramref name="request"/> which aggregated

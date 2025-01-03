@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen;
-public static class ImmutableArrayBuilderDiagnosticExtensions
+internal static class ImmutableArrayBuilderDiagnosticExtensions
 {
     public static bool HasError(this in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {

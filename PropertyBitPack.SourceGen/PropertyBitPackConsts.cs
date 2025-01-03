@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen;
-public static class PropertyBitPackConsts
+internal static class PropertyBitPackConsts
 {
     public const string RootNamespace = nameof(PropertyBitPack);
     public const string BitFieldAttributeName = $"{RootNamespace}.{nameof(BitFieldAttribute)}";

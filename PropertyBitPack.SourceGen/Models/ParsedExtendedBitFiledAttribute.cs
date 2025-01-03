@@ -10,7 +10,7 @@ using System.Text;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
 namespace PropertyBitPack.SourceGen.Models;
-public sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
+internal sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
 {
 
     public ParsedExtendedBitFiledAttribute(IFieldName? fieldName, int? bitsCount, ISymbol symbolGetterLargeSizeValue): base(fieldName, bitsCount)

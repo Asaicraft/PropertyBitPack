@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen;
-public static class SpanExtensions
+internal static class SpanExtensions
 {
     public static bool Contains<T>(this in ReadOnlySpan<T> span, T value, IEqualityComparer<T> comparer)
     {

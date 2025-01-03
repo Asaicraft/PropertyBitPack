@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public readonly struct BitsSpan(FieldRequest fieldRequest, byte start, byte length)
+internal readonly struct BitsSpan(FieldRequest fieldRequest, byte start, byte length)
 {
     private readonly FieldRequest _fieldRequest = fieldRequest;
     private readonly byte _start = start;

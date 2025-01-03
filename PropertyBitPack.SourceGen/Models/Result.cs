@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
 
-public static class Result
+internal static class Result
 {
     public static Result<T> Success<T>(T value) => new(value, null);
     public static Result<T> Failure<T>(ImmutableArray<Diagnostic> diagnostics) => new(default, diagnostics);

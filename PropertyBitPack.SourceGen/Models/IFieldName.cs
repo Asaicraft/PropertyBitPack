@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public interface IFieldName
+internal interface IFieldName
 {
 
     public string Name

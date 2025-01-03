@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
-public interface IBitFieldPropertyAggregator
+internal interface IBitFieldPropertyAggregator
 {
     /// <summary>
     /// Remove properties in <paramref name="properties"/> which aggregated 

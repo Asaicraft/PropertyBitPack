@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen;
-public static class PropertyBitPackDiagnostics
+internal static class PropertyBitPackDiagnostics
 {
     public static readonly DiagnosticDescriptor InvalidBitsCount = new(
         id: "PRBITS001",

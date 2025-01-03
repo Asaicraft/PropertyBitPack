@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public abstract class GenerateSourceRequest
+internal abstract class GenerateSourceRequest
 {
     public ImmutableArray<FieldRequest> Fields { get; }
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen;
-public abstract class PropertyBitPackGeneratorContextBuilder
+internal abstract class PropertyBitPackGeneratorContextBuilder
 {
     public abstract ILinkedList<IAttributeParser> AttributeParsers
     {

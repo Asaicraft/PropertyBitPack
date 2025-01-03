@@ -9,7 +9,12 @@ namespace PropertyBitPack;
 
 [AttributeUsage(AttributeTargets.Property)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class BitsMappingAttributeBase: Attribute
+#if PUBLIC_PACKAGE
+public
+#else
+internal
+#endif
+abstract class BitsMappingAttributeBase: Attribute
 {
     public int BitsCount
     {

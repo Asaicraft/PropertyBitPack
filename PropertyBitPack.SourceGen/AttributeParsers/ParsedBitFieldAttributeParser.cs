@@ -9,7 +9,7 @@ using System.Text;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
 namespace PropertyBitPack.SourceGen.AttributeParsers;
-public sealed class ParsedBitFieldAttributeParser : BaseAttributeParser
+internal sealed class ParsedBitFieldAttributeParser : BaseAttributeParser
 {
     public override bool IsCandidate(AttributeData attributeData)
     {

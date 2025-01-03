@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Collections;
-public sealed class SimpleLinkedList<T> : ILinkedList<T>
+internal sealed class SimpleLinkedList<T> : ILinkedList<T>
 {
     private readonly LinkedList<T> _linkedList;
 

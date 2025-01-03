@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace PropertyBitPack;
 
-public sealed class BitFieldAttribute: BitsMappingAttributeBase
+#if PUBLIC_PACKAGE
+public
+#else
+internal
+#endif
+sealed class BitFieldAttribute: BitsMappingAttributeBase
 {
 
 }

@@ -11,7 +11,7 @@ namespace PropertyBitPack.SourceGen;
 /// <summary>
 /// Provides utility methods for validating syntax nodes and ensuring correctness in source generation.
 /// </summary>
-public static class Guard
+internal static class Guard
 {
     /// <summary>
     /// Determines whether the specified <see cref="SyntaxNode"/> contains any errors.

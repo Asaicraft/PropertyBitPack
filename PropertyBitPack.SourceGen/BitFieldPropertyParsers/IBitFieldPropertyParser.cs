@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.BitFieldPropertyParsers;
-public interface IBitFieldPropertyParser
+internal interface IBitFieldPropertyParser
 {
 
     public bool IsCandidate(

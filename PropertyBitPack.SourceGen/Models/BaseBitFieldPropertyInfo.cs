@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public abstract class BaseBitFieldPropertyInfo
+internal abstract class BaseBitFieldPropertyInfo
 {
     public abstract AttributeParsedResult AttributeParsedResult
     {

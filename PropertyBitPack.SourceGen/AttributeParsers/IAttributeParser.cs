@@ -14,7 +14,7 @@ namespace PropertyBitPack.SourceGen.AttributeParsers;
 /// Each parser can check whether it is a candidate for a given attribute and
 /// attempt to parse that attribute into a model (e.g., <see cref="AttributeParsedResult"/>).
 /// </summary>
-public interface IAttributeParser
+internal interface IAttributeParser
 {
     /// <summary>
     /// Gets a value indicating whether this parser should be attempted

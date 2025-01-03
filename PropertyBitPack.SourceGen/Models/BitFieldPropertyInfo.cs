@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-public sealed class BitFieldPropertyInfo(
+internal sealed class BitFieldPropertyInfo(
     AttributeParsedResult attributeParsedResult,
     bool isInit,
     bool hasInitOrSet,

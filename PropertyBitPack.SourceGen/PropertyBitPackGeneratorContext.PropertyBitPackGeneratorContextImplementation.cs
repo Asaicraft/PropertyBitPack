@@ -5,7 +5,7 @@ using PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 using System.Collections.Immutable;
 
 namespace PropertyBitPack.SourceGen;
-public abstract partial class PropertyBitPackGeneratorContext
+internal abstract partial class PropertyBitPackGeneratorContext
 {
     internal sealed class PropertyBitPackGeneratorContextImplementation : PropertyBitPackGeneratorContext
     {

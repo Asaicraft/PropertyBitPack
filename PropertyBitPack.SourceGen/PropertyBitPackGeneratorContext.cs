@@ -14,7 +14,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.Text;
 
 namespace PropertyBitPack.SourceGen;
-public abstract partial class PropertyBitPackGeneratorContext
+internal abstract partial class PropertyBitPackGeneratorContext
 {
     public abstract ImmutableArray<IAttributeParser> AttributeParsers
     {

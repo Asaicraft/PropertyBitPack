@@ -9,7 +9,7 @@ using System.Text;
 
 namespace CommunityToolkit.Diagnostics;
 
-public static partial class ThrowHelper
+internal static partial class ThrowHelper
 {
     [DoesNotReturn]
     public static void ThrowUnreachableException(string message)

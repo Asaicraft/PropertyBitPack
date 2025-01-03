@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Collections;
-public ref struct ImmutableArrayBuilder<T>
+internal ref struct ImmutableArrayBuilder<T>
 {
     /// <summary>
     /// The rented <see cref="Writer"/> instance to use.

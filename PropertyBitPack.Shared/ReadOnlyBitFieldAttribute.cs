@@ -5,7 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PropertyBitPack;
-public sealed class ReadOnlyBitFieldAttribute : BitsMappingAttributeBase, IReadOnlyBitFieldAttribute
+
+#if PUBLIC_PACKAGE
+public
+#else
+internal
+#endif
+sealed class ReadOnlyBitFieldAttribute : BitsMappingAttributeBase, IReadOnlyBitFieldAttribute
 {
     public AccessModifier ConstructorAccessModifier
     {

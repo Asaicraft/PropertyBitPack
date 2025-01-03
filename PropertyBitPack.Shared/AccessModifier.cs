@@ -1,6 +1,11 @@
 ﻿namespace PropertyBitPack;
 
-public enum AccessModifier
+#if PUBLIC_PACKAGE
+public
+#else
+internal
+#endif
+enum AccessModifier
 {
     Public,
     Protected,

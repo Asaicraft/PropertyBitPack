@@ -15,7 +15,7 @@ using PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 namespace PropertyBitPack.SourceGen;
 
 [Generator(LanguageNames.CSharp)]
-public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
+internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 {
     private static readonly PropertyBitPackGeneratorContext _context;
 
