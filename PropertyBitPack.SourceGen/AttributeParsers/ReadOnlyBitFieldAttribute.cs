@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
 using System;
@@ -18,6 +19,22 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseAttributeParser
 
     public override bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
     {
-        throw new NotImplementedException();
+        result = null;
+
+        var owner = semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax)?.ContainingType;
+        var attributeSyntax = ExtractAttributeSyntax(propertyDeclarationSyntax, attributeData);
+
+        if (!TryGetBitsCount(attributeData, out var bitsCount, propertyDeclarationSyntax, in diagnostics))
+        {
+            return false;
+        }
+
+        if (!TryGetFieldName(attributeData, out var fieldName, semanticModel, in diagnostics, propertyDeclarationSyntax, owner))
+        {
+            return false;
+        }
+
+
+        result = new ParsedReadOnlyBitFieldAttribute(fieldName, bitsCount);
     }
 }

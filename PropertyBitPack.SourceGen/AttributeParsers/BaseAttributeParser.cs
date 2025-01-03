@@ -386,6 +386,11 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
         return default;
     }
 
+    protected static AttributeSyntax ExtractAttributeSyntax(PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeData attributeData)
+    {
+        return (attributeData.ApplicationSyntaxReference?.GetSyntax() as AttributeSyntax) ?? propertyDeclarationSyntax.AttributeLists.SelectMany(x => x.Attributes).First(x => x.Name.ToString() == attributeData.AttributeClass?.Name);
+    }
+
     #endregion
 
 
