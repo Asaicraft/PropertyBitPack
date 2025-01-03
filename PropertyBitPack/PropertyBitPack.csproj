@@ -14,12 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PropertyBitPack.Shared\PropertyBitPack.Shared.csproj" />
     <ProjectReference Include="..\PropertyBitPack.SourceGen\PropertyBitPack.SourceGen.csproj" GeneratePathProperty="true" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="$(OutputPath)\PropertyBitPack.SourceGen.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
+
+  <Import Project="..\PropertyBitPack.Shared\PropertyBitPack.Shared.projitems" Label="Shared" />
 
 </Project>

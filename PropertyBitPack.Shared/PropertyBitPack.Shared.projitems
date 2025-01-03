@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9fc57bac-8713-4547-9f36-9281869f7f29</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>PropertyBitPack.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AccessModifier.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BitFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BitsMappingAttributeBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtendedBitFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IExtendedBitFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IReadOnlyBitFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReadOnlyBitFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReadOnlyExtendedBitField.cs" />
+  </ItemGroup>
+</Project>

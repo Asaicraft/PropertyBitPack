@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.SourceGen",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.Example", "PropertyBitPack.Example\PropertyBitPack.Example.csproj", "{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.Shared", "PropertyBitPack.Shared\PropertyBitPack.Shared.csproj", "{30941CCA-7F0C-47BE-B665-C66DB3C9B98C}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PropertyBitPack.Shared", "PropertyBitPack.Shared\PropertyBitPack.Shared.shproj", "{9FC57BAC-8713-4547-9F36-9281869F7F29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,12 +29,13 @@ Global
 		{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{30941CCA-7F0C-47BE-B665-C66DB3C9B98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30941CCA-7F0C-47BE-B665-C66DB3C9B98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30941CCA-7F0C-47BE-B665-C66DB3C9B98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30941CCA-7F0C-47BE-B665-C66DB3C9B98C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		PropertyBitPack.Shared\PropertyBitPack.Shared.projitems*{62e39ee1-a6df-4531-ac9f-d748558ca4f8}*SharedItemsImports = 5
+		PropertyBitPack.Shared\PropertyBitPack.Shared.projitems*{9fc57bac-8713-4547-9f36-9281869f7f29}*SharedItemsImports = 13
+		PropertyBitPack.Shared\PropertyBitPack.Shared.projitems*{e44c842b-21b0-4e30-bb1b-ccaef0d956dd}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

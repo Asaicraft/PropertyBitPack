@@ -20,4 +20,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <Import Project="..\PropertyBitPack.Shared\PropertyBitPack.Shared.projitems" Label="Shared" />
+
+
+
 </Project>

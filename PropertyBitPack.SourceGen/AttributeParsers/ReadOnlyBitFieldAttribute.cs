@@ -14,7 +14,7 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseAttributeParser
 {
     public override bool IsCandidate(AttributeData attributeData)
     {
-        return HasInterface(attributeData, IReadOnlyBitFieldAttribute);
+        return HasInterface(attributeData, IReadOnlyBitFieldAttributeName);
     }
 
     public override bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
@@ -22,7 +22,6 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseAttributeParser
         result = null;
 
         var owner = semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax)?.ContainingType;
-        var attributeSyntax = ExtractAttributeSyntax(propertyDeclarationSyntax, attributeData);
 
         if (!TryGetBitsCount(attributeData, out var bitsCount, propertyDeclarationSyntax, in diagnostics))
         {
@@ -34,7 +33,14 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseAttributeParser
             return false;
         }
 
+        if(!TryGetConstantValue<AccessModifier>(attributeData, nameof(IReadOnlyBitFieldAttribute.ConstructorAccessModifier), out var accessModifier))
+        {
+            accessModifier = AccessModifier.Default;
+        }
 
-        result = new ParsedReadOnlyBitFieldAttribute(fieldName, bitsCount);
+
+        result = new ParsedReadOnlyBitFieldAttribute(fieldName, bitsCount, accessModifier);
+        return true;
     }
+
 }

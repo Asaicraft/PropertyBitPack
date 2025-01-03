@@ -72,6 +72,28 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     }
 
     /// <summary>
+    /// Checks if the specified attribute class implements a given interface type.
+    /// </summary>
+    /// <param name="attributeData">The attribute data to analyze.</param>
+    /// <param name="interfaceType">The <see cref="Type"/> of the interface to check for.</param>
+    /// <returns>True if the attribute class implements the specified interface type; otherwise, false.</returns>
+    protected static bool HasInterface(AttributeData attributeData, Type interfaceType)
+    {
+        return HasInterface(attributeData, interfaceType.FullName);
+    }
+
+    /// <summary>
+    /// Checks if the specified attribute class implements the interface represented by the given generic parameter.
+    /// </summary>
+    /// <typeparam name="T">The type of the interface to check for. Must derive from <see cref="Attribute"/>.</typeparam>
+    /// <param name="attributeData">The attribute data to analyze.</param>
+    /// <returns>True if the attribute class implements the interface represented by <typeparamref name="T"/>; otherwise, false.</returns>
+    protected static bool HasInterface<T>(AttributeData attributeData) where T : Attribute
+    {
+        return HasInterface(attributeData, typeof(T));
+    }
+
+    /// <summary>
     /// Attempts to retrieve the field name from the provided attribute data.
     /// </summary>
     /// <param name="attributeData">The attribute data to analyze.</param>
@@ -160,7 +182,7 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
 
         if (GetConstantValue(attributeData, BitFieldAttributeBitsCount) is not int validBitsCount)
         {
-            ThrowHelper.ThrowUnreachableException($"{BitFieldAttribute}.{BitFieldAttributeBitsCount} must be of type int");
+            ThrowHelper.ThrowUnreachableException($"{BitFieldAttributeFieldName}.{BitFieldAttributeBitsCount} must be of type int");
             return false;
         }
 
@@ -204,7 +226,7 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     /// <param name="argumentName">The name of the argument to retrieve.</param>
     /// <param name="value">The retrieved constant value, or null if the retrieval fails.</param>
     /// <returns>True if the constant value was successfully retrieved and matches the expected type; otherwise, false.</returns>
-    protected static bool TryGetConstantValue<T>(AttributeData attributeData, string argumentName, [NotNullWhen(true)] out T? value) where T : class
+    protected static bool TryGetConstantValue<T>(AttributeData attributeData, string argumentName, [NotNullWhen(true)] out T? value)
     {
         var constantValue = GetConstantValue(attributeData, argumentName);
         if (constantValue is T result)
@@ -460,5 +482,27 @@ public abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     protected static bool MatchesAttributeFullName(AttributeData attributeData, string attributeFullName)
     {
         return GetAttributeFullName(attributeData) == attributeFullName;
+    }
+
+    /// <summary>
+    /// Checks if the specified attribute matches the type of the given generic parameter.
+    /// </summary>
+    /// <typeparam name="T">The type of the attribute to compare against. Must derive from <see cref="Attribute"/>.</typeparam>
+    /// <param name="attributeData">The attribute data to analyze.</param>
+    /// <returns>True if the attribute's full name matches the full name of type <typeparamref name="T"/>; otherwise, false.</returns>
+    protected static bool MatchesAttributeFullName<T>(AttributeData attributeData) where T : Attribute
+    {
+        return MatchesAttributeFullName(attributeData, typeof(T));
+    }
+
+    /// <summary>
+    /// Checks if the specified attribute matches the given attribute type.
+    /// </summary>
+    /// <param name="attributeData">The attribute data to analyze.</param>
+    /// <param name="attributeType">The <see cref="Type"/> of the attribute to compare against.</param>
+    /// <returns>True if the attribute's full name matches the full name of the provided <paramref name="attributeType"/>; otherwise, false.</returns>
+    protected static bool MatchesAttributeFullName(AttributeData attributeData, Type attributeType)
+    {
+        return MatchesAttributeFullName(attributeData, attributeType.FullName);
     }
 }
