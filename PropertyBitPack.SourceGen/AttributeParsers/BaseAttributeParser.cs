@@ -88,7 +88,7 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     /// <typeparam name="T">The type of the interface to check for. Must derive from <see cref="Attribute"/>.</typeparam>
     /// <param name="attributeData">The attribute data to analyze.</param>
     /// <returns>True if the attribute class implements the interface represented by <typeparamref name="T"/>; otherwise, false.</returns>
-    protected static bool HasInterface<T>(AttributeData attributeData) where T : Attribute
+    protected static bool HasInterface<T>(AttributeData attributeData)
     {
         return HasInterface(attributeData, typeof(T));
     }
@@ -112,12 +112,11 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
         // If there is no syntax reference, attempt to extract the field name from named arguments.
         if (syntax is null)
         {
-            if (attributeData.NamedArguments.FirstOrDefault(static arg => arg.Key == BitFieldAttributeFieldName).Value.Value is string validFieldName)
-            {
-                fieldName = new FieldName(validFieldName);
-                return true;
-            }
-            return false;
+            var fieldNameConstant = GetConstantValue(attributeData, BitFieldAttributeFieldName) as string;
+            
+            fieldName = new FieldName(fieldNameConstant);
+            
+            return true;
         }
 
         // If the semantic model is not provided, we cannot proceed.
@@ -131,7 +130,8 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
 
         if (fieldNameArgument is null)
         {
-            return false;
+            // It's normal for the field name to be null, so we don't report an error.
+            return true;
         }
 
         // Get the operation for the field name argument.
@@ -140,7 +140,11 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
         // Ensure the operation is a NameOf operation.
         if (fieldNameOperation is not INameOfOperation nameOfOperation)
         {
-            return false;
+            var fieldNameConstant = GetConstantValue(attributeData, BitFieldAttributeFieldName) as string;
+
+            fieldName = new FieldName(fieldNameConstant);
+
+            return true;
         }
 
         // Extract the owner type of the field using the NameOf operation.
@@ -180,11 +184,24 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
         // If the property declaration syntax is not provided, attempt to retrieve it.
         propertyDeclarationSyntax ??= GetPropertyDeclaration(attributeData);
 
-        if (GetConstantValue(attributeData, BitFieldAttributeBitsCount) is not int validBitsCount)
+        var candidateBitsCount = GetConstantValue(attributeData, BitFieldAttributeBitsCount);
+        
+        int? validBitsCount;
+        
+        if (candidateBitsCount == null)
+        {
+            validBitsCount = null;
+        }
+        else if(candidateBitsCount is int v)
+        {
+            validBitsCount = v;
+        }
+        else
         {
             ThrowHelper.ThrowUnreachableException($"{BitFieldAttributeFieldName}.{BitFieldAttributeBitsCount} must be of type int");
             return false;
         }
+
 
         if (validBitsCount < 1)
         {

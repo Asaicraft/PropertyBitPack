@@ -14,7 +14,7 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseAttributeParser
 {
     public override bool IsCandidate(AttributeData attributeData)
     {
-        return HasInterface(attributeData, IReadOnlyBitFieldAttributeName);
+        return HasInterface<IReadOnlyBitFieldAttribute>(attributeData);
     }
 
     public override bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
