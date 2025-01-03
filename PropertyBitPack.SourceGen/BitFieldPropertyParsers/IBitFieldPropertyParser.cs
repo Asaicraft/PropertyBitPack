@@ -9,6 +9,12 @@ using System.Text;
 namespace PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 public interface IBitFieldPropertyParser
 {
+
+    public bool IsCandidate(
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        SemanticModel semanticModel);
+
     public BaseBitFieldPropertyInfo? Parse(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         AttributeData candidateAttribute,

@@ -102,13 +102,14 @@ public abstract partial class PropertyBitPackGeneratorContext
 
     public virtual BaseBitFieldPropertyInfo? ParseBitFieldProperty(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         for (var i = 0; i < BitFieldPropertyParsers.Length; i++)
         {
             var parser = BitFieldPropertyParsers[i];
-            var result = parser.Parse(propertyDeclarationSyntax, semanticModel, diagnostics);
+            var result = parser.Parse(propertyDeclarationSyntax, candidateAttribute, semanticModel, diagnostics);
             if (result is not null)
             {
                 return result;

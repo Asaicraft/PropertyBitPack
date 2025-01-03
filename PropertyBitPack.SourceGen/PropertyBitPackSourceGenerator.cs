@@ -10,6 +10,7 @@ using PropertyBitPack.SourceGen.Collections;
 using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics;
 using PropertyBitPack.SourceGen.AttributeParsers;
+using PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -24,6 +25,8 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
         builder.AttributeParsers.Add(new ReadOnlyBitFieldAttributeParser());
         builder.AttributeParsers.Add(new ParsedBitFieldAttributeParser());
+
+        builder.BitFieldPropertyParsers.Add(new BitFieldPropertyInfoParser());
 
         _context = builder.Build();
     }
@@ -66,7 +69,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         return null;
                     }
 
-                    var attributeData = candidates[0];
+                    var candidateAttribute = candidates[0];
 
                     if (candidates.Length != 1)
                     {
@@ -84,7 +87,7 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         return Result.Failure<BaseBitFieldPropertyInfo>(diagnosticsBuilder.ToImmutable());
                     }
 
-                    var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, semanticModel, in diagnosticsBuilder);
+                    var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, candidateAttribute, semanticModel, in diagnosticsBuilder);
                     var diagnostics = diagnosticsBuilder.ToImmutable();
 
                     ImmutableArray<Diagnostic>? nullableDiagnostics = diagnostics.IsDefaultOrEmpty ? null : diagnostics;

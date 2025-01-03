@@ -26,6 +26,10 @@ internal abstract class BaseBitFieldPropertyInfoParser : IBitFieldPropertyParser
 
     void IContextBindable.BindContext(PropertyBitPackGeneratorContext context) => _context = context;
 
+    public virtual bool IsCandidate(PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        SemanticModel semanticModel) => true;
+
     public BaseBitFieldPropertyInfo? Parse(PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeData candidateAttribute, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         return ParseCore(propertyDeclarationSyntax, candidateAttribute, semanticModel, diagnostics);
