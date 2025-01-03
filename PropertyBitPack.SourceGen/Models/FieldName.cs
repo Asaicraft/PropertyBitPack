@@ -1,9 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
+
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal sealed class FieldName(string? name) : IFieldName
 {
     private readonly string? _name = name;
@@ -17,4 +20,9 @@ internal sealed class FieldName(string? name) : IFieldName
     public string? Name => _name;
     public bool IsSymbolExist => _fieldSymbol != null;
     public ISymbol? ExistingSymbol => _fieldSymbol;
+
+    private string GetDebuggerDisplay()
+    {
+        return IsSymbolExist ? $"{Name} (Symbol:{ExistingSymbol?.Kind.ToString() ?? "null"})" : Name ?? "<unnamed>";
+    }
 }

@@ -1,9 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
+
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFieldPropertyInfo bitFieldPropertyInfo)
 {
     private readonly BitsSpan _bitsSpan = bitsSpan;
@@ -26,4 +29,20 @@ internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFiel
     public ITypeSymbol PropertyType => PropertySymbol.Type;
 
     public INamedTypeSymbol Owner => PropertyType.ContainingType;
+
+    private string GetDebuggerDisplay()
+    {
+        var setterOrInitter = HasInitOrSet
+            ? IsInit
+                ? "init;"
+                : "set;"
+            : string.Empty;
+
+        if (HasInitOrSet)
+        {
+            setterOrInitter = $"{SetterOrInitModifiers.ToFullString()} {setterOrInitter}";
+        }
+
+        return $"[{AttributeParsedResult}] {PropertySymbol.Type.Name} {PropertySymbol.Name} {{ get; {setterOrInitter} }} => {BitsSpan}";
+    }
 }

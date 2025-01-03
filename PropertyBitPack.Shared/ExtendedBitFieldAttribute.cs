@@ -13,7 +13,7 @@ internal
 #endif
 sealed class ExtendedBitFieldAttribute : BitsMappingAttributeBase, IExtendedBitFieldAttribute
 {
-    public required string? GetterLargeSizeValueName
+    public required string GetterLargeSizeValueName
     {
         get; set;
     }

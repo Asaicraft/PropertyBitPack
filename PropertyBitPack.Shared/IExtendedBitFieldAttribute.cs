@@ -7,5 +7,5 @@ internal
 #endif
 interface IExtendedBitFieldAttribute
 {
-    public string? GetterLargeSizeValueName { get; set; }
+    public string GetterLargeSizeValueName { get; set; }
 }
