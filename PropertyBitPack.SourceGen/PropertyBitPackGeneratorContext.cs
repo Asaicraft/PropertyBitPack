@@ -58,7 +58,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
     {
 
 
-        for(var i = 0; i < AttributeParsers.Length; i++)
+        for (var i = 0; i < AttributeParsers.Length; i++)
         {
             var parser = AttributeParsers[i];
             if (parser.IsCandidate(attributeData))
@@ -78,7 +78,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
                             continue;
                         }
 
-                        if(!nextParser.IsCandidate(attributeData))
+                        if (!nextParser.IsCandidate(attributeData))
                         {
                             continue;
                         }
@@ -120,13 +120,14 @@ internal abstract partial class PropertyBitPackGeneratorContext
     }
 
     public virtual ImmutableArray<GenerateSourceRequest> AggregateBitFieldProperties(
-        ILinkedList<BaseBitFieldPropertyInfo> properties)
+        ILinkedList<BaseBitFieldPropertyInfo> properties,
+        in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         var requests = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
         for (var i = 0; i < BitFieldPropertyAggregators.Length; i++)
         {
             var aggregator = BitFieldPropertyAggregators[i];
-            var aggregatedRequests = aggregator.Aggregate(properties);
+            var aggregatedRequests = aggregator.Aggregate(properties, diagnostics);
             requests.AddRange(aggregatedRequests.AsSpan());
         }
         return requests.ToImmutable();

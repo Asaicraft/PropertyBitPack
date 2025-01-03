@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics;
 using PropertyBitPack.SourceGen.AttributeParsers;
 using PropertyBitPack.SourceGen.BitFieldPropertyParsers;
+using PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -27,6 +28,8 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         builder.AttributeParsers.Add(new ParsedBitFieldAttributeParser());
 
         builder.BitFieldPropertyParsers.Add(new BitFieldPropertyInfoParser());
+
+        builder.BitFieldPropertyAggregators.Add(new AggregateByNameBitFieldAggregator());
 
         _context = builder.Build();
     }
@@ -125,7 +128,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results, in diagnosticsBuilder);
             var bitFieldPropertyInfoList = new SimpleLinkedList<BaseBitFieldPropertyInfo>(bitFieldPropertyInfos);
 
-            var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList);
+            var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList, in diagnosticsBuilder);
 
             var generateSourceRequests = new SimpleLinkedList<GenerateSourceRequest>(aggregatedBitFieldProperties);
 

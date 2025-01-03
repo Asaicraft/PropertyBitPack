@@ -4,9 +4,10 @@ using System.Collections.Immutable;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
+
 internal abstract class GenerateSourceRequest
 {
-    public ImmutableArray<FieldRequest> Fields { get; }
+    public abstract ImmutableArray<FieldRequest> Fields { get; }
 
-    public ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; }
+    public abstract ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; }
 }

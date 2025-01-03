@@ -12,5 +12,5 @@ internal interface IBitFieldPropertyAggregator
     /// <summary>
     /// Remove properties in <paramref name="properties"/> which aggregated 
     /// </summary>
-    public ImmutableArray<GenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties);
+    public ImmutableArray<GenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics);
 }
