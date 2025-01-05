@@ -17,19 +17,25 @@ internal static class BitCountHelper
     /// If <see cref="AttributeParsedResult.BitsCount"/> is null,
     /// it infers the bit count from the property's type (e.g. byte=8, int=32, etc.).
     /// </summary>
-    /// <param name="prop">The bit field property info.</param>
+    /// <param name="property">The bit field property info.</param>
     /// <returns>The number of bits required.</returns>
-    public static int GetEffectiveBitsCount(BaseBitFieldPropertyInfo prop)
+    public static int GetEffectiveBitsCount(BaseBitFieldPropertyInfo property)
     {
         // If the attribute explicitly sets BitsCount, return that value.
-        if (prop.AttributeParsedResult.BitsCount.HasValue)
+        if (property.AttributeParsedResult.BitsCount.HasValue)
         {
-            return prop.AttributeParsedResult.BitsCount.Value;
+            return property.AttributeParsedResult.BitsCount.Value;
         }
 
         // Otherwise, infer the bit count from the property's SpecialType.
         // You can expand or modify this switch for other types if needed.
-        return prop.PropertyType.SpecialType switch
+
+        return GetBitsCountForSpecialType(property.PropertyType.SpecialType); ;
+    }
+
+    public static int GetBitsCountForSpecialType(SpecialType specialType)
+    {
+        return specialType switch
         {
             SpecialType.System_Boolean => 1,
             SpecialType.System_Byte or SpecialType.System_SByte => 8,

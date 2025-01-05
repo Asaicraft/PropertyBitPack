@@ -18,7 +18,7 @@ internal readonly struct BitsSpan(FieldRequest fieldRequest, byte start, byte le
 
     public override string ToString()
     {
-        return $"{_fieldRequest.Name} ({_fieldRequest.FieldType}) [{_start}, {_length}]";
+        return $"{_fieldRequest.Name} ({_fieldRequest.FieldType}) [{_start}, {_start + _length})";
     }
 
     private string GetDebuggerDisplay()

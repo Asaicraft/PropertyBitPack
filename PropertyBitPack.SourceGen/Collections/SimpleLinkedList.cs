@@ -1,9 +1,14 @@
-﻿using System;
+﻿using CommunityToolkit.Diagnostics;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Collections;
+
+[DebuggerTypeProxy(typeof(SimpleLinkedList<>.SimpleLinkedListProxy))]
+[DebuggerDisplay("Count = {Count}")]
 internal sealed class SimpleLinkedList<T> : ILinkedList<T>
 {
     private readonly LinkedList<T> _linkedList;
@@ -99,5 +104,32 @@ internal sealed class SimpleLinkedList<T> : ILinkedList<T>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return ((IEnumerable)_linkedList).GetEnumerator();
+    }
+
+
+    internal sealed class SimpleLinkedListProxy
+    {
+        private readonly SimpleLinkedList<T> _collection;
+
+        public SimpleLinkedListProxy(SimpleLinkedList<T> collection)
+        {
+            if (collection == null)
+            {
+                ThrowHelper.ThrowArgumentNullException(nameof(collection));
+            }
+
+            _collection = collection;
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public T[] Items
+        {
+            get
+            {
+                var items = new T[_collection.Count];
+                _collection.CopyTo(items, 0);
+                return items;
+            }
+        }
     }
 }
