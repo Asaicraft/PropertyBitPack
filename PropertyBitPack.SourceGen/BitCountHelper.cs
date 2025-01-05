@@ -48,4 +48,22 @@ internal static class BitCountHelper
             _ => 0
         };
     }
+
+    /// <summary>
+    /// Gets the bit capacity of a known <see cref="SpecialType"/> 
+    /// (e.g. System_Byte=8, System_UInt16=16, etc.).
+    /// Returns 0 if not recognized.
+    /// </summary>
+    public static int GetTypeBitCapacity(SpecialType st)
+    {
+        return st switch
+        {
+            SpecialType.System_Byte => 8,
+            SpecialType.System_SByte => 8,
+            SpecialType.System_Int16 or SpecialType.System_UInt16 => 16,
+            SpecialType.System_Int32 or SpecialType.System_UInt32 => 32,
+            SpecialType.System_Int64 or SpecialType.System_UInt64 => 64,
+            _ => 0
+        };
+    }
 }

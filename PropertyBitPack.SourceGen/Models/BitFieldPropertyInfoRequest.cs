@@ -28,21 +28,7 @@ internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFiel
 
     public ITypeSymbol PropertyType => PropertySymbol.Type;
 
-    public INamedTypeSymbol Owner => PropertyType.ContainingType;
+    public INamedTypeSymbol Owner => PropertySymbol.ContainingType;
 
-    private string GetDebuggerDisplay()
-    {
-        var setterOrInitter = HasInitOrSet
-            ? IsInit
-                ? "init;"
-                : "set;"
-            : string.Empty;
-
-        if (HasInitOrSet)
-        {
-            setterOrInitter = $"{SetterOrInitModifiers.ToFullString()} {setterOrInitter}";
-        }
-
-        return $"[{AttributeParsedResult}] {PropertySymbol.Type.Name} {PropertySymbol.Name} {{ get; {setterOrInitter} }} => {BitsSpan}";
-    }
+    private string GetDebuggerDisplay() => $"{_bitFieldPropertyInfo} => {BitsSpan}";
 }
