@@ -25,4 +25,33 @@ internal abstract class GenerateSourceRequest
 
         return $"Fields: {Fields.Length}, Properties: {Properties.Length}, Total Bits: {totalBits}, Total Capacity: {totalCapacity}, Capacities: [{capacities}]";
     }
+
+
+    [Conditional("DEBUG")]
+    public void FullDebugWriteLine()
+    { 
+        var stringBuilder = new StringBuilder();
+
+        stringBuilder.AppendLine(GetDebuggerDisplay());
+        
+        stringBuilder.AppendLine("Fields:");
+        stringBuilder.AppendLine();
+        foreach (var field in Fields)
+        {
+            stringBuilder.Append("\t");
+            stringBuilder.AppendLine(field.ToString());
+        }
+
+        stringBuilder.AppendLine();
+        stringBuilder.AppendLine("Properties:");
+        stringBuilder.AppendLine();
+
+        foreach (var property in Properties)
+        {
+            stringBuilder.Append("\t");
+            stringBuilder.AppendLine(property.ToString());
+        }
+
+        Debug.WriteLine(stringBuilder.ToString());
+    }
 }

@@ -2,10 +2,12 @@
 using PropertyBitPack.SourceGen.Collections;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen;
 internal static class ImmutableArrayBuilderDiagnosticExtensions
+
 {
     public static bool HasError(this in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {

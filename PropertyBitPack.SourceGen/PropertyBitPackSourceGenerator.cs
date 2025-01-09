@@ -130,6 +130,13 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
             var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList, in diagnosticsBuilder);
 
+#if DEBUG
+            for(var i = 0; i < aggregatedBitFieldProperties.Length; i++)
+            {
+                aggregatedBitFieldProperties[i].FullDebugWriteLine();
+            }
+#endif
+
             var generateSourceRequests = new SimpleLinkedList<GenerateSourceRequest>(aggregatedBitFieldProperties);
 
             var generatedPropertySyntax = _context.GeneratePropertySyntax(generateSourceRequests);

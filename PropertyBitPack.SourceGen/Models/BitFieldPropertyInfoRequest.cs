@@ -30,5 +30,7 @@ internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFiel
 
     public INamedTypeSymbol Owner => PropertySymbol.ContainingType;
 
-    private string GetDebuggerDisplay() => $"{_bitFieldPropertyInfo} => {BitsSpan}";
+    public override string ToString() => $"{_bitFieldPropertyInfo} => {BitsSpan}";
+
+    private string GetDebuggerDisplay() => ToString();
 }

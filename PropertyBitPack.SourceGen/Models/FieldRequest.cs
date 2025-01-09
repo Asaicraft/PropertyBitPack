@@ -17,8 +17,10 @@ internal class FieldRequest(string name, SpecialType fieldType, bool isExist)
     public SpecialType FieldType => _fieldType;
     public bool IsExist => _isExist;
 
-    private string GetDebuggerDisplay()
+    public override string ToString()
     {
         return $"IsExist:{_isExist} {_name} ({_fieldType})";
     }
+
+    private string GetDebuggerDisplay() => ToString();
 }
