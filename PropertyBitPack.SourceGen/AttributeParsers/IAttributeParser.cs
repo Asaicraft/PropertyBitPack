@@ -31,7 +31,7 @@ internal interface IAttributeParser
     /// <c>true</c> if this parser is a valid candidate for <paramref name="attributeData"/>;
     /// otherwise, <c>false</c>.
     /// </returns>
-    public bool IsCandidate(AttributeData attributeData);
+    public bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax);
 
     /// <summary>
     /// Attempts to parse the specified attribute and produce a model representing its data.
@@ -51,9 +51,10 @@ internal interface IAttributeParser
     /// <c>true</c> if the attribute was successfully parsed; otherwise, <c>false</c>.
     /// </returns>
     public bool TryParse(
-        AttributeData attributeData,
-        PropertyDeclarationSyntax propertyDeclarationSyntax,
-        SemanticModel semanticModel,
+        AttributeData attributeData, 
+        AttributeSyntax attributeSyntax, 
+        PropertyDeclarationSyntax propertyDeclarationSyntax, 
+        SemanticModel semanticModel, 
         in ImmutableArrayBuilder<Diagnostic> diagnostics,
         [NotNullWhen(true)] out AttributeParsedResult? result);
 }

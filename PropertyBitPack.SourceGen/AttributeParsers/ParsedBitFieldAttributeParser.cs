@@ -11,12 +11,12 @@ using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 namespace PropertyBitPack.SourceGen.AttributeParsers;
 internal sealed class ParsedBitFieldAttributeParser : BaseAttributeParser
 {
-    public override bool IsCandidate(AttributeData attributeData)
+    public override bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax)
     {
         return MatchesAttributeFullName<BitFieldAttribute>(attributeData);
     }
 
-    public override bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
+    public override bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
     {
         result = null;
 
@@ -32,7 +32,7 @@ internal sealed class ParsedBitFieldAttributeParser : BaseAttributeParser
             return false;
         }
 
-        result = new ParsedBitFiledAttribute(fieldName, bitsCount);
+        result = new ParsedBitFiledAttribute(attributeSyntax, attributeData, fieldName, bitsCount);
         return true;
     }
 }

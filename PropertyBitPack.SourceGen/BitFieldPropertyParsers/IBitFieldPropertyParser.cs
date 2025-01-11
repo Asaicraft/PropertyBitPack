@@ -13,11 +13,13 @@ internal interface IBitFieldPropertyParser
     public bool IsCandidate(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
         SemanticModel semanticModel);
 
     public BaseBitFieldPropertyInfo? Parse(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics);
 }

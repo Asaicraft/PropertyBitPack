@@ -10,8 +10,18 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-internal abstract class AttributeParsedResult(IFieldName? fieldName, int? bitsCount)
+internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, int? bitsCount)
 {
+    public AttributeSyntax AttributeSyntax
+    {
+        get;
+    } = attributeSyntax;
+
+    public AttributeData AttributeData
+    {
+        get;
+    } = attributeData;
+
     public IFieldName? FieldName
     {
         get;
@@ -22,4 +32,9 @@ internal abstract class AttributeParsedResult(IFieldName? fieldName, int? bitsCo
     {
         get;
     } = bitsCount;
+
+    public AttributeArgumentSyntax? BitsCountArgument()
+    {
+        return AttributeSyntax.ArgumentList?.Arguments.FirstOrDefault(a => a.NameEquals?.Name.Identifier.Text == "bitsCount");
+    }
 }

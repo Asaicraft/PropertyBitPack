@@ -30,52 +30,59 @@ internal sealed class AdvancedBitFieldPropertyAggregator : BaseBitFieldPropertyA
         // We'll produce one or more GenerateSourceRequest objects.
         using var requestsBuilder = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
 
-        // Step 1: Separate named vs unnamed.
-        var namedProperties = new List<BaseBitFieldPropertyInfo>();
-        var unnamedProperties = new List<BaseBitFieldPropertyInfo>();
-
-        foreach (var p in properties)
+        if (properties.Count == 0)
         {
-            if (!string.IsNullOrWhiteSpace(p.AttributeParsedResult.FieldName?.Name))
+            return requestsBuilder.ToImmutable();
+        }
+
+        var namedFieldProperties = new List<BaseBitFieldPropertyInfo>();
+        var unnamedFieldProperties = new List<BaseBitFieldPropertyInfo>();
+
+        foreach (var property in properties)
+        {
+            if (!string.IsNullOrWhiteSpace(property.AttributeParsedResult.FieldName?.Name))
             {
-                namedProperties.Add(p);
+                namedFieldProperties.Add(property);
             }
             else
             {
-                unnamedProperties.Add(p);
+                unnamedFieldProperties.Add(property);
             }
         }
 
-        // Step 2: Handle named properties.
-        // Group by (Owner, FieldName), because each distinct FieldName within each Owner 
-        // must go into exactly ONE field.
-        // If multiple properties share the same (Owner, FieldName), 
-        // we sum their bits and pick the type or use the existing symbol's type.
-        var namedGroups = namedProperties
+        var namedGroups = namedFieldProperties
             .GroupBy(
                 keySelector: p => (p.Owner, Name: p.AttributeParsedResult.FieldName!.Name!),
-                comparer: new OwnerFieldNameComparer()) // This is a custom IEqualityComparer, or you can do .ToLookup instead
+                comparer: OwnerFieldNameComparer.Instance) // This is a custom IEqualityComparer, or you can do .ToLookup instead
             .ToList();
 
         foreach (var group in namedGroups)
         {
             var owner = group.Key.Owner;
             var fieldName = group.Key.Name;
-            var propsList = group.ToList();
+            var propertiesInGroup = group.ToImmutableArray();
 
-            // Sum the bits required
             var totalBits = 0;
             var hasInvalid = false;
-            foreach (var prop in propsList)
+
+            for (var i = 0; i < propertiesInGroup.Length; i++)
             {
-                var bits = BitCountHelper.GetEffectiveBitsCount(prop);
-                if (bits <= 0)
+                var property = propertiesInGroup[i];
+
+                var bits = BitCountHelper.GetEffectiveBitsCount(property);
+
+                if(bits < 0)
                 {
+                    var location = property.AttributeParsedResult.BitsCountArgument()?.GetLocation();
+
                     diagnostics.Add(Diagnostic.Create(
                         PropertyBitPackDiagnostics.InvalidBitsCount,
-                        Location.None,
-                        prop.PropertySymbol.Name));
+                        location,
+                        property.PropertySymbol.Name));
+
+
                     hasInvalid = true;
+                    break;
                 }
                 else
                 {
@@ -85,261 +92,10 @@ internal sealed class AdvancedBitFieldPropertyAggregator : BaseBitFieldPropertyA
 
             if (hasInvalid)
             {
-                // Skip the group if it has invalid bit counts
                 continue;
             }
-
-            // Check if there's an existing symbol for this FieldName 
-            // (in practice, you might only expect 1 property in the group to have ExistingSymbol, 
-            //  or they might all share the same existing symbol).
-            // Here, for simplicity, we'll assume if ANY property says IsSymbolExist==true, 
-            // we treat the field as existing. If multiple differ => that's a scenario to handle or diagnose.
-            var anyPropertyWithExistingSymbol = propsList
-                .FirstOrDefault(static p => p.AttributeParsedResult.FieldName!.IsSymbolExist);
-
-            FieldRequest fieldRequest;
-            if (anyPropertyWithExistingSymbol != null)
-            {
-                // Must use the existing field's type
-                var existingSym = anyPropertyWithExistingSymbol.AttributeParsedResult.FieldName!.ExistingSymbol;
-                // For simplicity, assume we can map this symbol to a known SpecialType 
-                // or a bit capacity. Otherwise, you might need reflection or Symbol analysis.
-                var existingType = MapSymbolToSpecialType(existingSym, diagnostics);
-
-                if (existingType == SpecialType.None)
-                {
-                    // We can't determine a valid type from the symbol => skip or diag.
-                    continue;
-                }
-
-                var capacity = BitCountHelper.GetTypeBitCapacity(existingType);
-                if (totalBits > capacity)
-                {
-                    // Too many bits for existing field
-                    diagnostics.Add(Diagnostic.Create(
-                        PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                        Location.None,
-                        fieldName,
-                        totalBits));
-                    continue;
-                }
-
-                fieldRequest = new FieldRequest(fieldName, existingType, isExist: true);
-            }
-            else
-            {
-                // No existing symbol => we pick the smallest new type that can hold totalBits
-                var chosenType = availableTypes.FirstOrDefault(t => BitCountHelper.GetTypeBitCapacity(t) >= totalBits);
-                if (chosenType == default)
-                {
-                    // Not found => means >64 bits => diag
-                    diagnostics.Add(Diagnostic.Create(
-                        PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                        Location.None,
-                        fieldName,
-                        totalBits));
-                    continue;
-                }
-
-                fieldRequest = new FieldRequest(fieldName, chosenType, isExist: false);
-            }
-
-            // Build property requests with offsets.
-            using var propertyRequestsBuilder = ImmutableArrayBuilder<BitFieldPropertyInfoRequest>.Rent();
-            int offset = 0;
-            foreach (var prop in propsList)
-            {
-                var bits = BitCountHelper.GetEffectiveBitsCount(prop);
-                if (bits <= 0)
-                {
-                    continue; // Already diagnosed above.
-                }
-
-                var span = new BitsSpan(fieldRequest, (byte)offset, (byte)bits);
-                offset += bits;
-
-                propertyRequestsBuilder.Add(new BitFieldPropertyInfoRequest(span, prop));
-                // You may also remove these props from the main linked list if needed.
-                properties.Remove(prop);
-            }
-
-            var finalProps = propertyRequestsBuilder.ToImmutable();
-            var fieldsImmutable = ImmutableArray.Create(fieldRequest);
-            requestsBuilder.Add(new SimpleGenerateSourceRequest(fieldsImmutable, finalProps));
         }
 
-        // Step 3: Handle unnamed properties.
-        // We group them by (Owner). Then, for each group, we do the "packing approach" 
-        // using as few fields as possible.
-        var unnamedGroups = unnamedProperties
-            .GroupBy(static p => p.Owner, SymbolEqualityComparer.Default)
-            .ToList();
-
-        foreach (var group in unnamedGroups)
-        {
-            var owner = group.Key;
-            var propsList = group.ToList();
-
-            // Sort descending by bits, so we pack large ones first.
-            propsList.Sort((a, b) =>
-            {
-                var bitsA = BitCountHelper.GetEffectiveBitsCount(a);
-                var bitsB = BitCountHelper.GetEffectiveBitsCount(b);
-                return bitsB.CompareTo(bitsA);
-            });
-
-            // We'll keep a working list
-            var leftover = new List<BaseBitFieldPropertyInfo>(propsList);
-
-            while (leftover.Count > 0)
-            {
-                var largest = leftover[0];
-                var largestBits = BitCountHelper.GetEffectiveBitsCount(largest);
-
-                // Check if there's an existing symbol for this property.
-                // (Corner case: multiple unnamed properties might share the same existing field name with IsSymbolExist?)
-                // Здесь, ради простоты, представим ситуацию:
-                // - Если IsSymbolExist == true, то это "один" уже существующий field 
-                //   (ведь имя отсутствует, но symbol есть — специфичный кейс).
-                //   Либо вы можете решать, что если несколько безымянных свойств указывают на один и тот же ExistingSymbol, 
-                //   они упакуются вместе. 
-                //   Для brevity — мы покажем логику на одно свойство. Если не влезает, diag.
-                var isAnyExist = largest.AttributeParsedResult.FieldName?.IsSymbolExist == true;
-                SpecialType chosenType;
-                bool isExistField;
-
-                if (isAnyExist)
-                {
-                    // Use the existing symbol from the property
-                    var existSym = largest.AttributeParsedResult.FieldName!.ExistingSymbol;
-                    chosenType = MapSymbolToSpecialType(existSym, diagnostics);
-                    if (chosenType == SpecialType.None)
-                    {
-                        leftover.RemoveAt(0);
-                        continue;
-                    }
-                    isExistField = true;
-                }
-                else
-                {
-                    // Pick the smallest new type for the largest property
-                    chosenType = availableTypes.FirstOrDefault(t => BitCountHelper.GetTypeBitCapacity(t) >= largestBits);
-                    if (chosenType == default)
-                    {
-                        // >64 => diag
-                        diagnostics.Add(Diagnostic.Create(
-                            PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                            Location.None,
-                            largest.PropertySymbol.Name,
-                            largestBits));
-                        leftover.RemoveAt(0);
-                        continue;
-                    }
-                    isExistField = false;
-                }
-
-                var capacity = BitCountHelper.GetTypeBitCapacity(chosenType);
-                if (largestBits > capacity)
-                {
-                    // Even for the largest property alone, we can't fit => diag
-                    diagnostics.Add(Diagnostic.Create(
-                        PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                        Location.None,
-                        largest.PropertySymbol.Name,
-                        largestBits));
-                    leftover.RemoveAt(0);
-                    continue;
-                }
-
-                using var propertyRequestsBuilder = ImmutableArrayBuilder<BitFieldPropertyInfoRequest>.Rent();
-                var packedNames = new List<string>();
-                int offset = 0, bitsUsed = 0;
-
-                // Try to fit as many properties as we can into 'chosenType'
-                for (int i = 0; i < leftover.Count;)
-                {
-                    var prop = leftover[i];
-                    var bits = BitCountHelper.GetEffectiveBitsCount(prop);
-                    // Skip invalid bits
-                    if (bits <= 0)
-                    {
-                        leftover.RemoveAt(i);
-                        diagnostics.Add(Diagnostic.Create(
-                            PropertyBitPackDiagnostics.InvalidBitsCount,
-                            Location.None,
-                            prop.PropertySymbol.Name));
-                        continue;
-                    }
-
-                    // If this property has an existing symbol that conflicts 
-                    // (i.e., a different symbol or a different type?), 
-                    // в реальном коде нужно обрабатывать. Для простоты предполагаем, что:
-                    // - Если "isExistField" true, мы упаковываем только то же самое поле. 
-                    //   Если у следующего prop другой existing symbol — пропускаем его, например.
-                    bool thisPropHasExist = prop.AttributeParsedResult.FieldName?.IsSymbolExist == true;
-                    if (isExistField && thisPropHasExist)
-                    {
-                        // Check if it's the same symbol => if not, skip
-                        var otherSym = prop.AttributeParsedResult.FieldName!.ExistingSymbol;
-                        var otherType = MapSymbolToSpecialType(otherSym, diagnostics);
-                        if (otherType != chosenType)
-                        {
-                            i++;
-                            continue;
-                        }
-                    }
-                    else if (thisPropHasExist != isExistField)
-                    {
-                        // Can't mix existing with newly created in the same field => skip
-                        i++;
-                        continue;
-                    }
-
-                    if (bitsUsed + bits <= capacity)
-                    {
-                        var placeholderSpan = new BitsSpan(default, (byte)offset, (byte)bits);
-                        propertyRequestsBuilder.Add(new BitFieldPropertyInfoRequest(placeholderSpan, prop));
-
-                        packedNames.Add(prop.PropertySymbol.Name);
-                        offset += bits;
-                        bitsUsed += bits;
-                        leftover.RemoveAt(i);
-                    }
-                    else
-                    {
-                        i++;
-                    }
-                }
-
-                if (packedNames.Count == 0)
-                {
-                    // We didn't pack anything => to avoid infinite loop, remove the first item
-                    leftover.RemoveAt(0);
-                    continue;
-                }
-
-                // Create the final field name from all packed properties
-                var combinedFieldName = string.Join("__", packedNames);
-
-                // Create the FieldRequest
-                var fieldRequest = new FieldRequest(combinedFieldName, chosenType, isExistField);
-
-                // Update each BitsSpan with the real FieldRequest
-                var itemsArray = propertyRequestsBuilder.ToArray();
-                for (var i = 0; i < itemsArray.Length; i++)
-                {
-                    var oldSpan = itemsArray[i].BitsSpan;
-                    var newSpan = new BitsSpan(fieldRequest, oldSpan.Start, oldSpan.Length);
-                    itemsArray[i] = new BitFieldPropertyInfoRequest(newSpan, itemsArray[i].BitFieldPropertyInfo);
-                }
-
-                var finalProps = itemsArray.ToImmutableArray();
-                var fieldsImmutable = ImmutableArray.Create(fieldRequest);
-                requestsBuilder.Add(new SimpleGenerateSourceRequest(fieldsImmutable, finalProps));
-            }
-        }
-
-        // Step 4: Done
         return requestsBuilder.ToImmutable();
     }
 
@@ -367,6 +123,9 @@ internal sealed class AdvancedBitFieldPropertyAggregator : BaseBitFieldPropertyA
     private sealed class OwnerFieldNameComparer
         : IEqualityComparer<(INamedTypeSymbol Owner, string Name)>
     {
+
+        public static readonly OwnerFieldNameComparer Instance = new();
+
         public bool Equals((INamedTypeSymbol Owner, string Name) x, (INamedTypeSymbol Owner, string Name) y)
         {
             return SymbolEqualityComparer.Default.Equals(x.Owner, y.Owner)

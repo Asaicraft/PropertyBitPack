@@ -28,18 +28,19 @@ internal abstract class BaseBitFieldPropertyInfoParser : IBitFieldPropertyParser
 
     public virtual bool IsCandidate(PropertyDeclarationSyntax propertyDeclarationSyntax,
         AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
         SemanticModel semanticModel) => true;
 
-    public BaseBitFieldPropertyInfo? Parse(PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeData candidateAttribute, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    public BaseBitFieldPropertyInfo? Parse(PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeData candidateAttribute, AttributeSyntax attributeSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
-        return ParseCore(propertyDeclarationSyntax, candidateAttribute, semanticModel, diagnostics);
+        return ParseCore(propertyDeclarationSyntax, candidateAttribute, attributeSyntax, semanticModel, diagnostics);
     }
 
-    protected virtual BaseBitFieldPropertyInfo? ParseCore(PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeData candidateAttribute, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    protected virtual BaseBitFieldPropertyInfo? ParseCore(PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeData candidateAttribute, AttributeSyntax attributeSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         var setterOrInitModifiers = ExtraxtSetterOrInitModifiers(propertyDeclarationSyntax, out var hasInitOrSet, out var isInit);
 
-        if(!Context.TryParseAttribute(candidateAttribute, propertyDeclarationSyntax, semanticModel, diagnostics, out var attributeResult))
+        if(!Context.TryParseAttribute(candidateAttribute, attributeSyntax, propertyDeclarationSyntax, semanticModel, diagnostics, out var attributeResult))
         {
             return null;
         }

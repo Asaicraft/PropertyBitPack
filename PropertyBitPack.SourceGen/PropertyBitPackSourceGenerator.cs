@@ -63,7 +63,9 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         return null;
                     }
 
-                    var attributes = propertySymbol.GetAttributes();
+                    var attributes = propertySymbol.GetAttributes()
+                        .Select(x => (x, (AttributeSyntax?)x.ApplicationSyntaxReference?.GetSyntax()))
+                        .Where(x => x.Item2 != null)!.ToImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)>();
 
                     var candidates = GetCandidadates(attributes);
 
@@ -82,7 +84,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                                 propertyDeclaration.GetLocation(),
                                 string.Join(
                                     ", ",
-                                    candidates.Select(x => x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                                    candidates.Select(x => x.AttributeData.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
                                 )
                             )
                         );
@@ -90,7 +92,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         return Result.Failure<BaseBitFieldPropertyInfo>(diagnosticsBuilder.ToImmutable());
                     }
 
-                    var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, candidateAttribute, semanticModel, in diagnosticsBuilder);
+                    var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, candidateAttribute.AttributeData, candidateAttribute.AttributeSyntax, semanticModel, in diagnosticsBuilder);
                     var diagnostics = diagnosticsBuilder.ToImmutable();
 
                     ImmutableArray<Diagnostic>? nullableDiagnostics = diagnostics.IsDefaultOrEmpty ? null : diagnostics;
@@ -99,17 +101,17 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
 
 
-                    static ImmutableArray<AttributeData> GetCandidadates(ImmutableArray<AttributeData> attributeDatas)
+                    static ImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> GetCandidadates(ImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> attributes)
                     {
-                        using var candidates = ImmutableArrayBuilder<AttributeData>.Rent();
+                        using var candidates = ImmutableArrayBuilder<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)>.Rent();
 
-                        for (var i = 0; i < attributeDatas.Length; i++)
+                        for (var i = 0; i < attributes.Length; i++)
                         {
-                            var attributeData = attributeDatas[i];
+                            var attribute = attributes[i];
 
-                            if (_context.IsCandidateAttribute(attributeData))
+                            if (_context.IsCandidateAttribute(attribute.AttributeData, attribute.AttributeSyntax))
                             {
-                                candidates.Add(attributeData);
+                                candidates.Add(attribute);
                             }
                         }
 

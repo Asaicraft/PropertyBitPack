@@ -36,12 +36,12 @@ internal abstract partial class PropertyBitPackGeneratorContext
         get;
     }
 
-    public virtual bool IsCandidateAttribute(AttributeData attributeData)
+    public virtual bool IsCandidateAttribute(AttributeData attributeData, AttributeSyntax attributeSyntax)
     {
         for (var i = 0; i < AttributeParsers.Length; i++)
         {
             var parser = AttributeParsers[i];
-            if (parser.IsCandidate(attributeData))
+            if (parser.IsCandidate(attributeData, attributeSyntax))
             {
                 return true;
             }
@@ -51,6 +51,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
 
     public virtual bool TryParseAttribute(
         AttributeData attributeData,
+        AttributeSyntax attributeSyntax,
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics,
@@ -61,9 +62,9 @@ internal abstract partial class PropertyBitPackGeneratorContext
         for (var i = 0; i < AttributeParsers.Length; i++)
         {
             var parser = AttributeParsers[i];
-            if (parser.IsCandidate(attributeData))
+            if (parser.IsCandidate(attributeData, attributeSyntax))
             {
-                if (parser.TryParse(attributeData, propertyDeclarationSyntax, semanticModel, diagnostics, out result))
+                if (parser.TryParse(attributeData, attributeSyntax, propertyDeclarationSyntax, semanticModel, diagnostics, out result))
                 {
                     return true;
                 }
@@ -78,12 +79,12 @@ internal abstract partial class PropertyBitPackGeneratorContext
                             continue;
                         }
 
-                        if (!nextParser.IsCandidate(attributeData))
+                        if (!nextParser.IsCandidate(attributeData, attributeSyntax))
                         {
                             continue;
                         }
 
-                        if (nextParser.TryParse(attributeData, propertyDeclarationSyntax, semanticModel, diagnostics, out result))
+                        if (nextParser.TryParse(attributeData, attributeSyntax, propertyDeclarationSyntax, semanticModel, diagnostics, out result))
                         {
                             return true;
                         }
@@ -103,13 +104,14 @@ internal abstract partial class PropertyBitPackGeneratorContext
     public virtual BaseBitFieldPropertyInfo? ParseBitFieldProperty(
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         for (var i = 0; i < BitFieldPropertyParsers.Length; i++)
         {
             var parser = BitFieldPropertyParsers[i];
-            var result = parser.Parse(propertyDeclarationSyntax, candidateAttribute, semanticModel, diagnostics);
+            var result = parser.Parse(propertyDeclarationSyntax, candidateAttribute, attributeSyntax, semanticModel, diagnostics);
             if (result is not null)
             {
                 return result;

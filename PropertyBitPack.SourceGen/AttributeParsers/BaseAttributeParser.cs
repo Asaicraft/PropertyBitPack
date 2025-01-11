@@ -36,9 +36,9 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
         _context = context;
     }
 
-    public abstract bool IsCandidate(AttributeData attributeData);
+    public abstract bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax);
 
-    public abstract bool TryParse(AttributeData attributeData, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result);
+    public abstract bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result);
 
     /// <summary>
     /// Checks if the specified attribute class implements a given interface.

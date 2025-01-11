@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ namespace PropertyBitPack.SourceGen.Models;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal sealed class ParsedReadOnlyBitFieldAttribute : AttributeParsedResult
 {
-    public ParsedReadOnlyBitFieldAttribute(IFieldName? fieldName, int? bitsCount, AccessModifier accessModifier) : base(fieldName, bitsCount)
+    public ParsedReadOnlyBitFieldAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, int? bitsCount, AccessModifier accessModifier) : base(attributeSyntax, attributeData, fieldName, bitsCount)
     {
         ConstructorAccessModifier = accessModifier;
     }
