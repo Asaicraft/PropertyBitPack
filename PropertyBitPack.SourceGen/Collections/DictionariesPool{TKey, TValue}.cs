@@ -14,6 +14,13 @@ internal static class DictionariesPool<TKey, TValue>
 {
     private static readonly ConcurrentStack<Dictionary<TKey, TValue>> pool = new();
 
+    static DictionariesPool()
+    {
+        pool.Push([]);
+        pool.Push([]);
+        pool.Push([]);
+    }
+
     /// <summary>
     /// Rents a <see cref="Dictionary{TKey, TValue}"/> instance from the pool,
     /// or creates a new one if the pool is empty.
@@ -35,6 +42,13 @@ internal static class DictionariesPool<TKey, TValue>
     /// <param name="dictionary">The dictionary to return to the pool.</param>
     public static void Return(Dictionary<TKey, TValue> dictionary)
     {
+        if(pool.Count > 4)
+        {
+            // avoid memory leak
+            // avoid keeping too many dictionaries in the pool
+            return;
+        }
+
         dictionary.Clear();
         pool.Push(dictionary);
     }

@@ -19,7 +19,7 @@ internal sealed class FieldName(string? name) : IFieldName
 
     public string? Name => _name;
     public bool IsSymbolExist => _fieldSymbol != null;
-    public ISymbol? ExistingSymbol => _fieldSymbol;
+    public IFieldSymbol? ExistingSymbol => _fieldSymbol;
 
     private string GetDebuggerDisplay()
     {

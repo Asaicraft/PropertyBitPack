@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, int? bitsCount)
+internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount)
 {
     public AttributeSyntax AttributeSyntax
     {
@@ -28,7 +28,7 @@ internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, A
     } = fieldName;
 
 
-    public int? BitsCount
+    public byte? BitsCount
     {
         get;
     } = bitsCount;

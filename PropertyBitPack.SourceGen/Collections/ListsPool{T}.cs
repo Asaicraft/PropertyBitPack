@@ -14,6 +14,13 @@ internal static class ListsPool<T>
     // Using a thread-safe collection if multithreading is possible in your scenario.
     private static readonly ConcurrentStack<List<T>> pool = new();
 
+    static ListsPool()
+    {
+        pool.Push([]);
+        pool.Push([]);
+        pool.Push([]);
+    }
+
     /// <summary>
     /// Rents a <see cref="List{T}"/> instance from the pool, or creates a new one if the pool is empty.
     /// </summary>
@@ -34,6 +41,13 @@ internal static class ListsPool<T>
     /// <param name="list">The list to return to the pool.</param>
     public static void Return(List<T> list)
     {
+        if(pool.Count > 4)
+        {
+            // avoid memory leak
+            // avoid keeping too many lists in the pool
+            return;
+        }
+
         list.Clear();
         pool.Push(list);
     }

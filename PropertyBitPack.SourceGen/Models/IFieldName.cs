@@ -32,7 +32,7 @@ internal interface IFieldName
     /// The existing symbol associated with the field, if any.
     /// Can be null if no symbol is associated.
     /// </summary>
-    public ISymbol? ExistingSymbol
+    public IFieldSymbol? ExistingSymbol
     {
         get;
     }

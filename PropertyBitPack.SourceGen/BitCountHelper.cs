@@ -19,7 +19,7 @@ internal static class BitCountHelper
     /// </summary>
     /// <param name="property">The bit field property info.</param>
     /// <returns>The number of bits required.</returns>
-    public static int GetEffectiveBitsCount(BaseBitFieldPropertyInfo property)
+    public static byte GetEffectiveBitsCount(BaseBitFieldPropertyInfo property)
     {
         // If the attribute explicitly sets BitsCount, return that value.
         if (property.AttributeParsedResult.BitsCount.HasValue)
@@ -33,7 +33,7 @@ internal static class BitCountHelper
         return GetBitsCountForSpecialType(property.PropertyType.SpecialType); ;
     }
 
-    public static int GetBitsCountForSpecialType(SpecialType specialType)
+    public static byte GetBitsCountForSpecialType(SpecialType specialType)
     {
         return specialType switch
         {
@@ -54,7 +54,7 @@ internal static class BitCountHelper
     /// (e.g. System_Byte=8, System_UInt16=16, etc.).
     /// Returns 0 if not recognized.
     /// </summary>
-    public static int GetTypeBitCapacity(SpecialType st)
+    public static byte GetTypeBitCapacity(SpecialType st)
     {
         return st switch
         {

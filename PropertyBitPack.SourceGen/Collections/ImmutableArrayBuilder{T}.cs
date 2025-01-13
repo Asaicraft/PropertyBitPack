@@ -80,6 +80,14 @@ internal ref struct ImmutableArrayBuilder<T>
         writer!.AddRange(items);
     }
 
+    public readonly void AddRange(IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            Add(item);
+        }
+    }
+
     /// <inheritdoc cref="ImmutableArray{T}.Builder.ToImmutable"/>
     public readonly ImmutableArray<T> ToImmutable()
     {
