@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
+
+/// <summary>
+/// Represents the bit size for various data types.
+/// </summary>
 internal enum BitSize : byte
 {
     Invalid = 0,

@@ -16,17 +16,19 @@ internal sealed class FieldNameEqualityComparer : IEqualityComparer<IFieldName?>
             return true;
         }
 
+        if (x is null && y is null)
+        {
+            return true;
+        }
+
         if (x is null || y is null)
         {
             return false;
         }
 
-        if(x.IsSymbolExist == y.IsSymbolExist)
+        if(x.IsSymbolExist == y.IsSymbolExist == true)
         {
-            if(x.IsSymbolExist)
-            {
-                return SymbolEqualityComparer.Default.Equals(x.ExistingSymbol, y.ExistingSymbol);
-            }
+            return SymbolEqualityComparer.Default.Equals(x.ExistingSymbol, y.ExistingSymbol);
         }
 
         return StringComparer.Ordinal.Equals(x.Name, y.Name);

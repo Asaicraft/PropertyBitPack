@@ -111,4 +111,14 @@ internal static class PropertyBitPackDiagnostics
         description: "Attributes causing conflict cannot be used together. Ensure only one attribute from the conflicting group is applied.",
         isEnabledByDefault: true
     );
+
+    public static readonly DiagnosticDescriptor TooManyBitsForSpecificType = new(
+        id: "PRBITS012",
+        title: "Too many bits required for specific type",
+        messageFormat: "The field '{0}' requires {1} bits, which exceeds the capacity of type '{2}' that can hold a maximum of {3} bits",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        description: "The field requires more bits than the specified type can accommodate. Ensure the bit count is within the allowable limit for the chosen type.",
+        isEnabledByDefault: true
+    );
 }

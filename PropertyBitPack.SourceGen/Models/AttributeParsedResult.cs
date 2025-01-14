@@ -35,6 +35,11 @@ internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, A
 
     public AttributeArgumentSyntax? BitsCountArgument()
     {
-        return AttributeSyntax.ArgumentList?.Arguments.FirstOrDefault(a => a.NameEquals?.Name.Identifier.Text == "bitsCount");
+        return AttributeSyntax.ArgumentList?.Arguments.FirstOrDefault(a => a.NameEquals?.Name.Identifier.Text == nameof(BitsCount));
+    }
+
+    public AttributeArgumentSyntax? FieldNameArgument()
+    {
+        return AttributeSyntax?.ArgumentList?.Arguments.FirstOrDefault(a => a.NameEquals?.Name.Identifier.Text == nameof(FieldName));
     }
 }

@@ -187,12 +187,85 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         return calculatedBits.ToImmutable();
     }
 
+    /// <summary>
+    /// Converts a field request and a collection of bit field property information
+    /// into an immutable array of <see cref="BitFieldPropertyInfoRequest"/>.
+    /// </summary>
+    /// <param name="fieldRequest">
+    /// The <see cref="FieldRequest"/> containing information about the field to be processed.
+    /// </param>
+    /// <param name="bitFieldPropertyInfos">
+    /// An immutable array of <see cref="BaseBitFieldPropertyInfo"/> that provides information about the bit field properties.
+    /// </param>
+    /// <returns>
+    /// An immutable array of <see cref="BitFieldPropertyInfoRequest"/> representing the bit field requests.
+    /// </returns>
+    /// <exception cref="UnreachableException">
+    /// Thrown if the total required bits exceed the maximum allowed bits for the field type.
+    /// </exception>
+    protected static ImmutableArray<BitFieldPropertyInfoRequest> ToRequests(FieldRequest fieldRequest, ImmutableArray<BaseBitFieldPropertyInfo> bitFieldPropertyInfos)
+    {
+        using var requests = ListsPool.Rent<BitFieldPropertyInfoRequest>();
 
+        byte currentOffset = 0;
+        var maxBits =(byte)MapSpecialTypeToBitSize(fieldRequest.FieldType);
+
+        for (var i = 0; i < bitFieldPropertyInfos.Length; i++)
+        {
+            var bitField = bitFieldPropertyInfos[i];
+            var requiredBits = GetEffectiveBitsCount(bitField);
+
+            var bitsSpan = new BitsSpan(fieldRequest, currentOffset, requiredBits);
+
+            if (currentOffset + bitsSpan.Length >= maxBits)
+            {
+                // Before using these methods,
+                // you should validate the input. That's why this code is "unreachable."
+                ThrowHelper.ThrowUnreachableException($"Too many bits. Maximum allowed is {maxBits}.");
+            }
+
+            currentOffset += bitsSpan.Length;
+
+            var request = new BitFieldPropertyInfoRequest(bitsSpan, bitField);
+
+            requests.Add(request);
+        }
+
+        return [.. requests];
+        
+    }
+
+    /// <summary>
+    /// Validates whether the total required bits fit within the specified <see cref="BitSize"/>.
+    /// </summary>
+    /// <param name="bitSize">The maximum allowable bit size.</param>
+    /// <param name="requestedBits">The requested bit field properties.</param>
+    /// <returns>
+    /// <c>true</c> if the total required bits fit within the <see cref="BitSize"/>; otherwise, <c>false</c>.
+    /// </returns>
     protected static bool ValidateSize(BitSize bitSize, ImmutableArray<BaseBitFieldPropertyInfo> requestedBits)
     {
-        var bits = requestedBits.Sum(x => GetEffectiveBitsCount(x));
+        var bits = RequiredBits(requestedBits);
 
         return (byte)bitSize > bits;
+    }
+
+    /// <summary>
+    /// Calculates the total number of bits required for the given bit field properties.
+    /// </summary>
+    /// <param name="requestedBits">The bit field properties.</param>
+    /// <returns>The total number of bits required.</returns>
+    protected static int RequiredBits(ImmutableArray<BaseBitFieldPropertyInfo> requestedBits)
+    {
+        var requiredBits = 0;
+
+        for (var i = 0; i < requestedBits.Length; i++)
+        {
+            var bit = requestedBits[i];
+            requiredBits += GetEffectiveBitsCount(bit);
+        }
+
+        return requiredBits;
     }
 
     /// <summary>
@@ -225,6 +298,11 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         return BitSize.Invalid;
     }
 
+    /// <summary>
+    /// Represents the calculated bits required for a bit field, including the field's capacity.
+    /// </summary>
+    /// <param name="fieldCapacity">The capacity of the field in bits.</param>
+    /// <param name="bits">The individual bit sizes required.</param>
     protected readonly struct CalculatedBits(BitSize fieldCapacity, ImmutableArray<byte> bits)
     {
         public BitSize FieldCapacity { get; } = fieldCapacity;
@@ -252,6 +330,12 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
 
+    /// <summary>
+    /// Represents a group of properties associated with a specific owner and field name.
+    /// </summary>
+    /// <param name="owner">The type symbol representing the owner.</param>
+    /// <param name="fieldName">The optional field name.</param>
+    /// <param name="properties">The properties associated with the field.</param>
     protected sealed class OwnerFieldNameGroup(INamedTypeSymbol owner, IFieldName? fieldName, ImmutableArray<BaseBitFieldPropertyInfo> properties)
     {
         public INamedTypeSymbol Owner { get; } = owner;
@@ -277,6 +361,11 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         return SpecialType.None;
     }
 
+    /// <summary>
+    /// Maps a <see cref="SpecialType"/> to its corresponding <see cref="BitSize"/>.
+    /// </summary>
+    /// <param name="specialType">The special type to map.</param>
+    /// <returns>The corresponding <see cref="BitSize"/> for the given <see cref="SpecialType"/>.</returns>
     protected static BitSize MapSpecialTypeToBitSize(SpecialType specialType)
     {
         return specialType switch
@@ -290,6 +379,12 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         };
     }
 
+
+    /// <summary>
+    /// Gets the effective number of bits required for the given bit field property information.
+    /// </summary>
+    /// <param name="baseBitFieldPropertyInfo">The bit field property information.</param>
+    /// <returns>The number of bits required.</returns>
     protected static byte GetEffectiveBitsCount(BaseBitFieldPropertyInfo baseBitFieldPropertyInfo)
     {
         return BitCountHelper.GetEffectiveBitsCount(baseBitFieldPropertyInfo);

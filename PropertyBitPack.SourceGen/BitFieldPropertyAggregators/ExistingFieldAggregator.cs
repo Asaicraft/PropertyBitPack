@@ -31,6 +31,7 @@ internal sealed class ExistingFieldAggregator : BaseBitFieldPropertyAggregator
 
         var groupedFieldProperties = GroupPropertiesByFieldNameAndOwner(existingFieldProperties);
 
+
         for (var i = 0; i < groupedFieldProperties.Length; i++)
         {
             var group = groupedFieldProperties[i];
@@ -40,17 +41,35 @@ internal sealed class ExistingFieldAggregator : BaseBitFieldPropertyAggregator
 
             var fieldSymbol = group.FieldName.ExistingSymbol!;
             var propertiesInGroup = group.Properties;
+            var bitsSize = MapSpecialTypeToBitSize(fieldSymbol.Type.SpecialType);
 
-            if(!ValidateSize(MapSpecialTypeToBitSize(fieldSymbol.Type.SpecialType), propertiesInGroup))
+            if (!ValidateSize(bitsSize, propertiesInGroup))
             {
-                diagnostics.Add(Diagnostic.Create(
-                    PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                    fieldSymbol.Locations[0],
-                    fieldSymbol.Name,
-                    fieldSymbol.Type.Name,
-                    propertiesInGroup.Length
-                ));
+                var requiredBits = RequiredBits(propertiesInGroup);
+
+                for (var j = 0; j < propertiesInGroup.Length; j++)
+                {
+                    var property = propertiesInGroup[j];
+                    var fieldNameLocation = property.AttributeParsedResult.FieldNameArgument()?.GetLocation();
+
+                    diagnostics.Add(Diagnostic.Create(
+                       PropertyBitPackDiagnostics.TooManyBitsForSpecificType,
+                       fieldNameLocation,
+                       fieldSymbol.Name,
+                       requiredBits,
+                       (byte)bitsSize
+                   ));
+                }
+
+                continue;
             }
+
+            var fieldRequest = new ExistingFieldRequest(fieldSymbol);
+            var propertyRequests = ToRequests(fieldRequest, propertiesInGroup);
+
+            var gsr = new ExistingFieldGsr(fieldSymbol, propertyRequests);
+
+            requestsBuilder.Add(gsr);
         }
     }
 }
