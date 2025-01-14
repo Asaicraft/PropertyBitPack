@@ -15,7 +15,6 @@ internal static class OwnerFieldNameGroupDictionaryPool
     {
         pool.Push(new(OwnerFieldNameComparer.Default));
         pool.Push(new(OwnerFieldNameComparer.Default));
-        pool.Push(new(OwnerFieldNameComparer.Default));
     }
 
     public static Dictionary<(INamedTypeSymbol, IFieldName?), List<BaseBitFieldPropertyInfo>> Rent()

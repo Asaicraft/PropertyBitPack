@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
+using System.Linq;
+using CommunityToolkit.Diagnostics;
 
 namespace PropertyBitPack.SourceGen.Collections;
 internal static partial class ListsPool
@@ -93,6 +95,59 @@ internal static partial class ListsPool
         public ImmutableArray<T> ToImmutable()
         {
             return [.. _list];
+        }
+
+        public void AddRange(IList<T> items)
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                _list.Add(items[i]);
+            }
+        }
+
+        public void AddRange(ImmutableArray<T> items)
+        {
+            AddRange(items.AsSpan());
+        }
+
+        public void AddRange(IEnumerable<T> items)
+        {
+            _list.AddRange(items);
+        }
+
+        public void AddRange(ReadOnlySpan<T> items)
+        {
+            for (var i = 0; i < items.Length; i++)
+            {
+                _list.Add(items[i]);
+            }
+        }
+
+        public T First(Func<T, bool> predicate)
+        {
+            for (var i = 0; i < _list.Count; i++)
+            {
+                var item = _list[i];
+                if (predicate(item))
+                {
+                    return item;
+                }
+            }
+
+            return ThrowHelper.ThrowInvalidOperationException<T>("No item found.");
+        }
+
+        public T FirstOrDefault(Func<T, bool> predicate, T defaultValue = default!)
+        {
+            for (var i = 0; i < _list.Count; i++)
+            {
+                var item = _list[i];
+                if (predicate(item))
+                {
+                    return item;
+                }
+            }
+            return defaultValue;
         }
     }
 }

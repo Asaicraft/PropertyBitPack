@@ -484,6 +484,18 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         };
     }
 
+    protected static SpecialType MapBitSizeToSpecialType(BitSize bitSize)
+    {
+        return bitSize switch
+        {
+            BitSize.Bool => SpecialType.System_Boolean,
+            BitSize.Byte => SpecialType.System_Byte,
+            BitSize.UInt16 => SpecialType.System_UInt16,
+            BitSize.UInt32 => SpecialType.System_UInt32,
+            BitSize.UInt64 => SpecialType.System_UInt64,
+            _ => SpecialType.None
+        };
+    }
 
     /// <summary>
     /// Gets the effective number of bits required for the given bit field property information.
