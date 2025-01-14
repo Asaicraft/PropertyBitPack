@@ -69,7 +69,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         // Rent a dictionary from the pool for grouping.
         // Key: (INamedTypeSymbol Owner, IFieldName? fieldName)
         // Value: a list of properties belonging to this group.
-        var groupedPropertiesDictionary = DictionariesPool<(INamedTypeSymbol, IFieldName?), List<BaseBitFieldPropertyInfo>>.Rent();
+        var groupedPropertiesDictionary = OwnerFieldNameGroupDictionaryPool.Rent();
 
         try
         {
@@ -123,7 +123,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
             }
 
             // Clear and return the dictionary to the pool
-            DictionariesPool<(INamedTypeSymbol, IFieldName?), List<BaseBitFieldPropertyInfo>>.Return(groupedPropertiesDictionary);
+            OwnerFieldNameGroupDictionaryPool.Return(groupedPropertiesDictionary);
         }
 
         // Return the result
@@ -217,7 +217,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
 
             var bitsSpan = new BitsSpan(fieldRequest, currentOffset, requiredBits);
 
-            if (currentOffset + bitsSpan.Length >= maxBits)
+            if (currentOffset + bitsSpan.Length > maxBits)
             {
                 // Before using these methods,
                 // you should validate the input. That's why this code is "unreachable."
@@ -247,7 +247,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     {
         var bits = RequiredBits(requestedBits);
 
-        return (byte)bitSize > bits;
+        return (byte)bitSize >= bits;
     }
 
     /// <summary>

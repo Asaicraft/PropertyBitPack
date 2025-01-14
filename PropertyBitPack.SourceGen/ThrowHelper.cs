@@ -14,7 +14,7 @@ internal static partial class ThrowHelper
     [DoesNotReturn]
     public static void ThrowUnreachableException(string message)
     {
-        throw new UnreachableException($"{UnreachableException.DefaultMessage}{message}");
+        throw new UnreachableException($"{UnreachableException.DefaultMessage} {message}");
     }
 
     [DoesNotReturn]

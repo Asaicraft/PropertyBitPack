@@ -29,6 +29,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
         builder.BitFieldPropertyParsers.Add(new BitFieldPropertyInfoParser());
 
+        builder.BitFieldPropertyAggregators.Add(new ExistingFieldAggregator());
         builder.BitFieldPropertyAggregators.Add(new AdvancedBitFieldPropertyAggregator());
 
         _context = builder.Build();
