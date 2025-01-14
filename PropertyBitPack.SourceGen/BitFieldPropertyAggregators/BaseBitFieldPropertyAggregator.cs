@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
@@ -131,60 +132,163 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
     /// <summary>
+    /// Distributes bits for each property in <paramref name="propertyInfos"/> into fields, 
+    /// calling <see cref="DistributeBitsIntoFields(ReadOnlySpan{byte})"/> internally.
+    /// </summary>
+    /// <param name="propertyInfos">
+    /// A collection of <see cref="BaseBitFieldPropertyInfo"/> objects, each specifying its own required bit count.
+    /// </param>
+    /// <returns>
+    /// An immutable array of <see cref="CalculatedBits"/> instances describing how these bits are distributed.
+    /// </returns>
+    /// <exception cref="UnreachableException">
+    /// Thrown if an invalid bit count is encountered or any unexpected logic failure occurs.
+    /// </exception>
+    protected static ImmutableArray<CalculatedBits> DistributeBitsIntoFields(ImmutableArray<BaseBitFieldPropertyInfo> propertyInfos)
+    {
+        using var list = ListsPool.Rent<byte>();
+
+        for (var i = 0; i < propertyInfos.Length; i++)
+        {
+            var property = propertyInfos[i];
+            var bits = GetEffectiveBitsCount(property);
+            list.Add(bits);
+        }
+
+        return DistributeBitsIntoFields(list.ToImmutable());
+    }
+
+    /// <summary>
     /// Calculates the distribution of requested bits into fields of appropriate sizes.
     /// </summary>
     /// <param name="requestedBits">An immutable array of byte values representing requested bit sizes.</param>
     /// <returns>An immutable array of <see cref="CalculatedBits"/> objects.</returns>
     protected static ImmutableArray<CalculatedBits> DistributeBitsIntoFields(ImmutableArray<byte> requestedBits)
     {
-        byte totalBits = 0;
-        var calculatedBits = ImmutableArrayBuilder<CalculatedBits>.Rent();
-        var list = ListsPool<byte>.Rent();
+        return DistributeBitsIntoFields(requestedBits.AsSpan());
+    }
 
-        try
+    /// <summary>
+    /// Distributes the requested bits into fields using the smallest possible type for each chunk.
+    /// For example, if we have bits [1, 1, 1, 32], it will create two fields:
+    /// one using 8 bits (for the three 1-bit properties) and one using 32 bits
+    /// (for the 32-bit property).
+    /// </summary>
+    /// <param name="requestedBits">
+    /// A sequence of byte values, each representing how many bits a single property requires.
+    /// </param>
+    /// <returns>
+    /// An immutable array of <see cref="CalculatedBits"/> describing how these bits are split
+    /// into fields of minimal capacity (byte, ushort, uint, or ulong).
+    /// </returns>
+    /// <exception cref="UnreachableException">
+    /// Thrown if an invalid bit size occurs or bits exceed 64 in one chunk.
+    /// </exception>
+    protected static ImmutableArray<CalculatedBits> DistributeBitsIntoFields(ReadOnlySpan<byte> requestedBits)
+    {
+        // We'll accumulate the final fields here.
+        using var calculatedBits = ListsPool.Rent<CalculatedBits>();
+
+        // A temporary list storing the bits for the current chunk.
+        using var chunkBits = ListsPool.Rent<byte>();
+
+        byte currentTotal = 0;   // Sum of bits in the current chunk
+        BitSize currentSize = BitSize.Invalid;
+        // 'currentSize' is the minimal type size for the chunk so far (Byte, UInt16, etc.).
+
+        for (int i = 0; i < requestedBits.Length; i++)
         {
-            for (var i = 0; i < requestedBits.Length; i++)
+            var bits = requestedBits[i];
+            // If a single property requires >64 bits, we can't handle it in standard types => error
+            if (bits > 64)
             {
-                var bits = requestedBits[i];
-                list.Add(bits);
-
-                if (totalBits + bits > 64)
-                {
-                    var fieldCapacity = DetermineFieldBitSize(totalBits);
-
-                    if (fieldCapacity == BitSize.Invalid)
-                    {
-                        ThrowHelper.ThrowUnreachableException("Invalid bit size.");
-                    }
-
-                    var calculated = new CalculatedBits(fieldCapacity, [.. list]);
-
-                    calculatedBits.Add(calculated);
-
-                    totalBits = 0;
-                    list.Clear();
-                }
+                ThrowHelper.ThrowUnreachableException($"Requested {bits} bits exceeds 64.");
             }
 
-            if (totalBits > 0)
+            // Minimal type for the chunk before adding 'bits'
+            var oldSize = (currentTotal == 0)
+                ? BitSize.Invalid
+                : DetermineFieldBitSize(currentTotal);
+
+            // Minimal type if we add the new property to the current chunk
+            var newTotal = (byte)(currentTotal + bits);
+            if (newTotal > 64)
             {
-                var fieldCapacity = DetermineFieldBitSize(totalBits);
+                // Even if oldSize <=64, adding this property would exceed 64.
+                // => finalize the current chunk
+                FinalizeCurrentChunk(in calculatedBits, in chunkBits, currentTotal);
 
-                if (fieldCapacity == BitSize.Invalid)
-                {
-                    ThrowHelper.ThrowUnreachableException("Invalid bit size.");
-                }
+                // Start a new chunk with the current property alone.
+                chunkBits.Add(bits);
+                currentTotal = bits;
+                currentSize = DetermineFieldBitSize(currentTotal);
+                continue;
+            }
 
-                var calculated = new CalculatedBits(fieldCapacity, [.. list]);
-                calculatedBits.Add(calculated);
+            var newSize = DetermineFieldBitSize(newTotal);
+
+            // If oldSize == Invalid (chunk empty), just add the bits and set currentSize
+            if (oldSize == BitSize.Invalid)
+            {
+                chunkBits.Add(bits);
+                currentTotal = newTotal;
+                currentSize = newSize;
+                continue;
+            }
+
+            // If adding 'bits' causes the minimal type to change, 
+            // we finalize the old chunk first.
+            // Example: chunk had 3 bits => oldSize=Byte(8). 
+            // Adding next property with 32 bits => newSize=UInt64(64). We don't want that.
+            if (newSize != oldSize)
+            {
+                // Finalize the previous chunk
+                FinalizeCurrentChunk(in calculatedBits, in chunkBits, currentTotal);
+
+                // Now start a new chunk with the current property alone.
+                chunkBits.Add(bits);
+                currentTotal = bits;
+                currentSize = newSize;
+            }
+            else
+            {
+                // We can safely add this property to the existing chunk
+                chunkBits.Add(bits);
+                currentTotal = newTotal;
+                currentSize = newSize;
             }
         }
-        finally
+
+        // After the loop, if there's a leftover chunk, finalize it
+        if (currentTotal > 0)
         {
-            ListsPool<byte>.Return(list);
+            FinalizeCurrentChunk(in calculatedBits, in chunkBits, currentTotal);
         }
 
-        return calculatedBits.ToImmutable();
+        return [.. calculatedBits];
+
+        // Local helper: finalize the chunk, create a CalculatedBits instance, reset accumulators
+        static void FinalizeCurrentChunk(
+            ref readonly ListsPool.RentedListPool<CalculatedBits> calcBits,
+            ref readonly ListsPool.RentedListPool<byte> chunk,
+            byte total)
+        {
+            if (total == 0)
+            {
+                return; // nothing to finalize
+            }
+
+            var fieldSize = DetermineFieldBitSize(total);
+            if (fieldSize == BitSize.Invalid)
+            {
+                ThrowHelper.ThrowUnreachableException("Invalid bit size encountered during finalization.");
+            }
+
+            var calculated = new CalculatedBits(fieldSize, [.. chunk]);
+            calcBits.Add(calculated);
+
+            chunk.Clear();
+        }
     }
 
     /// <summary>
@@ -269,12 +373,18 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
     /// <summary>
-    /// Determines the appropriate field size in bits for a given bit count.
+    /// Determines the minimal field size for a given total bit count.
+    /// For example, 1..8 => Byte, 9..16 => UInt16, 17..32 => UInt32, 33..64 => UInt64.
     /// </summary>
-    /// <param name="bits">The number of bits to evaluate.</param>
-    /// <returns>A <see cref="BitSize"/> value representing the appropriate field size.</returns>
+    /// <param name="bits">The total bit count.</param>
+    /// <returns>A <see cref="BitSize"/> indicating the minimal type to hold 'bits'.</returns>
     protected static BitSize DetermineFieldBitSize(byte bits)
     {
+        if (bits == 0)
+        {
+            return BitSize.Invalid;
+        }
+
         if (bits <= 8)
         {
             return BitSize.Byte;
@@ -290,12 +400,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
             return BitSize.UInt32;
         }
 
-        if (bits <= 64)
-        {
-            return BitSize.UInt64;
-        }
-
-        return BitSize.Invalid;
+        return bits <= 64 ? BitSize.UInt64 : BitSize.Invalid;
     }
 
     /// <summary>

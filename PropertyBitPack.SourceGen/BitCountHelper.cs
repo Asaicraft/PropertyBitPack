@@ -30,7 +30,7 @@ internal static class BitCountHelper
         // Otherwise, infer the bit count from the property's SpecialType.
         // You can expand or modify this switch for other types if needed.
 
-        return GetBitsCountForSpecialType(property.PropertyType.SpecialType); ;
+        return GetBitsCountForSpecialType(property.PropertyType.SpecialType);
     }
 
     public static byte GetBitsCountForSpecialType(SpecialType specialType)
