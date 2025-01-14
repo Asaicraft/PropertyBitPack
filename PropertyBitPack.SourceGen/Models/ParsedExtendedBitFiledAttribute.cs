@@ -17,7 +17,7 @@ namespace PropertyBitPack.SourceGen.Models;
 internal sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
 {
 
-    public ParsedExtendedBitFiledAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, int? bitsCount, ISymbol symbolGetterLargeSizeValue): base(attributeSyntax, attributeData, fieldName, bitsCount)
+    public ParsedExtendedBitFiledAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount, ISymbol symbolGetterLargeSizeValue): base(attributeSyntax, attributeData, fieldName, bitsCount)
     {
         SymbolGetterLargeSizeValue = symbolGetterLargeSizeValue;
     }

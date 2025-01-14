@@ -177,7 +177,7 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     /// <param name="bitsCount">The retrieved bits count if successfully determined; otherwise, null.</param>
     /// <param name="diagnostics">An optional diagnostics builder for reporting issues.</param>
     /// <returns>True if the bits count is successfully determined; false if the retrieval fails due to invalid data.</returns>
-    protected static bool TryGetBitsCount(AttributeData attributeData, out int? bitsCount, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default)
+    protected static bool TryGetBitsCount(AttributeData attributeData, out byte? bitsCount, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default)
     {
         bitsCount = null;
 
@@ -186,13 +186,13 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
 
         var candidateBitsCount = GetConstantValue(attributeData, BitFieldAttributeBitsCount);
         
-        int? validBitsCount;
+        byte? validBitsCount;
         
         if (candidateBitsCount == null)
         {
             validBitsCount = null;
         }
-        else if(candidateBitsCount is int v)
+        else if(candidateBitsCount is byte v)
         {
             validBitsCount = v;
         }

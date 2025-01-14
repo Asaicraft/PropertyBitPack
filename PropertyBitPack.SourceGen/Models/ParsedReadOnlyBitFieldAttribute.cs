@@ -10,7 +10,7 @@ namespace PropertyBitPack.SourceGen.Models;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal sealed class ParsedReadOnlyBitFieldAttribute : AttributeParsedResult
 {
-    public ParsedReadOnlyBitFieldAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, int? bitsCount, AccessModifier accessModifier) : base(attributeSyntax, attributeData, fieldName, bitsCount)
+    public ParsedReadOnlyBitFieldAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount, AccessModifier accessModifier) : base(attributeSyntax, attributeData, fieldName, bitsCount)
     {
         ConstructorAccessModifier = accessModifier;
     }

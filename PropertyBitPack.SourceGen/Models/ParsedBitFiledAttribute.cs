@@ -14,7 +14,7 @@ namespace PropertyBitPack.SourceGen.Models;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal sealed class ParsedBitFiledAttribute : AttributeParsedResult
 {
-    public ParsedBitFiledAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, int? bitsCount) : base(attributeSyntax, attributeData, fieldName, bitsCount)
+    public ParsedBitFiledAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount) : base(attributeSyntax, attributeData, fieldName, bitsCount)
     {
     }
 
