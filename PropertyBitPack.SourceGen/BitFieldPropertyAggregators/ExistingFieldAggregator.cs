@@ -102,6 +102,14 @@ internal sealed class ExistingFieldAggregator : BaseBitFieldPropertyAggregator
 
             // Store the result in the requests builder.
             requestsBuilder.Add(gsr);
+
+            for (var j = 0; j < propertiesInGroup.Length; j++)
+            {
+                var usedProperty = propertiesInGroup[j];
+
+                // Remove the property from the linked list.
+                properties.Remove(usedProperty);
+            }
         }
     }
 }
