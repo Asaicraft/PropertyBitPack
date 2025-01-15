@@ -19,6 +19,7 @@ namespace PropertyBitPack.SourceGen;
 internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 {
     private static readonly PropertyBitPackGeneratorContext _context;
+    private static readonly SymbolDisplayFormat NamespaceAndClassSymbolDisplayFormat = new(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
     static PropertyBitPackSourceGenerator()
     {
@@ -86,7 +87,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                                 propertyDeclaration.GetLocation(),
                                 string.Join(
                                     ", ",
-                                    candidates.Select(x => x.AttributeData.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                                    candidates.Select(x => x.AttributeData.AttributeClass?.ToDisplayString(NamespaceAndClassSymbolDisplayFormat))
                                 )
                             )
                         );
@@ -144,7 +145,8 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             }
 #endif
 
-            var generateSourceRequests = new SimpleLinkedList<GenerateSourceRequest>(aggregatedBitFieldProperties);
+            using var generateSourceRequestsRented = SimpleLinkedListsPool.Rent<GenerateSourceRequest>();
+            var generateSourceRequests = generateSourceRequestsRented.List;
 
             var generatedPropertySyntax = _context.GeneratePropertySyntax(generateSourceRequests);
 
