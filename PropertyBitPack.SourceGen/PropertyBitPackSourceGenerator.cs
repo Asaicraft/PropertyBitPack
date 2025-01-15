@@ -130,7 +130,8 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
 
             var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results, in diagnosticsBuilder);
-            var bitFieldPropertyInfoList = new SimpleLinkedList<BaseBitFieldPropertyInfo>(bitFieldPropertyInfos);
+            using var bitFieldPropertyInfoRentedList = SimpleLinkedListsPool.Rent<BaseBitFieldPropertyInfo>();
+            var bitFieldPropertyInfoList = bitFieldPropertyInfoRentedList.List;
 
             var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList, in diagnosticsBuilder);
 
