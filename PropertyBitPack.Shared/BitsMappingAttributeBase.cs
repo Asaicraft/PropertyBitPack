@@ -16,7 +16,7 @@ internal
 #endif
 abstract class BitsMappingAttributeBase: Attribute
 {
-    public byte? BitsCount
+    public byte BitsCount
     {
         get; set;
     }

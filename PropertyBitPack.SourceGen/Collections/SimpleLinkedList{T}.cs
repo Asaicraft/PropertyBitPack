@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
@@ -23,7 +24,37 @@ internal sealed class SimpleLinkedList<T> : ILinkedList<T>
         _linkedList = new LinkedList<T>(collection);
     }
 
+    public void AddRange(IEnumerable<T> values)
+    {
+        foreach (var value in values)
+        {
+            _linkedList.AddLast(value);
+        }
+    }
 
+    public void AddRange(ReadOnlySpan<T> values)
+    {
+        for(var i = 0; i < values.Length; i++)
+        {
+            _linkedList.AddLast(values[i]);
+        }
+    }
+
+    public void AddRange(IReadOnlyList<T> values)
+    {
+        for (var i = 0; i < values.Count; i++)
+        {
+            _linkedList.AddLast(values[i]);
+        }
+    }
+
+    public void AddRange(ImmutableArray<T> values)
+    {
+        for (var i = 0; i < values.Length; i++)
+        {
+            _linkedList.AddLast(values[i]);
+        }
+    }
 
     public int Count => ((ICollection<T>)_linkedList).Count;
 

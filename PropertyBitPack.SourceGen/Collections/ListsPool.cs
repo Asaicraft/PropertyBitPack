@@ -28,6 +28,7 @@ internal static partial class ListsPool
     {
         private readonly List<T> _list = list;
 
+        public List<T> List => _list;
         public void Dispose()
         {
             ListsPool<T>.Return(_list);

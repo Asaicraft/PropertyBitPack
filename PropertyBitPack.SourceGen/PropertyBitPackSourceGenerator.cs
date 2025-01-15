@@ -31,7 +31,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
         builder.BitFieldPropertyAggregators.Add(new ExistingFieldAggregator());
         builder.BitFieldPropertyAggregators.Add(new UnnamedFieldAggregator());
-        builder.BitFieldPropertyAggregators.Add(new AdvancedBitFieldPropertyAggregator());
+        builder.BitFieldPropertyAggregators.Add(new NamedFieldPropertyAggregator());
 
         _context = builder.Build();
     }
@@ -132,6 +132,8 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results, in diagnosticsBuilder);
             using var bitFieldPropertyInfoRentedList = SimpleLinkedListsPool.Rent<BaseBitFieldPropertyInfo>();
             var bitFieldPropertyInfoList = bitFieldPropertyInfoRentedList.List;
+
+            bitFieldPropertyInfoList.AddRange(bitFieldPropertyInfos);
 
             var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList, in diagnosticsBuilder);
 
