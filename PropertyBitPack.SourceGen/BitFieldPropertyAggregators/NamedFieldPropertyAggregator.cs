@@ -91,7 +91,9 @@ internal sealed class NamedFieldPropertyAggregator : BaseBitFieldPropertyAggrega
                     fieldName,
                     requiredBits
                 );
+
                 diagnostics.Add(diagnostic);
+                
                 continue;
             }
 

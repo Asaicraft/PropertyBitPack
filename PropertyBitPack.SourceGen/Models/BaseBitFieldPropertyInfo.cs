@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,6 +32,11 @@ internal abstract class BaseBitFieldPropertyInfo
     }
 
     public abstract IPropertySymbol PropertySymbol
+    {
+        get;
+    }
+
+    public abstract PropertyDeclarationSyntax PropertyDeclarationSyntax
     {
         get;
     }

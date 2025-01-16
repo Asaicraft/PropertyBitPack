@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,6 +26,8 @@ internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFiel
     public SyntaxTokenList SetterOrInitModifiers => _bitFieldPropertyInfo.SetterOrInitModifiers;
 
     public IPropertySymbol PropertySymbol => _bitFieldPropertyInfo.PropertySymbol;
+
+    public PropertyDeclarationSyntax PropertyDeclarationSyntax => _bitFieldPropertyInfo.PropertyDeclarationSyntax;
 
     public ITypeSymbol PropertyType => PropertySymbol.Type;
 

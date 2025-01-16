@@ -50,7 +50,7 @@ internal abstract class BaseBitFieldPropertyInfoParser : IBitFieldPropertyParser
             return null;
         }
 
-        return new BitFieldPropertyInfo(attributeResult, isInit, hasInitOrSet, setterOrInitModifiers, propertySymbol);
+        return new BitFieldPropertyInfo(propertyDeclarationSyntax, attributeResult, isInit, hasInitOrSet, setterOrInitModifiers, propertySymbol);
     }
 
     protected virtual SyntaxTokenList ExtraxtSetterOrInitModifiers(PropertyDeclarationSyntax propertyDeclaration, out bool hasInitOrSet, out bool isInit)
