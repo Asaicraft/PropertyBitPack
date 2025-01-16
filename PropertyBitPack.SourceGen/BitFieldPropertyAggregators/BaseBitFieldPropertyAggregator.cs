@@ -48,12 +48,12 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         // We'll produce one or more GenerateSourceRequest objects.
         using var requestsBuilder = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
 
-        AggregateCore(properties, requestsBuilder, diagnostics);
+        AggregateCore(properties, requestsBuilder, in diagnostics);
 
         return requestsBuilder.ToImmutable();
     }
 
-    protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, ImmutableArrayBuilder<Diagnostic> diagnostics);
+    protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics);
 
 
 
@@ -312,7 +312,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         using var requests = ListsPool.Rent<BitFieldPropertyInfoRequest>();
 
         byte currentOffset = 0;
-        var maxBits =(byte)MapSpecialTypeToBitSize(fieldRequest.FieldType);
+        var maxBits = (byte)MapSpecialTypeToBitSize(fieldRequest.FieldType);
 
         for (var i = 0; i < bitFieldPropertyInfos.Length; i++)
         {
@@ -336,7 +336,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         }
 
         return [.. requests];
-        
+
     }
 
     /// <summary>
