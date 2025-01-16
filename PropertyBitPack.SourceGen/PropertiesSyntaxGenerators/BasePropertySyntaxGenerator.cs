@@ -8,9 +8,20 @@ using System.Collections.Immutable;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
+
+/// <summary>
+/// Abstract base class for generating property declarations with customizable syntax for getters, setters, and initializers.
+/// </summary>
+/// <param name="propertyBitPackGeneratorContext">The context for the property bit pack generator.</param>
 internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorContext propertyBitPackGeneratorContext) : IPropertySyntaxGenerator
 {
 
+    /// <summary>
+    /// Generates a setter accessor syntax with the specified modifiers and body.
+    /// </summary>
+    /// <param name="modifiers">The modifiers for the setter accessor.</param>
+    /// <param name="body">The body of the setter accessor.</param>
+    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the setter.</returns>
     protected static AccessorDeclarationSyntax Setter(SyntaxTokenList modifiers, BlockSyntax body)
     {
         return AccessorDeclaration(
@@ -21,6 +32,12 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         );
     }
 
+
+    /// <summary>
+    /// Generates a getter accessor syntax with the specified body.
+    /// </summary>
+    /// <param name="body">The body of the getter accessor.</param>
+    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the getter.</returns>
     protected static AccessorDeclarationSyntax Getter(BlockSyntax body)
     {
         return AccessorDeclaration(
@@ -30,6 +47,13 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
             body
         );
     }
+
+    /// <summary>
+    /// Generates an initializer accessor syntax with the specified modifiers and body.
+    /// </summary>
+    /// <param name="modifiers">The modifiers for the initializer accessor.</param>
+    /// <param name="body">The body of the initializer accessor.</param>
+    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the initializer.</returns>
 
     protected static AccessorDeclarationSyntax Initter(SyntaxTokenList modifiers, BlockSyntax body)
     {
@@ -41,10 +65,15 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         );
     }
 
+
     private readonly PropertyBitPackGeneratorContext _propertyBitPackGeneratorContext = propertyBitPackGeneratorContext;
 
+    /// <summary>
+    /// Gets the context for the property bit pack generator.
+    /// </summary>
     public PropertyBitPackGeneratorContext PropertyBitPackGeneratorContext => _propertyBitPackGeneratorContext;
 
+    /// <inheritdoc/>
     public PropertyDeclarationSyntax? GenerateProperty(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember)
     {
         if (!IsCandidate(sourceRequest, bitFieldPropertyInfoRequest))
@@ -58,11 +87,27 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         return property;
     }
 
+    /// <summary>
+    /// Determines whether a property is a candidate for generation.
+    /// </summary>
+    /// <param name="sourceRequest">The source request containing generation details.</param>
+    /// <param name="bitFieldPropertyInfoRequest">The bit field property information.</param>
+    /// <returns>
+    /// <c>true</c> if the property is a candidate for generation; otherwise, <c>false</c>.
+    /// </returns>
     protected virtual bool IsCandidate(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         return false;
     }
 
+    /// <summary>
+    /// Generates the core property declaration.
+    /// </summary>
+    /// <param name="sourceRequest">The source request containing generation details.</param>
+    /// <param name="bitFieldPropertyInfoRequest">The bit field property information.</param>
+    /// <returns>
+    /// A <see cref="PropertyDeclarationSyntax"/> representing the generated property, or <c>null</c> if not applicable.
+    /// </returns>
     protected virtual PropertyDeclarationSyntax? GeneratePropertyCore(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         var getterBlock = GetterBlockSyntax(bitFieldPropertyInfoRequest);
@@ -101,6 +146,15 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         );
     }
 
+    /// <summary>
+    /// Generates the core property declaration with additional members if applicable.
+    /// </summary>
+    /// <param name="sourceRequest">The source request containing generation details.</param>
+    /// <param name="bitFieldPropertyInfoRequest">The bit field property information.</param>
+    /// <param name="additionalMember">Outputs additional member declarations required for the property.</param>
+    /// <returns>
+    /// A <see cref="PropertyDeclarationSyntax"/> representing the generated property, or <c>null</c> if not applicable.
+    /// </returns>
     public virtual PropertyDeclarationSyntax? GeneratePropertyCore(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember)
     {
         additionalMember = default;
