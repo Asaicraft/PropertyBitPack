@@ -20,7 +20,7 @@ internal sealed class NonExistingPropertiesSyntaxGenerator : BasePropertiesSynta
         {
             foreach (var candidateRequest in requests)
             {
-                if(candidateRequest is NonExistingFieldGsr nonExistingFieldGsr)
+                if (candidateRequest is NonExistingFieldGsr nonExistingFieldGsr)
                 {
                     candidateRequestsBuilder.Add(nonExistingFieldGsr);
                     continue;
@@ -66,7 +66,10 @@ internal sealed class NonExistingPropertiesSyntaxGenerator : BasePropertiesSynta
 
             properties.Add(GenerateProperty(nonExistingFieldGsr, propertyRequest, out var additionalMembers));
 
-            additionalMembersList.AddRange(additionalMembers);
+            if (!additionalMembers.IsDefaultOrEmpty)
+            {
+                additionalMembersList.AddRange(additionalMembers);
+            }
         }
 
         using var membersRented = ListsPool.Rent<MemberDeclarationSyntax>();
@@ -78,6 +81,6 @@ internal sealed class NonExistingPropertiesSyntaxGenerator : BasePropertiesSynta
 
         var unit = GenerateCompilationUnit(nonExistingFieldGsr, members);
 
-        return unit.NormalizeWhitespace().GetText();
+        return unit.NormalizeWhitespace().GetText(Encoding.UTF8);
     }
 }

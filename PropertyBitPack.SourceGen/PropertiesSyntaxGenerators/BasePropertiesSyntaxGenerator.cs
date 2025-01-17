@@ -15,7 +15,6 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerator, IContextBindable
 {
-
     private ImmutableArray<IPropertySyntaxGenerator> _propertySyntaxGenerators = [];
 
     public PropertyBitPackGeneratorContext PropertyBitPackGeneratorContext

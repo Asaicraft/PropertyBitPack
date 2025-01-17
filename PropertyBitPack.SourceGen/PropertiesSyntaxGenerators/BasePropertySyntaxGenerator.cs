@@ -120,17 +120,13 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
 
         AccessorListSyntax accessors;
 
-        var tempAccessors = ArrayPool<AccessorDeclarationSyntax>.Shared.Rent(2);
-        try
+        using (var tempAccessorsRented = ListsPool.Rent<AccessorDeclarationSyntax>())
         {
-            tempAccessors[0] = getter;
-            tempAccessors[1] = setter;
+            var tempAccessors = tempAccessorsRented.List;
+            tempAccessors.Add(getter);
+            tempAccessors.Add(setter);
 
             accessors = AccessorList(List(tempAccessors));
-        }
-        finally
-        {
-            ArrayPool<AccessorDeclarationSyntax>.Shared.Return(tempAccessors);
         }
 
         var propertyTypeSyntax = bitFieldPropertyInfoRequest.PropertyDeclarationSyntax.Type;

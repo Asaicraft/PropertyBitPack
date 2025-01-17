@@ -12,6 +12,7 @@ using System.Diagnostics;
 using PropertyBitPack.SourceGen.AttributeParsers;
 using PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 using PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
+using PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 
 namespace PropertyBitPack.SourceGen;
 
@@ -33,6 +34,8 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         builder.BitFieldPropertyAggregators.Add(new ExistingFieldAggregator());
         builder.BitFieldPropertyAggregators.Add(new UnnamedFieldAggregator());
         builder.BitFieldPropertyAggregators.Add(new NamedFieldPropertyAggregator());
+
+        builder.PropertiesSyntaxGenerators.Add(new NonExistingPropertiesSyntaxGenerator());
 
         _context = builder.Build();
     }
@@ -70,7 +73,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                         .Select(x => (x, (AttributeSyntax?)x.ApplicationSyntaxReference?.GetSyntax()))
                         .Where(x => x.Item2 != null)!.ToImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)>();
 
-                    var candidates = GetCandidadates(attributes);
+                    var candidates = GetCandidadates(attributes.AsSpan());
 
                     if (candidates.Length == 0)
                     {
@@ -102,9 +105,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
                     return new(bitFieldPropertyInfo, nullableDiagnostics);
 
-
-
-                    static ImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> GetCandidadates(ImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> attributes)
+                    static ImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> GetCandidadates(ReadOnlySpan<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> attributes)
                     {
                         using var candidates = ImmutableArrayBuilder<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)>.Rent();
 
@@ -130,7 +131,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
         {
             using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
 
-            var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results, in diagnosticsBuilder);
+            var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results.AsSpan(), in diagnosticsBuilder);
             using var bitFieldPropertyInfoRentedList = SimpleLinkedListsPool.Rent<BaseBitFieldPropertyInfo>();
             var bitFieldPropertyInfoList = bitFieldPropertyInfoRentedList.List;
 
@@ -147,6 +148,8 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 
             using var generateSourceRequestsRented = SimpleLinkedListsPool.Rent<GenerateSourceRequest>();
             var generateSourceRequests = generateSourceRequestsRented.List;
+
+            generateSourceRequests.AddRange(aggregatedBitFieldProperties);
 
             var generatedPropertySyntax = _context.GeneratePropertySyntax(generateSourceRequests);
 
@@ -174,7 +177,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             // - ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder: A builder for accumulating diagnostics during validation.
             // Returns:
             // - ImmutableArray<PropertyAttributePair>: An immutable array containing valid property-attribute pairs.
-            static ImmutableArray<BaseBitFieldPropertyInfo> ValidateAndAccumulateProperties(ImmutableArray<Result<BaseBitFieldPropertyInfo>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+            static ImmutableArray<BaseBitFieldPropertyInfo> ValidateAndAccumulateProperties(ReadOnlySpan<Result<BaseBitFieldPropertyInfo>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
             {
                 // Create a temporary builder for storing valid property-attribute pairs.
                 using var properties = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
