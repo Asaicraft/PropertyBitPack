@@ -64,11 +64,11 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
         var fieldType = GetTypeSyntaxFrom(fieldRequest.FieldType);
 
-        var fieldDeclaration = SyntaxFactory.FieldDeclaration(
-            SyntaxFactory.VariableDeclaration(
+        var fieldDeclaration = FieldDeclaration(
+            VariableDeclaration(
                 fieldType,
-                SyntaxFactory.SingletonSeparatedList(
-                    SyntaxFactory.VariableDeclarator(
+                SingletonSeparatedList(
+                    VariableDeclarator(
                         fieldRequest.Name
                     )
                 )
@@ -223,15 +223,15 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// </exception>
     protected static TypeSyntax GetTypeSyntaxFrom(SpecialType specialType) => specialType switch
     {
-        SpecialType.System_Byte => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ByteKeyword)),
-        SpecialType.System_SByte => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.SByteKeyword)),
-        SpecialType.System_Int16 => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ShortKeyword)),
-        SpecialType.System_UInt16 => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UShortKeyword)),
-        SpecialType.System_Int32 => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)),
-        SpecialType.System_UInt32 => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UIntKeyword)),
-        SpecialType.System_Int64 => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.LongKeyword)),
-        SpecialType.System_UInt64 => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ULongKeyword)),
-        SpecialType.System_Boolean => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
+        SpecialType.System_Byte => PredefinedType(Token(SyntaxKind.ByteKeyword)),
+        SpecialType.System_SByte => PredefinedType(Token(SyntaxKind.SByteKeyword)),
+        SpecialType.System_Int16 => PredefinedType(Token(SyntaxKind.ShortKeyword)),
+        SpecialType.System_UInt16 => PredefinedType(Token(SyntaxKind.UShortKeyword)),
+        SpecialType.System_Int32 => PredefinedType(Token(SyntaxKind.IntKeyword)),
+        SpecialType.System_UInt32 => PredefinedType(Token(SyntaxKind.UIntKeyword)),
+        SpecialType.System_Int64 => PredefinedType(Token(SyntaxKind.LongKeyword)),
+        SpecialType.System_UInt64 => PredefinedType(Token(SyntaxKind.ULongKeyword)),
+        SpecialType.System_Boolean => PredefinedType(Token(SyntaxKind.BoolKeyword)),
 
         _ => throw new NotSupportedException()
     };
