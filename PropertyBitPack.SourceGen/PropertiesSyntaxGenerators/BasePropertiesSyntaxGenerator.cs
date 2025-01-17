@@ -104,48 +104,76 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return propertyDeclaration;
     }
 
-    protected virtual string GetFileName(GenerateSourceRequest request)
+
+    csharp
+    Копировать
+Редактировать
+/// <summary>
+/// Generates the filename for the source code file based on the given request.
+/// </summary>
+/// <param name="request">The request containing information about the fields used in the generated source.</param>
+/// <returns>
+/// A string representing the filename, including field names concatenated with underscores
+/// and the suffix ".BitPack.g.cs".
+/// </returns>
+protected virtual string GetFileName(GenerateSourceRequest request)
     {
         using var stingBuilderRented = StringBuildersPool.Rent();
         var stringBuilder = stingBuilderRented.StringBuilder;
 
+        // Iterate through all fields and append their names to the filename
         for (var i = 0; i < request.Fields.Length; i++)
         {
             var fieldRequests = request.Fields[i];
-
             stringBuilder.Append(fieldRequests.Name);
 
-            if(i != request.Fields.Length - 1)
+            // Add separator for all but the last field
+            if (i != request.Fields.Length - 1)
             {
                 stringBuilder.Append("___");
             }
-            
         }
 
+        // Append the suffix to the filename
         stringBuilder.Append(".BitPack.g.cs");
 
         return stringBuilder.ToString();
     }
 
-    protected virtual CompilationUnitSyntax GenerateCompilationUnit(GenerateSourceRequest request, IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    /// <summary>
+    /// Generates a <see cref="CompilationUnitSyntax"/> that represents the entire source file.
+    /// </summary>
+    /// <param name="request">The request containing field and property information.</param>
+    /// <param name="memberDeclarationSyntaxes">
+    /// A collection of <see cref="MemberDeclarationSyntax"/> representing the class members.
+    /// </param>
+    /// <returns>
+    /// A <see cref="CompilationUnitSyntax"/> containing the namespace, using directives, and class declaration.
+    /// </returns>
+    protected virtual CompilationUnitSyntax GenerateCompilationUnit(
+        GenerateSourceRequest request,
+        IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
         var ownerNamespace = owner.ContainingNamespace;
 
+        // Generate the class declaration based on the request
         var classDeclaration = GenerateClassDeclaration(request, memberDeclarationSyntaxes);
 
+        // Create a namespace declaration wrapping the class
         var namespaceDeclaration = NamespaceDeclaration(
-            IdentifierName(ownerNamespace.Name), 
-            default, 
-            default, 
+            IdentifierName(ownerNamespace.Name),
+            default,
+            default,
             SingletonList<MemberDeclarationSyntax>(classDeclaration)
         );
 
+        // Add using directives
         using var usingsRented = ListsPool.Rent<UsingDirectiveSyntax>();
         var usings = usingsRented.List;
-
         usings.Add(UsingDirective(IdentifierName("System")));
 
+        // Create the compilation unit
         return CompilationUnit(
             default,
             List(usings),
@@ -154,10 +182,23 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         );
     }
 
-    protected virtual ClassDeclarationSyntax GenerateClassDeclaration(GenerateSourceRequest request, IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    /// <summary>
+    /// Generates a <see cref="ClassDeclarationSyntax"/> for the owner class described in the request.
+    /// </summary>
+    /// <param name="request">The request containing property and field information for the class.</param>
+    /// <param name="memberDeclarationSyntaxes">
+    /// A collection of <see cref="MemberDeclarationSyntax"/> representing the class members.
+    /// </param>
+    /// <returns>
+    /// A <see cref="ClassDeclarationSyntax"/> representing a partial class definition for the owner.
+    /// </returns>
+    protected virtual ClassDeclarationSyntax GenerateClassDeclaration(
+        GenerateSourceRequest request,
+        IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
 
+        // Create a partial class declaration with the provided members
         return ClassDeclaration(
             List<AttributeListSyntax>(),
             TokenList(Token(SyntaxKind.PartialKeyword)),
