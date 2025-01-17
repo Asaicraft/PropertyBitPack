@@ -190,8 +190,19 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// A <see cref="BlockSyntax"/> containing the logic to set the value of the property.
     /// </returns>
+    /// <summary>
+    /// Generates a <see cref="BlockSyntax"/> for the setter of a bit field property,
+    /// handling both 1-bit (boolean) and multi-bit properties with clamping where necessary.
+    /// </summary>
+    /// <param name="bitFieldPropertyInfoRequest">
+    /// The bit field property information, including field name, start position, length, and property symbol.
+    /// </param>
+    /// <returns>
+    /// A <see cref="BlockSyntax"/> containing the logic to set the value of the property.
+    /// </returns>
     protected virtual BlockSyntax SetterBlockSyntax(BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
+        var propertyTypeSyntax = bitFieldPropertyInfoRequest.PropertyDeclarationSyntax.Type;
         var propertySymbol = bitFieldPropertyInfoRequest.PropertySymbol;
         var fieldName = bitFieldPropertyInfoRequest.BitsSpan.FieldRequest.Name;
         var start = bitFieldPropertyInfoRequest.BitsSpan.Start;
@@ -214,18 +225,16 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
             );
 
             // Wrap the expression in an ExpressionStatement and add to the block
-            statements.Add(
-                ExpressionStatement(boolAssignment)
-            );
+            statements.Add(ExpressionStatement(boolAssignment));
         }
         else
         {
             // For multi-bit properties, clamp the value to ensure it fits within the specified bit length
 
-            // 1) Define a constant maxValue_: const int maxValue_ = (1 << length) - 1;
+            // 1) Define a constant maxValue_: const {PropertyType} maxValue_ = (1 << length) - 1;
             var maxValueDecl = LocalDeclarationStatement(
                 VariableDeclaration(
-                    PredefinedType(Token(SyntaxKind.IntKeyword)),
+                    propertyTypeSyntax,
                     SingletonSeparatedList(
                         VariableDeclarator("maxValue_")
                             .WithInitializer(
@@ -251,9 +260,16 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
             );
             statements.Add(maxValueDecl);
 
-            // 2) Declare a clamped variable: var clamped_ = Math.Min(value, maxValue_);
+            // 2) Declare a clamped variable: var clamped_ = Math.Min(({PropertyType})value, maxValue_);
             using var mathMinArguments = ListsPool.Rent<SyntaxNodeOrToken>();
-            mathMinArguments.Add(Argument(IdentifierName("value")));
+            mathMinArguments.Add(
+                Argument(
+                    CastExpression(
+                        PredefinedType(Token(SyntaxKind.IntKeyword)),
+                        IdentifierName("value")
+                    )
+                )
+            );
             mathMinArguments.Add(Token(SyntaxKind.CommaToken));
             mathMinArguments.Add(Argument(IdentifierName("maxValue_")));
 
@@ -291,14 +307,13 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
             );
 
             // Add the assignment as a separate statement
-            statements.Add(
-                ExpressionStatement(assignmentExpr)
-            );
+            statements.Add(ExpressionStatement(assignmentExpr));
         }
 
         // Return the full block containing all statements
         return Block(statements);
     }
+
 
     /// <summary>
     /// Generates a bitwise expression to extract the value of a property from its bitfield representation.
@@ -475,6 +490,8 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// </returns>
     protected virtual ExpressionSyntax SetOrInitBitwiseExpression(string fieldName, byte start, byte length, IPropertySymbol propertySymbol, string valueVariableName)
     {
+        var propertyTypeSyntax = GetTypeSyntax(propertySymbol);
+
         // If the field represents a 1-bit boolean value
         if (propertySymbol.Type.SpecialType == SpecialType.System_Boolean)
         {
@@ -484,7 +501,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         else
         {
             // Generate an assignment expression for multi-bit fields
-            return MultiBitAssignmentExpression(fieldName, start, length, valueVariableName);
+            return MultiBitAssignmentExpression(fieldName, start, length, valueVariableName, propertyTypeSyntax);
         }
     }
 
@@ -547,8 +564,10 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// An <see cref="ExpressionSyntax"/> representing the assignment expression for a multi-bit field.
     /// </returns>
-    protected ExpressionSyntax MultiBitAssignmentExpression(string fieldName, byte start, byte length, string valueVariableName)
+    protected ExpressionSyntax MultiBitAssignmentExpression(string fieldName, byte start, byte length, string valueVariableName, TypeSyntax propertyType)
     {
+        
+
         // Left operand: (fieldName & ~(((1 << length) - 1) << start))
         var leftAndMask = BinaryExpression(
             SyntaxKind.BitwiseAndExpression,
@@ -577,16 +596,13 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
             )
         );
 
-        // Right operand: (((int)valueVariableName & ((1 << length) - 1)) << start)
+        // Right operand: ((valueVariableName & ((1 << length) - 1)) << start)
         var rightMaskAndShift = BinaryExpression(
             SyntaxKind.LeftShiftExpression,
             ParenthesizedExpression(
                 BinaryExpression(
                     SyntaxKind.BitwiseAndExpression,
-                    CastExpression(
-                        PredefinedType(Token(SyntaxKind.IntKeyword)),
-                        IdentifierName(valueVariableName)
-                    ),
+                    IdentifierName(valueVariableName),
                     ParenthesizedExpression(
                         BinaryExpression(
                             SyntaxKind.SubtractExpression,
@@ -609,13 +625,44 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         return AssignmentExpression(
             SyntaxKind.SimpleAssignmentExpression,
             IdentifierName(fieldName),
-            ParenthesizedExpression(
-                BinaryExpression(
-                    SyntaxKind.BitwiseOrExpression,
-                    leftAndMask,
-                    rightMaskAndShift
+            CastExpression(
+                propertyType,
+                ParenthesizedExpression(
+                    BinaryExpression(
+                        SyntaxKind.BitwiseOrExpression,
+                        leftAndMask,
+                        rightMaskAndShift
+                    )
                 )
             )
         );
     }
+
+    protected static TypeSyntax GetTypeSyntax(IPropertySymbol propertyTypeSymbol) => GetTypeSyntaxFromSpecialType(propertyTypeSymbol.Type.SpecialType);
+
+    protected static TypeSyntax GetTypeSyntaxFromSpecialType(SpecialType specialType) => specialType switch
+    {
+        SpecialType.System_Boolean => PredefinedType(Token(SyntaxKind.BoolKeyword)),
+        SpecialType.System_Byte => PredefinedType(Token(SyntaxKind.ByteKeyword)),
+        SpecialType.System_SByte => PredefinedType(Token(SyntaxKind.SByteKeyword)),
+        SpecialType.System_Int16 => PredefinedType(Token(SyntaxKind.ShortKeyword)),
+        SpecialType.System_UInt16 => PredefinedType(Token(SyntaxKind.UShortKeyword)),
+        SpecialType.System_Int32 => PredefinedType(Token(SyntaxKind.IntKeyword)),
+        SpecialType.System_UInt32 => PredefinedType(Token(SyntaxKind.UIntKeyword)),
+        SpecialType.System_Int64 => PredefinedType(Token(SyntaxKind.LongKeyword)),
+        SpecialType.System_UInt64 => PredefinedType(Token(SyntaxKind.ULongKeyword)),
+
+        _ => throw new NotSupportedException()
+    };
+
+    protected static TypeSyntax ToSignedVariantSyntax(SpecialType specialType) => GetTypeSyntaxFromSpecialType(ToSignedVariant(specialType));
+
+    protected static SpecialType ToSignedVariant(SpecialType specialType) => specialType switch
+    {
+        SpecialType.System_Byte => SpecialType.System_SByte,
+        SpecialType.System_UInt16 => SpecialType.System_Int16,
+        SpecialType.System_UInt32 => SpecialType.System_Int32,
+        SpecialType.System_UInt64 => SpecialType.System_Int64,
+        _ => specialType
+    };
 }
