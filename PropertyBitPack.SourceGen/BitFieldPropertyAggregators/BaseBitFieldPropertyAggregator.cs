@@ -484,6 +484,14 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         };
     }
 
+    /// <summary>
+    /// Maps a given <see cref="BitSize"/> value to its corresponding <see cref="SpecialType"/>.
+    /// </summary>
+    /// <param name="bitSize">The <see cref="BitSize"/> value to map.</param>
+    /// <returns>
+    /// The corresponding <see cref="SpecialType"/> for the provided <paramref name="bitSize"/>.
+    /// If the <paramref name="bitSize"/> does not match any known value, <see cref="SpecialType.None"/> is returned.
+    /// </returns>
     protected static SpecialType MapBitSizeToSpecialType(BitSize bitSize)
     {
         return bitSize switch
