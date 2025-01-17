@@ -45,7 +45,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     {
         using var fileGeneratorRequestsBuilder = ImmutableArrayBuilder<FileGeneratorRequest>.Rent();
 
-        GenerateCore(requests, fileGeneratorRequestsBuilder);
+        GenerateCore(requests, in fileGeneratorRequestsBuilder);
 
         if (requests.Count == 0)
         {
