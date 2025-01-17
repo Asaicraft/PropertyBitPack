@@ -30,13 +30,36 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 {
     private ImmutableArray<IPropertySyntaxGenerator> _propertySyntaxGenerators = [];
 
+    /// <summary>
+    /// Gets or sets the context used for property bit-packing generation.
+    /// </summary>
+    /// <remarks>
+    /// The context provides access to shared resources, such as parsers, aggregators, and syntax generators,
+    /// that are required during the source generation process.
+    /// </remarks>
     public PropertyBitPackGeneratorContext PropertyBitPackGeneratorContext
     {
         get; set;
     } = null!;
 
+    /// <summary>
+    /// Gets the collection of property syntax generators initialized by the context.
+    /// </summary>
+    /// <remarks>
+    /// The generators are created by invoking the <see cref="GenereatePropertySyntaxGenerators"/> method
+    /// during the binding of the context.
+    /// </remarks>
     public ImmutableArray<IPropertySyntaxGenerator> PropertySyntaxGenerators => _propertySyntaxGenerators;
 
+    /// <summary>
+    /// Binds the specified context to the generator and initializes the property syntax generators.
+    /// </summary>
+    /// <param name="context">
+    /// The <see cref="PropertyBitPackGeneratorContext"/> to bind and use for initialization.
+    /// </param>
+    /// <remarks>
+    /// This method is typically called during the setup phase to configure the generator with the appropriate context.
+    /// </remarks>
     public void BindContext(PropertyBitPackGeneratorContext context)
     {
         PropertyBitPackGeneratorContext = context;
@@ -44,6 +67,18 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         _propertySyntaxGenerators = GenereatePropertySyntaxGenerators(context);
     }
 
+    /// <summary>
+    /// Generates the property syntax generators based on the provided context.
+    /// </summary>
+    /// <param name="context">
+    /// The <see cref="PropertyBitPackGeneratorContext"/> used to initialize the generators.
+    /// </param>
+    /// <returns>
+    /// An <see cref="ImmutableArray{T}"/> containing the initialized property syntax generators.
+    /// </returns>
+    /// <remarks>
+    /// This method can be overridden by derived classes to customize the initialization logic for generators.
+    /// </remarks>
     protected virtual ImmutableArray<IPropertySyntaxGenerator> GenereatePropertySyntaxGenerators(PropertyBitPackGeneratorContext context)
     {
         var generators = new IPropertySyntaxGenerator[]
@@ -54,6 +89,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return Unsafe.As<IPropertySyntaxGenerator[], ImmutableArray<IPropertySyntaxGenerator>>(ref generators);
     }
 
+    /// <inheritdoc/>
     public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<GenerateSourceRequest> requests)
     {
         using var fileGeneratorRequestsBuilder = ImmutableArrayBuilder<FileGeneratorRequest>.Rent();
