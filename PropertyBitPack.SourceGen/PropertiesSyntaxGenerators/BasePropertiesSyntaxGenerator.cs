@@ -41,7 +41,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
         return Unsafe.As<IPropertySyntaxGenerator[], ImmutableArray<IPropertySyntaxGenerator>>(ref generators);
     }
-    
+
     public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<GenerateSourceRequest> requests)
     {
         using var fileGeneratorRequestsBuilder = ImmutableArrayBuilder<FileGeneratorRequest>.Rent();
@@ -105,18 +105,15 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     }
 
 
-    csharp
-    Копировать
-Редактировать
-/// <summary>
-/// Generates the filename for the source code file based on the given request.
-/// </summary>
-/// <param name="request">The request containing information about the fields used in the generated source.</param>
-/// <returns>
-/// A string representing the filename, including field names concatenated with underscores
-/// and the suffix ".BitPack.g.cs".
-/// </returns>
-protected virtual string GetFileName(GenerateSourceRequest request)
+    /// <summary>
+    /// Generates the filename for the source code file based on the given request.
+    /// </summary>
+    /// <param name="request">The request containing information about the fields used in the generated source.</param>
+    /// <returns>
+    /// A string representing the filename, including field names concatenated with underscores
+    /// and the suffix ".BitPack.g.cs".
+    /// </returns>
+    protected virtual string GetFileName(GenerateSourceRequest request)
     {
         using var stingBuilderRented = StringBuildersPool.Rent();
         var stringBuilder = stingBuilderRented.StringBuilder;
