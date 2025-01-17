@@ -13,6 +13,19 @@ using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
+
+/// <summary>
+/// Provides a base class for generating syntax related to property bit-packing.
+/// </summary>
+/// <remarks>
+/// This class serves as an abstraction for generating source code for properties and fields 
+/// based on bit-packing logic. It handles context binding, file generation, and syntax 
+/// construction for classes, properties, fields, and namespaces. Derived classes must 
+/// override <see cref="GenerateCore"/> to provide specific implementation logic for processing 
+/// requests.
+/// </remarks>
+/// <seealso cref="IPropertiesSyntaxGenerator"/>
+/// <seealso cref="IContextBindable"/>
 internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerator, IContextBindable
 {
     private ImmutableArray<IPropertySyntaxGenerator> _propertySyntaxGenerators = [];
