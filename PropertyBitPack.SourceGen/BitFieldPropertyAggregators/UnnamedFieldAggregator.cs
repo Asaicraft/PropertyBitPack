@@ -11,7 +11,7 @@ using System.Text;
 namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 internal sealed class UnnamedFieldAggregator : BaseBitFieldPropertyAggregator
 {
-    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, ImmutableArrayBuilder<Diagnostic> diagnostics)
+    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder,in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         using var unnamedFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
 
@@ -115,7 +115,7 @@ internal sealed class UnnamedFieldAggregator : BaseBitFieldPropertyAggregator
             }
 
             var fieldName = GetFieldName(in candidateProperties);
-            var fieldRequest = new FieldRequest(fieldName, MapBitSizeToSpecialType(calculatedBit.FieldCapacity), false);
+            var fieldRequest = new NonExistingFieldRequest(fieldName, MapBitSizeToSpecialType(calculatedBit.FieldCapacity));
 
             byte offset = 0;
 

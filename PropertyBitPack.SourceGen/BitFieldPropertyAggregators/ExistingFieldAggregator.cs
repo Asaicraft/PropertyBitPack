@@ -30,7 +30,7 @@ internal sealed class ExistingFieldAggregator : BaseBitFieldPropertyAggregator
     protected override void AggregateCore(
         ILinkedList<BaseBitFieldPropertyInfo> properties,
         in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder,
-        ImmutableArrayBuilder<Diagnostic> diagnostics)
+        in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         // Collect all properties that refer to an existing field.
         using var existingFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();

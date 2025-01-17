@@ -4,6 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-internal sealed class NamedFieldRequest(string name, SpecialType fieldType) : NonExistingFieldRequest(name, fieldType)
+internal class NonExistingFieldRequest(string fieldName, SpecialType specialType) : FieldRequest(fieldName, specialType, false)
 {
 }

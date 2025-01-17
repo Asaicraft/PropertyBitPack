@@ -5,18 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models;
-internal sealed class NamedFieldGsr : GenerateSourceRequest
+internal sealed class NamedFieldGsr(NamedFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties) : NonExistingFieldGsr
 {
-
-    public NamedFieldGsr(NamedFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties)
-    {
-        Fields = [fieldRequest];
-        Properties = properties;
-    }
-
     public NamedFieldRequest FieldRequest => Unsafe.As<NamedFieldRequest>(Fields[0]);
-    public override ImmutableArray<FieldRequest> Fields { get; }
-    public override ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; }
-
-    
+    public override ImmutableArray<NonExistingFieldRequest> NonExistingFieldRequests { get; } = [fieldRequest];
+    public override ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; } = properties;
 }

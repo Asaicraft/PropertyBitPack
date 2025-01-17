@@ -102,8 +102,17 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
         return propertyDeclaration;
     }
-    }
 
+    /// <summary>
+    /// Gets the corresponding <see cref="TypeSyntax"/> for a given <see cref="SpecialType"/>.
+    /// </summary>
+    /// <param name="specialType">The <see cref="SpecialType"/> value to convert.</param>
+    /// <returns>
+    /// A <see cref="TypeSyntax"/> representing the type keyword associated with the given <paramref name="specialType"/>.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// Thrown if the provided <paramref name="specialType"/> is not supported.
+    /// </exception>
     protected static TypeSyntax GetTypeSyntaxFrom(SpecialType specialType) => specialType switch
     {
         SpecialType.System_Byte => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ByteKeyword)),

@@ -31,7 +31,7 @@ internal sealed class NamedFieldPropertyAggregator : BaseBitFieldPropertyAggrega
     /// <param name="diagnostics">
     /// The builder used to collect any diagnostic issues encountered during processing.
     /// </param>
-    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, ImmutableArrayBuilder<Diagnostic> diagnostics)
+    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         // Collects properties that have named but non-existing fields.
         using var unnamedFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
@@ -93,7 +93,7 @@ internal sealed class NamedFieldPropertyAggregator : BaseBitFieldPropertyAggrega
                 );
 
                 diagnostics.Add(diagnostic);
-                
+
                 continue;
             }
 

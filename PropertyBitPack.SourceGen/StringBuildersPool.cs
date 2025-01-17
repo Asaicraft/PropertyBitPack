@@ -58,6 +58,7 @@ internal static class StringBuildersPool
         {
             Return(_stringBuilder);
         }
+
         public override string ToString()
         {
             return _stringBuilder.ToString();
