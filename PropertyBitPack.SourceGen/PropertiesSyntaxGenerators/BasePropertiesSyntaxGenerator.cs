@@ -57,6 +57,12 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
     protected abstract void GenerateCore(ILinkedList<GenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder);
 
+    /// <summary>
+    /// Generates a field declaration syntax for the specified field request.
+    /// </summary>
+    /// <param name="generateSourceRequest">The source generation request containing context information.</param>
+    /// <param name="fieldRequest">The field request containing details about the field to generate.</param>
+    /// <returns>A <see cref="FieldDeclarationSyntax"/> representing the generated field.</returns>
     protected virtual FieldDeclarationSyntax GenerateField(GenerateSourceRequest generateSourceRequest, FieldRequest fieldRequest)
     {
         Debug.Assert(!fieldRequest.IsExist);
@@ -77,11 +83,25 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return fieldDeclaration;
     }
 
+    /// <summary>
+    /// Generates a property declaration syntax for the specified bit field property request.
+    /// </summary>
+    /// <param name="generateSourceRequest">The source generation request containing context information.</param>
+    /// <param name="bitFieldPropertyInfoRequest">The property request containing details about the bit field property to generate.</param>
+    /// <returns>A <see cref="PropertyDeclarationSyntax"/> representing the generated property.</returns>
     protected virtual PropertyDeclarationSyntax GenerateProperty(GenerateSourceRequest generateSourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         return GenerateProperty(generateSourceRequest, bitFieldPropertyInfoRequest, out _);
     }
 
+    /// <summary>
+    /// Generates a property declaration syntax and additional members for the specified bit field property request.
+    /// </summary>
+    /// <param name="generateSourceRequest">The source generation request containing context information.</param>
+    /// <param name="bitFieldPropertyInfoRequest">The property request containing details about the bit field property to generate.</param>
+    /// <param name="additionalMembers">Additional members generated as part of the property generation.</param>
+    /// <returns>A <see cref="PropertyDeclarationSyntax"/> representing the generated property.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the property cannot be generated.</exception>
     protected virtual PropertyDeclarationSyntax GenerateProperty(GenerateSourceRequest generateSourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMembers)
     {
         PropertyDeclarationSyntax? propertyDeclaration = null;
@@ -102,6 +122,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
         return propertyDeclaration;
     }
+
 
 
     /// <summary>

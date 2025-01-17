@@ -145,6 +145,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
             var generatedTexts = generator.Generate(requests);
             sourceTexts.AddRange(generatedTexts.AsSpan());
         }
+
         return sourceTexts.ToImmutable();
     }
 }
