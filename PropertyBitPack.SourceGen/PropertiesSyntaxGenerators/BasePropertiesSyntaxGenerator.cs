@@ -402,7 +402,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
             attributeLists: List<AttributeListSyntax>(),
             modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
             keyword: Token(SyntaxKind.RecordKeyword),
-            classOrStructKeyword: default,
+            classOrStructKeyword: Token(SyntaxKind.StructKeyword),
             identifier: Identifier(owner.Name),
             typeParameterList: GenerateTypeParameterList(owner),
             parameterList: null,
