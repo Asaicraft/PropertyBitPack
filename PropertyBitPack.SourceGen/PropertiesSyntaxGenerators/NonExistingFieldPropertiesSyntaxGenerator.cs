@@ -24,21 +24,7 @@ internal sealed class NonExistingFieldPropertiesSyntaxGenerator : BaseProperties
 {
     protected override void GenerateCore(ILinkedList<GenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder)
     {
-        ImmutableArray<NonExistingFieldGsr> candidateRequests;
-
-        using (var candidateRequestsBuilder = ImmutableArrayBuilder<NonExistingFieldGsr>.Rent())
-        {
-            foreach (var candidateRequest in requests)
-            {
-                if (candidateRequest is NonExistingFieldGsr nonExistingFieldGsr)
-                {
-                    candidateRequestsBuilder.Add(nonExistingFieldGsr);
-                    continue;
-                }
-            }
-
-            candidateRequests = candidateRequestsBuilder.ToImmutable();
-        }
+        var candidateRequests = FilterCandidates<NonExistingFieldGsr>(requests);
 
         for (var i = 0; i < candidateRequests.Length; i++)
         {

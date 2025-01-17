@@ -22,21 +22,7 @@ internal sealed class ExistingFieldPropertiesGenerator: BasePropertiesSyntaxGene
 {
     protected override void GenerateCore(ILinkedList<GenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder)
     {
-        ImmutableArray<ExistingFieldGsr> candidateRequests;
-
-        using (var candidateRequestsBuilder = ImmutableArrayBuilder<ExistingFieldGsr>.Rent())
-        {
-            foreach (var candidateRequest in requests)
-            {
-                if (candidateRequest is ExistingFieldGsr existingFieldGsr)
-                {
-                    candidateRequestsBuilder.Add(existingFieldGsr);
-                    continue;
-                }
-            }
-
-            candidateRequests = candidateRequestsBuilder.ToImmutable();
-        }
+        var candidateRequests = FilterCandidates<ExistingFieldGsr>(requests);
 
         for (var i = 0; i < candidateRequests.Length; i++)
         {

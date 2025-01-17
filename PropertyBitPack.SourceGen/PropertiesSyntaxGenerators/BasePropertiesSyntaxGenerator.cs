@@ -172,8 +172,6 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return propertyDeclaration;
     }
 
-
-
     /// <summary>
     /// Generates the filename for the source code file based on the given request.
     /// </summary>
@@ -283,6 +281,79 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
             Token(SyntaxKind.CloseBraceToken),
             default
         );
+    }
+
+    /// <summary>
+    /// Filters the provided source generation requests to include only those of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="GenerateSourceRequest"/>.</typeparam>
+    /// <param name="generateSourceRequests">
+    /// An <see cref="ImmutableArray{T}"/> containing the source generation requests to filter.
+    /// </param>
+    /// <returns>
+    /// An <see cref="ImmutableArray{T}"/> of filtered requests of type <typeparamref name="T"/>.
+    /// </returns>
+    /// <remarks>
+    /// This method uses a simple type check to collect requests of the specified type. 
+    /// If the input array is empty or uninitialized, it returns an empty array.
+    /// </remarks>
+    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<GenerateSourceRequest> generateSourceRequests) where T: GenerateSourceRequest
+    {
+        if (generateSourceRequests.Count == 0)
+        {
+            return [];
+        }
+
+        using var candidateRequestsBuilder = ImmutableArrayBuilder<T>.Rent(Math.Max(generateSourceRequests.Count / 2, 8));
+        
+        foreach (var candidateRequest in generateSourceRequests)
+        {
+            if (candidateRequest is T request)
+            {
+                candidateRequestsBuilder.Add(request);
+            }
+        }
+
+        return candidateRequestsBuilder.ToImmutable();
+    }
+
+    /// <summary>
+    /// Filters the provided source generation requests using a custom filter function.
+    /// </summary>
+    /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="GenerateSourceRequest"/>.</typeparam>
+    /// <param name="generateSourceRequests">
+    /// An <see cref="ImmutableArray{T}"/> containing the source generation requests to filter.
+    /// </param>
+    /// <param name="filter">
+    /// A delegate function that takes a <see cref="GenerateSourceRequest"/> and returns a 
+    /// filtered instance of type <typeparamref name="T"/> or <c>null</c> if the request does not match.
+    /// </param>
+    /// <returns>
+    /// An <see cref="ImmutableArray{T}"/> of filtered requests of type <typeparamref name="T"/>.
+    /// </returns>
+    /// <remarks>
+    /// This method allows more flexible filtering logic by applying the provided delegate function 
+    /// to each request. It excludes <c>null</c> results from the final array.
+    /// </remarks>
+    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<GenerateSourceRequest> generateSourceRequests, Func<GenerateSourceRequest, T?> filter) where T : GenerateSourceRequest
+    {
+        if (generateSourceRequests.IsDefaultOrEmpty)
+        {
+            return [];
+        }
+
+        using var candidateRequestsBuilder = ImmutableArrayBuilder<T>.Rent(Math.Max(generateSourceRequests.Length / 2, 8));
+
+        foreach (var candidateRequest in generateSourceRequests)
+        {
+            var request = filter(candidateRequest);
+            if (request is not null)
+            {
+                candidateRequestsBuilder.Add(request);
+            }
+        }
+
+        return candidateRequestsBuilder.ToImmutable();
     }
 
     /// <summary>
