@@ -47,7 +47,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
         GenerateCore(requests, in fileGeneratorRequestsBuilder);
 
-        if (requests.Count == 0)
+        if (fileGeneratorRequestsBuilder.Count == 0)
         {
             return [];
         }
