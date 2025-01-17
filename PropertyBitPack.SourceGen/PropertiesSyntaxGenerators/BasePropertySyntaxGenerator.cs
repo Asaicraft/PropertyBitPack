@@ -134,7 +134,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
 
         return PropertyDeclaration(
             List<AttributeListSyntax>(),
-            TokenList(),
+            TokenList(Token(SyntaxKind.PartialKeyword)),
             propertyTypeSyntax,
             null,
             propertyName,
