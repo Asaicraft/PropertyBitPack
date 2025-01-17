@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
 using System;
@@ -284,6 +285,122 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     }
 
     /// <summary>
+    /// Processes the filtered candidate requests of the specified type, generating source text and file names
+    /// for each, and removing them from the original collection.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The specific subtype of <see cref="GenerateSourceRequest"/> to process.
+    /// </typeparam>
+    /// <param name="requests">
+    /// The linked list of all <see cref="GenerateSourceRequest"/> objects to be examined.
+    /// </param>
+    /// <param name="candidateRequests">
+    /// An immutable array of requests of type <typeparamref name="T"/> that have been filtered out
+    /// from the original collection.
+    /// </param>
+    /// <param name="fileGeneratorRequestsBuilder">
+    /// The builder used to accumulate <see cref="FileGeneratorRequest"/> objects for final output.
+    /// </param>
+    /// <remarks>
+    /// This method centralizes the logic for processing requests by generating source text and file names,
+    /// ensuring that filtered requests are removed from the original collection and their results are added
+    /// to the output builder.
+    /// </remarks>
+    protected virtual void ProccessCandidates<T>(
+        ILinkedList<GenerateSourceRequest> requests,
+        ImmutableArray<T> candidateRequests,
+        in ImmutableArrayBuilder<FileGeneratorRequest> fileGeneratorRequestsBuilder
+    )
+        where T : GenerateSourceRequest
+    {
+        for (var i = 0; i < candidateRequests.Length; i++)
+        {
+            var candidateRequest = candidateRequests[i];
+
+            // Generate the source code for this request
+            var sourceText = GenerateSourceText(candidateRequest);
+
+            // Generate the file name (e.g., "SomeFieldName.BitPack.g.cs")
+            var fileName = GetFileName(candidateRequest);
+
+            // Remove the request from the original collection
+            requests.Remove(candidateRequest);
+
+            // Add a new file generator request for the generated source
+            fileGeneratorRequestsBuilder.Add(new FileGeneratorRequest(sourceText, fileName));
+        }
+    }
+
+
+    /// <summary>
+    /// Generates a <see cref="SourceText"/> representation for the specified request.
+    /// </summary>
+    /// <param name="generateSourceRequest">
+    /// The request describing the fields and properties to generate in the source code.
+    /// </param>
+    /// <returns>
+    /// A <see cref="SourceText"/> containing the fully generated C# syntax, including namespace,
+    /// class definition, fields, and properties.
+    /// </returns>
+    /// <remarks>
+    /// This method processes the given request by generating syntax nodes for fields, properties,
+    /// and additional members if required. It combines these members into a complete compilation unit,
+    /// normalizes the generated syntax, and returns the resulting source text.
+    /// </remarks>
+    protected virtual SourceText GenerateSourceText(GenerateSourceRequest generateSourceRequest)
+    {
+        // Generate any new fields needed (skip existing fields)
+        using var fieldsRented = ListsPool.Rent<FieldDeclarationSyntax>();
+        var fields = fieldsRented.List;
+
+        for (var i = 0; i < generateSourceRequest.Fields.Length; i++)
+        {
+            var field = generateSourceRequest.Fields[i];
+
+            // Skip already existing fields
+            if (field.IsExist)
+            {
+                continue;
+            }
+
+            fields.Add(GenerateField(generateSourceRequest, field));
+        }
+
+        // Generate properties, collecting additional members as needed
+        using var propertiesRented = ListsPool.Rent<PropertyDeclarationSyntax>();
+        var properties = propertiesRented.List;
+
+        using var additionalMembersRented = ListsPool.Rent<MemberDeclarationSyntax>();
+        var additionalMembersList = additionalMembersRented.List;
+
+        for (var i = 0; i < generateSourceRequest.Properties.Length; i++)
+        {
+            var propertyRequest = generateSourceRequest.Properties[i];
+
+            properties.Add(GenerateProperty(generateSourceRequest, propertyRequest, out var additionalMembers));
+
+            if (!additionalMembers.IsDefaultOrEmpty)
+            {
+                additionalMembersList.AddRange(additionalMembers);
+            }
+        }
+
+        // Combine fields, properties, and additional members into a single list
+        using var membersRented = ListsPool.Rent<MemberDeclarationSyntax>();
+        var members = membersRented.List;
+
+        members.AddRange(fields);
+        members.AddRange(properties);
+        members.AddRange(additionalMembersList);
+
+        // Generate the compilation unit (namespace, class, etc.)
+        var unit = GenerateCompilationUnit(generateSourceRequest, members);
+
+        // Return the final normalized source text
+        return unit.NormalizeWhitespace().GetText(Encoding.UTF8);
+    }
+
+    /// <summary>
     /// Filters the provided source generation requests to include only those of the specified type.
     /// </summary>
     /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="GenerateSourceRequest"/>.</typeparam>
@@ -297,7 +414,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// This method uses a simple type check to collect requests of the specified type. 
     /// If the input array is empty or uninitialized, it returns an empty array.
     /// </remarks>
-    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<GenerateSourceRequest> generateSourceRequests) where T: GenerateSourceRequest
+    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<GenerateSourceRequest> generateSourceRequests) where T : GenerateSourceRequest
     {
         if (generateSourceRequests.Count == 0)
         {
@@ -305,7 +422,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         }
 
         using var candidateRequestsBuilder = ImmutableArrayBuilder<T>.Rent(Math.Max(generateSourceRequests.Count / 2, 8));
-        
+
         foreach (var candidateRequest in generateSourceRequests)
         {
             if (candidateRequest is T request)
