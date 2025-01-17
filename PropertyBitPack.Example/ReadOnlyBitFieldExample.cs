@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PropertyBitPack.Example;
-public sealed class ReadOnlyBitFieldExample
+public sealed partial class ReadOnlyBitFieldExample
 {
     [ReadOnlyBitField(ConstructorAccessModifier = AccessModifier.Internal)]
     public partial bool Flag1 
