@@ -114,8 +114,13 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// </returns>
     protected virtual string GetFileName(GenerateSourceRequest request)
     {
+        var owner = request.Properties[0].Owner;
+
         using var stingBuilderRented = StringBuildersPool.Rent();
         var stringBuilder = stingBuilderRented.StringBuilder;
+
+        stringBuilder.Append(owner.ToDisplayString());
+        stringBuilder.Append('.');
 
         // Iterate through all fields and append their names to the filename
         for (var i = 0; i < request.Fields.Length; i++)
