@@ -337,7 +337,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return StructDeclaration(
             attributeLists: List<AttributeListSyntax>(),
             modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
-            keyword: Token(SyntaxKind.ClassKeyword),
+            keyword: Token(SyntaxKind.StructKeyword),
             identifier: Identifier(owner.Name),
             typeParameterList: GenerateTypeParameterList(owner),
             baseList: null,
