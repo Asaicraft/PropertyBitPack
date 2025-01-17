@@ -116,7 +116,11 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         var modifiers = bitFieldPropertyInfoRequest.SetterOrInitModifiers;
 
         var getter = Getter(getterBlock);
-        var setter = Setter(modifiers, setterBlock);
+        var setterOrInitter = bitFieldPropertyInfoRequest.HasInitOrSet 
+            ? bitFieldPropertyInfoRequest.IsInit
+                ? Initter(modifiers, setterBlock)
+                : Setter(modifiers, setterBlock)
+            : null;
 
         AccessorListSyntax accessors;
 
@@ -124,7 +128,11 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         {
             var tempAccessors = tempAccessorsRented.List;
             tempAccessors.Add(getter);
-            tempAccessors.Add(setter);
+
+            if(setterOrInitter is not null)
+            {
+                tempAccessors.Add(setterOrInitter);
+            }
 
             accessors = AccessorList(List(tempAccessors));
         }
