@@ -232,7 +232,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
 
         // Create a namespace declaration wrapping the class
         var namespaceDeclaration = NamespaceDeclaration(
-            IdentifierName(ownerNamespace.Name),
+            IdentifierName(ownerNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
             default,
             default,
             SingletonList<MemberDeclarationSyntax>(typeDeclorationSyntax)

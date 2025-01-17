@@ -131,10 +131,11 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
 
         var propertyTypeSyntax = bitFieldPropertyInfoRequest.PropertyDeclarationSyntax.Type;
         var propertyName = bitFieldPropertyInfoRequest.PropertyDeclarationSyntax.Identifier;
+        var propertyModifiers = bitFieldPropertyInfoRequest.PropertyDeclarationSyntax.Modifiers;
 
         return PropertyDeclaration(
             List<AttributeListSyntax>(),
-            TokenList(Token(SyntaxKind.PartialKeyword)),
+            propertyModifiers,
             propertyTypeSyntax,
             null,
             propertyName,
