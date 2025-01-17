@@ -366,11 +366,9 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         var owner = request.Properties[0].Owner;
 
         return RecordDeclaration(
-            kind: SyntaxKind.RecordStructDeclaration,
             attributeLists: List<AttributeListSyntax>(),
             modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
             keyword: Token(SyntaxKind.RecordKeyword),
-            classOrStructKeyword: default,
             identifier: Identifier(owner.Name),
             typeParameterList: GenerateTypeParameterList(owner),
             parameterList: null,
@@ -400,9 +398,11 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         var owner = request.Properties[0].Owner;
 
         return RecordDeclaration(
+            kind: SyntaxKind.RecordStructDeclaration,
             attributeLists: List<AttributeListSyntax>(),
             modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
             keyword: Token(SyntaxKind.RecordKeyword),
+            classOrStructKeyword: default,
             identifier: Identifier(owner.Name),
             typeParameterList: GenerateTypeParameterList(owner),
             parameterList: null,
