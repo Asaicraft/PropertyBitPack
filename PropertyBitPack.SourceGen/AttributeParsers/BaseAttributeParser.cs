@@ -192,9 +192,9 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
         {
             validBitsCount = null;
         }
-        else if(candidateBitsCount is int v)
+        else if(candidateBitsCount is byte v)
         {
-            validBitsCount = (byte)v;
+            validBitsCount = v;
         }
         else
         {
