@@ -218,7 +218,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A collection of <see cref="MemberDeclarationSyntax"/> representing the class members.
     /// </param>
     /// <returns>
-    /// A <see cref="CompilationUnitSyntax"/> containing the namespace, using directives, and class declaration.
+    /// A <see cref="CompilationUnitSyntax"/> containing the namespace, using directives, and type declaration.
     /// </returns>
     protected virtual CompilationUnitSyntax GenerateCompilationUnit(
         GenerateSourceRequest request,
@@ -227,8 +227,8 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         var owner = request.Properties[0].Owner;
         var ownerNamespace = owner.ContainingNamespace;
 
-        // Generate the class declaration based on the request
-        var typeDeclorationSyntax = GenerateClassDeclaration(request, memberDeclarationSyntaxes);
+        // Generate the type declaration based on the request
+        var typeDeclorationSyntax = GenerateTypeDeclaration(request, memberDeclarationSyntaxes);
 
         // Create a namespace declaration wrapping the class
         var namespaceDeclaration = NamespaceDeclaration(
