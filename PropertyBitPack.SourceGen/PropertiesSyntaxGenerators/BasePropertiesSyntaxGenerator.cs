@@ -228,14 +228,14 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         var ownerNamespace = owner.ContainingNamespace;
 
         // Generate the class declaration based on the request
-        var classDeclaration = GenerateClassDeclaration(request, memberDeclarationSyntaxes);
+        var typeDeclorationSyntax = GenerateClassDeclaration(request, memberDeclarationSyntaxes);
 
         // Create a namespace declaration wrapping the class
         var namespaceDeclaration = NamespaceDeclaration(
             IdentifierName(ownerNamespace.Name),
             default,
             default,
-            SingletonList<MemberDeclarationSyntax>(classDeclaration)
+            SingletonList<MemberDeclarationSyntax>(typeDeclorationSyntax)
         );
 
         // Add using directives
@@ -250,6 +250,41 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
             default,
             SingletonList<MemberDeclarationSyntax>(namespaceDeclaration)
         );
+    }
+
+    /// <summary>
+    /// Generates a type declaration syntax for the owner based on the type kind and whether it is a record.
+    /// </summary>
+    /// <param name="request">The request containing property and field information for the type.</param>
+    /// <param name="memberDeclarationSyntaxes">
+    /// A collection of <see cref="MemberDeclarationSyntax"/> representing the members of the type.
+    /// </param>
+    /// <returns>
+    /// A <see cref="TypeDeclarationSyntax"/> representing the generated type declaration.
+    /// </returns>
+    /// <remarks>
+    /// This method determines the type kind (class, struct) and whether the type is a record
+    /// to delegate to the appropriate type-specific generation method.
+    /// </remarks>
+    protected virtual TypeDeclarationSyntax GenerateTypeDeclaration(
+        GenerateSourceRequest request,
+        IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    {
+        var owner = request.Properties[0].Owner;
+
+        return owner.TypeKind switch
+        {
+
+            TypeKind.Class => !owner.IsRecord 
+                ? GenerateClassDeclaration(request, memberDeclarationSyntaxes)
+                : GenerateClassRecordDeclaration(request, memberDeclarationSyntaxes),
+
+            TypeKind.Struct => !owner.IsRecord
+                ? GenerateStructDeclaration(request, memberDeclarationSyntaxes)
+                : GenerateStructRecordDeclaration(request, memberDeclarationSyntaxes),
+            
+            _ => throw new UnreachableException() 
+        };
     }
 
     /// <summary>
@@ -268,20 +303,148 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     {
         var owner = request.Properties[0].Owner;
 
-        // Create a partial class declaration with the provided members
         return ClassDeclaration(
-            List<AttributeListSyntax>(),
-            TokenList(Token(SyntaxKind.PartialKeyword)),
-            Token(SyntaxKind.ClassKeyword),
-            Identifier(owner.Name),
-            null,
-            null,
-            List<TypeParameterConstraintClauseSyntax>(),
-            Token(SyntaxKind.OpenBraceToken),
-            List(memberDeclarationSyntaxes),
-            Token(SyntaxKind.CloseBraceToken),
-            default
+            attributeLists: List<AttributeListSyntax>(),
+            modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
+            keyword: Token(SyntaxKind.ClassKeyword),
+            identifier: Identifier(owner.Name),
+            typeParameterList: GenerateTypeParameterList(owner),
+            baseList: null,
+            constraintClauses: List<TypeParameterConstraintClauseSyntax>(),
+            openBraceToken: Token(SyntaxKind.OpenBraceToken),
+            members: List(memberDeclarationSyntaxes),
+            closeBraceToken: Token(SyntaxKind.CloseBraceToken),
+            semicolonToken: default
         );
+    }
+
+    /// <summary>
+    /// Generates a partial struct declaration for the owner described in the request.
+    /// </summary>
+    /// <param name="request">The request containing property and field information for the struct.</param>
+    /// <param name="memberDeclarationSyntaxes">
+    /// A collection of <see cref="MemberDeclarationSyntax"/> representing the struct members.
+    /// </param>
+    /// <returns>
+    /// A <see cref="StructDeclarationSyntax"/> representing the generated struct declaration.
+    /// </returns>
+    protected virtual StructDeclarationSyntax GenerateStructDeclaration(
+        GenerateSourceRequest request,
+        IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    {
+        var owner = request.Properties[0].Owner;
+
+        return StructDeclaration(
+            attributeLists: List<AttributeListSyntax>(),
+            modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
+            keyword: Token(SyntaxKind.ClassKeyword),
+            identifier: Identifier(owner.Name),
+            typeParameterList: GenerateTypeParameterList(owner),
+            baseList: null,
+            constraintClauses: List<TypeParameterConstraintClauseSyntax>(),
+            openBraceToken: Token(SyntaxKind.OpenBraceToken),
+            members: List(memberDeclarationSyntaxes),
+            closeBraceToken: Token(SyntaxKind.CloseBraceToken),
+            semicolonToken: default
+        );
+    }
+
+    /// <summary>
+    /// Generates a partial record class declaration for the owner described in the request.
+    /// </summary>
+    /// <param name="request">The request containing property and field information for the record class.</param>
+    /// <param name="memberDeclarationSyntaxes">
+    /// A collection of <see cref="MemberDeclarationSyntax"/> representing the record class members.
+    /// </param>
+    /// <returns>
+    /// A <see cref="RecordDeclarationSyntax"/> representing the generated record class declaration.
+    /// </returns>
+    protected virtual RecordDeclarationSyntax GenerateClassRecordDeclaration(
+        GenerateSourceRequest request,
+        IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    {
+        var owner = request.Properties[0].Owner;
+
+        return RecordDeclaration(
+            kind: SyntaxKind.RecordStructDeclaration,
+            attributeLists: List<AttributeListSyntax>(),
+            modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
+            keyword: Token(SyntaxKind.RecordKeyword),
+            classOrStructKeyword: default,
+            identifier: Identifier(owner.Name),
+            typeParameterList: GenerateTypeParameterList(owner),
+            parameterList: null,
+            baseList: null,
+            constraintClauses: List<TypeParameterConstraintClauseSyntax>(),
+            openBraceToken: Token(SyntaxKind.OpenBraceToken),
+            members: List(memberDeclarationSyntaxes),
+            closeBraceToken: Token(SyntaxKind.CloseBraceToken),
+            semicolonToken: default
+        );
+    }
+
+    /// <summary>
+    /// Generates a partial record struct declaration for the owner described in the request.
+    /// </summary>
+    /// <param name="request">The request containing property and field information for the record struct.</param>
+    /// <param name="memberDeclarationSyntaxes">
+    /// A collection of <see cref="MemberDeclarationSyntax"/> representing the record struct members.
+    /// </param>
+    /// <returns>
+    /// A <see cref="RecordDeclarationSyntax"/> representing the generated record struct declaration.
+    /// </returns>
+    protected virtual RecordDeclarationSyntax GenerateStructRecordDeclaration(
+        GenerateSourceRequest request,
+        IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    {
+        var owner = request.Properties[0].Owner;
+
+        return RecordDeclaration(
+            attributeLists: List<AttributeListSyntax>(),
+            modifiers: TokenList(Token(SyntaxKind.PartialKeyword)),
+            keyword: Token(SyntaxKind.RecordKeyword),
+            identifier: Identifier(owner.Name),
+            typeParameterList: GenerateTypeParameterList(owner),
+            parameterList: null,
+            baseList: null,
+            constraintClauses: List<TypeParameterConstraintClauseSyntax>(),
+            openBraceToken: Token(SyntaxKind.OpenBraceToken),
+            members: List(memberDeclarationSyntaxes),
+            closeBraceToken: Token(SyntaxKind.CloseBraceToken),
+            semicolonToken: default
+        );
+    }
+
+    /// <summary>
+    /// Generates a type parameter list for the specified named type symbol.
+    /// </summary>
+    /// <param name="namedTypeSymbol">The named type symbol describing the type parameters.</param>
+    /// <returns>
+    /// A <see cref="TypeParameterListSyntax"/> containing the type parameters, or <c>null</c> if none exist.
+    /// </returns>
+    /// <remarks>
+    /// This method iterates through the type parameters of the given symbol and generates a syntax node
+    /// representing the list of type parameters.
+    /// </remarks>
+    protected virtual TypeParameterListSyntax? GenerateTypeParameterList(INamedTypeSymbol namedTypeSymbol)
+    {
+        var typeParameters = namedTypeSymbol.TypeParameters;
+
+        if (typeParameters.Length == 0)
+        {
+            return null;
+        }
+
+        var rented = ListsPool.Rent<TypeParameterSyntax>();
+        var typeParametersList = rented.List;
+
+        for (var i = 0; i < typeParameters.Length; i++)
+        {
+            var typeParameter = typeParameters[i];
+            typeParametersList.Add(TypeParameter(typeParameter.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
+        }
+
+        return TypeParameterList(SeparatedList(typeParametersList));
     }
 
     /// <summary>
