@@ -10,6 +10,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerator, IContextBindable
@@ -101,6 +102,75 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         }
 
         return propertyDeclaration;
+    }
+
+    protected virtual string GetFileName(GenerateSourceRequest request)
+    {
+        using var stingBuilderRented = StringBuildersPool.Rent();
+        var stringBuilder = stingBuilderRented.StringBuilder;
+
+        for (var i = 0; i < request.Fields.Length; i++)
+        {
+            var fieldRequests = request.Fields[i];
+
+            stringBuilder.Append(fieldRequests.Name);
+
+            if(i != request.Fields.Length - 1)
+            {
+                stringBuilder.Append("___");
+            }
+            
+        }
+
+        stringBuilder.Append(".BitPack.g.cs");
+
+        return stringBuilder.ToString();
+    }
+
+    protected virtual CompilationUnitSyntax GenerateCompilationUnit(GenerateSourceRequest request, IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    {
+        var owner = request.Properties[0].Owner;
+        var ownerNamespace = owner.ContainingNamespace;
+
+        var classDeclaration = GenerateClassDeclaration(request, memberDeclarationSyntaxes);
+
+        var namespaceDeclaration = NamespaceDeclaration(
+            IdentifierName(ownerNamespace.Name), 
+            default, 
+            default, 
+            SingletonList<MemberDeclarationSyntax>(classDeclaration)
+        );
+
+        using var usingsRented = ListsPool.Rent<UsingDirectiveSyntax>();
+        var usings = usingsRented.List;
+
+        usings.Add(UsingDirective(IdentifierName("System")));
+
+        return CompilationUnit(
+            default,
+            List(usings),
+            default,
+            SingletonList<MemberDeclarationSyntax>(namespaceDeclaration)
+        );
+    }
+
+    protected virtual ClassDeclarationSyntax GenerateClassDeclaration(GenerateSourceRequest request, IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
+    {
+        var owner = request.Properties[0].Owner;
+
+        return ClassDeclaration(
+            List<AttributeListSyntax>(),
+            TokenList(Token(SyntaxKind.PartialKeyword)),
+            Token(SyntaxKind.ClassKeyword),
+            Identifier(owner.Name),
+            null,
+            null,
+            List<TypeParameterConstraintClauseSyntax>(),
+            Token(SyntaxKind.OpenBraceToken),
+            List(memberDeclarationSyntaxes),
+            Token(SyntaxKind.CloseBraceToken),
+            default
+        );
     }
 
     /// <summary>
