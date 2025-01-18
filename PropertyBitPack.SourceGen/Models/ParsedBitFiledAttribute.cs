@@ -24,7 +24,7 @@ internal sealed class ParsedBitFiledAttribute : AttributeParsedResult
             ? $"nameof({FieldName.Name})"
             : FieldName?.Name ?? "<unnamed>";
 
-        return $"{nameof(IExtendedBitFieldAttribute)}({nameof(BitsCount)}={BitsCount}, {nameof(FieldName)}={nameOfFieldNameOrJustName})";
+        return $"{nameof(BitFieldAttribute)}({nameof(BitsCount)}={BitsCount}, {nameof(FieldName)}={nameOfFieldNameOrJustName})";
     }
 
     private string GetDebuggerDisplay()

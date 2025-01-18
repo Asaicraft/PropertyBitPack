@@ -31,6 +31,6 @@ internal sealed class ParsedReadOnlyBitFieldAttribute : AttributeParsedResult
             ? $"nameof({FieldName.Name})"
             : FieldName?.Name ?? "<unnamed>";
 
-        return $"{nameof(IExtendedBitFieldAttribute)}({nameof(BitsCount)}={BitsCount}, {nameof(FieldName)}={nameOfFieldNameOrJustName}, {nameof(ConstructorAccessModifier)}={ConstructorAccessModifier})";
+        return $"{nameof(IReadOnlyBitFieldAttribute)}({nameof(BitsCount)}={BitsCount}, {nameof(FieldName)}={nameOfFieldNameOrJustName}, {nameof(ConstructorAccessModifier)}={ConstructorAccessModifier})";
     }
 }
