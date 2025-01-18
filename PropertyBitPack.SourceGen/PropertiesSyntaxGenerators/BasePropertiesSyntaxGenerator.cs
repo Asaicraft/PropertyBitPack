@@ -84,7 +84,8 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     {
         var generators = new IPropertySyntaxGenerator[]
         {
-            new PropertySyntaxGenerator(context)
+            new ExtendedPropertySyntaxGenerator(context),
+            new PropertySyntaxGenerator(context),
         };
 
         return Unsafe.As<IPropertySyntaxGenerator[], ImmutableArray<IPropertySyntaxGenerator>>(ref generators);
