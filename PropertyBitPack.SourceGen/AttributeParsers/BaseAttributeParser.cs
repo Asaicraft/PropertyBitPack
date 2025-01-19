@@ -491,6 +491,16 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     }
 
     /// <summary>
+    /// Retrieves the property declaration syntax associated with the specified attribute syntax.
+    /// </summary>
+    /// <param name="attributeSyntax">The attribute syntax to analyze.</param>
+    /// <returns>The property declaration syntax, or null if it cannot be determined.</returns>
+    protected static PropertyDeclarationSyntax? GetPropertyDeclaration(AttributeSyntax attributeSyntax)
+    {
+        return attributeSyntax.FirstAncestorOrSelf<PropertyDeclarationSyntax>();
+    }
+
+    /// <summary>
     /// Checks if the specified attribute matches the given full name.
     /// </summary>
     /// <param name="attributeData">The attribute data to analyze.</param>
