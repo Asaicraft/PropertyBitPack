@@ -128,6 +128,8 @@ internal sealed class UnnamedFieldAggregator : BaseBitFieldPropertyAggregator
                 var bitFieldPropertyInfoRequest = new BitFieldPropertyInfoRequest(bitsSpan, candidateProperty);
 
                 calculatedBitList.Add(bitFieldPropertyInfoRequest);
+
+                offset += bitsSize;
             }
 
             var gsr = new UnnamedFieldGsr(fieldRequest, [.. calculatedBitList]);
