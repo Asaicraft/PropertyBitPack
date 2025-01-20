@@ -13,8 +13,10 @@ internal
 #endif
 sealed class ReadOnlyBitFieldAttribute : BitsMappingAttributeBase, IReadOnlyBitFieldAttribute
 {
+    public const AccessModifier DefaultConstructorAccessModifier = AccessModifier.Private;
+
     public AccessModifier ConstructorAccessModifier
     {
         get; set;
-    } = AccessModifier.Private;
+    } = DefaultConstructorAccessModifier;
 }
