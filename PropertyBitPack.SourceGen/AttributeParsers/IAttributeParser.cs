@@ -56,5 +56,5 @@ internal interface IAttributeParser
         PropertyDeclarationSyntax propertyDeclarationSyntax, 
         SemanticModel semanticModel, 
         in ImmutableArrayBuilder<Diagnostic> diagnostics,
-        [NotNullWhen(true)] out AttributeParsedResult? result);
+        [NotNullWhen(true)] out IAttributeParsedResult? result);
 }

@@ -46,7 +46,7 @@ internal sealed class ExtendedBitFieldAttributeParser : BaseExtendedAndReadonlyA
     /// <returns>
     /// <c>true</c> if the attribute was successfully parsed; otherwise, <c>false</c>.
     /// </returns>
-    public override bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result)
+    public override bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out IAttributeParsedResult? result)
     {
         result = null;
 

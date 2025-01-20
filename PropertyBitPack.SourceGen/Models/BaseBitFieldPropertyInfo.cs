@@ -11,7 +11,7 @@ namespace PropertyBitPack.SourceGen.Models;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal abstract class BaseBitFieldPropertyInfo
 {
-    public abstract AttributeParsedResult AttributeParsedResult
+    public abstract IAttributeParsedResult AttributeParsedResult
     {
         get;
     }
