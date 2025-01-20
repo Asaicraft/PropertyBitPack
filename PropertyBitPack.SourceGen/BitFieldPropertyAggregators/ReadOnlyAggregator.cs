@@ -47,5 +47,14 @@ internal sealed class ReadOnlyAggregator: BaseBitFieldPropertyAggregator
         }
 
         var readonlyFieldProperties = readonlyFieldPropertiesBuilder.ToImmutable();
+
+        if(readonlyFieldProperties.IsDefaultOrEmpty)
+        {
+            return;
+        }
+
+        var grouped = GroupPropertiesByFieldNameAndOwner(readonlyFieldProperties);
+
+
     }
 }
