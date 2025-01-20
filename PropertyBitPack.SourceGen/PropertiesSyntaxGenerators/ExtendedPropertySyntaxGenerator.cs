@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 using System;
 using System.Collections.Generic;

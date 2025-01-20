@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using System;
 using System.Collections.Generic;
 using System.Text;

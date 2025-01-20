@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount) : IAttributeParsedResult
 {
     public AttributeSyntax AttributeSyntax

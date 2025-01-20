@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 /// <summary>
 /// Represents the result of parsing an attribute.

@@ -11,7 +11,7 @@ using System.Text;
 using System.Xml.Linq;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult, IParsedExtendedBitFiledAttribute

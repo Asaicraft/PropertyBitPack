@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 internal static class IAttributeParsedResultExtensions
 {
     public static AttributeArgumentSyntax? BitsCountArgument(this IAttributeParsedResult attributeParsedResult)

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

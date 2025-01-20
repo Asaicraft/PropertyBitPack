@@ -1,4 +1,4 @@
-﻿namespace PropertyBitPack.SourceGen.Models;
+﻿namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 /// <summary>
 /// Represents the parsed data of a read-only bit field attribute.
