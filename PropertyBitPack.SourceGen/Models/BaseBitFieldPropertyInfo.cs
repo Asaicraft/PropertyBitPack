@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +12,7 @@ namespace PropertyBitPack.SourceGen.Models;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal abstract class BaseBitFieldPropertyInfo
 {
-    public abstract AttributeParsedResult AttributeParsedResult
+    public abstract IAttributeParsedResult AttributeParsedResult
     {
         get;
     }

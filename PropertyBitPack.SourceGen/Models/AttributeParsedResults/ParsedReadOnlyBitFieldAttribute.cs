@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-internal sealed class ParsedReadOnlyBitFieldAttribute : AttributeParsedResult
+internal sealed class ParsedReadOnlyBitFieldAttribute : AttributeParsedResult, IParsedReadOnlyBitFieldAttribute
 {
     public ParsedReadOnlyBitFieldAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount, AccessModifier accessModifier) : base(attributeSyntax, attributeData, fieldName, bitsCount)
     {

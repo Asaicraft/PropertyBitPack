@@ -11,13 +11,13 @@ using System.Text;
 using System.Xml.Linq;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-internal sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult
+internal sealed class ParsedExtendedBitFiledAttribute : AttributeParsedResult, IParsedExtendedBitFiledAttribute
 {
 
-    public ParsedExtendedBitFiledAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount, ISymbol symbolGetterLargeSizeValue): base(attributeSyntax, attributeData, fieldName, bitsCount)
+    public ParsedExtendedBitFiledAttribute(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount, ISymbol symbolGetterLargeSizeValue) : base(attributeSyntax, attributeData, fieldName, bitsCount)
     {
         SymbolGetterLargeSizeValue = symbolGetterLargeSizeValue;
     }

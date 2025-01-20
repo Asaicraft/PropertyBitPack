@@ -9,8 +9,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
-internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount)
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
+internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, AttributeData attributeData, IFieldName? fieldName, byte? bitsCount) : IAttributeParsedResult
 {
     public AttributeSyntax AttributeSyntax
     {
@@ -32,14 +32,4 @@ internal abstract class AttributeParsedResult(AttributeSyntax attributeSyntax, A
     {
         get;
     } = bitsCount;
-
-    public AttributeArgumentSyntax? BitsCountArgument()
-    {
-        return AttributeSyntax.ArgumentList?.Arguments.FirstOrDefault(a => a.NameEquals?.Name.Identifier.Text == nameof(BitsCount));
-    }
-
-    public AttributeArgumentSyntax? FieldNameArgument()
-    {
-        return AttributeSyntax?.ArgumentList?.Arguments.FirstOrDefault(a => a.NameEquals?.Name.Identifier.Text == nameof(FieldName));
-    }
 }

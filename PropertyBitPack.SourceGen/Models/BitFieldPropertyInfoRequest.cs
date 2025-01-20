@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +18,7 @@ internal sealed class BitFieldPropertyInfoRequest(BitsSpan bitsSpan, BaseBitFiel
 
     public BaseBitFieldPropertyInfo BitFieldPropertyInfo => _bitFieldPropertyInfo;
 
-    public AttributeParsedResult AttributeParsedResult => _bitFieldPropertyInfo.AttributeParsedResult;
+    public IAttributeParsedResult AttributeParsedResult => _bitFieldPropertyInfo.AttributeParsedResult;
 
     public bool IsInit => _bitFieldPropertyInfo.IsInit;
 

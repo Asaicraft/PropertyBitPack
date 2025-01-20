@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

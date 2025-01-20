@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -38,7 +39,7 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
 
     public abstract bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax);
 
-    public abstract bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AttributeParsedResult? result);
+    public abstract bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out IAttributeParsedResult? result);
 
     /// <summary>
     /// Checks if the specified attribute class implements a given interface.

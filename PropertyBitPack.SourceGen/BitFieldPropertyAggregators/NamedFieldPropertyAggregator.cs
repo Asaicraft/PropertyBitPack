@@ -1,6 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
+using PropertyBitPack.SourceGen.Models.FieldRequests;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

@@ -12,6 +12,8 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 namespace PropertyBitPack.SourceGen;
 internal abstract partial class PropertyBitPackGeneratorContext
@@ -55,7 +57,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
         PropertyDeclarationSyntax propertyDeclarationSyntax,
         SemanticModel semanticModel,
         in ImmutableArrayBuilder<Diagnostic> diagnostics,
-        [NotNullWhen(true)] out AttributeParsedResult? result)
+        [NotNullWhen(true)] out IAttributeParsedResult? result)
     {
 
 

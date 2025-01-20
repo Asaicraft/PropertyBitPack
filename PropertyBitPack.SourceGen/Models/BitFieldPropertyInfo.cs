@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,14 +10,14 @@ namespace PropertyBitPack.SourceGen.Models;
 
 internal sealed class BitFieldPropertyInfo(
     PropertyDeclarationSyntax propertyDeclarationSyntax,
-    AttributeParsedResult attributeParsedResult,
+    IAttributeParsedResult attributeParsedResult,
     bool isInit,
     bool hasInitOrSet,
     SyntaxTokenList setterOrInitModifiers,
     IPropertySymbol propertySymbol) : BaseBitFieldPropertyInfo
 {
     public override PropertyDeclarationSyntax PropertyDeclarationSyntax { get; } = propertyDeclarationSyntax;
-    public override AttributeParsedResult AttributeParsedResult { get; } = attributeParsedResult;
+    public override IAttributeParsedResult AttributeParsedResult { get; } = attributeParsedResult;
     public override bool IsInit { get; } = isInit;
     public override bool HasInitOrSet { get; } = hasInitOrSet;
     public override SyntaxTokenList SetterOrInitModifiers { get; } = setterOrInitModifiers;

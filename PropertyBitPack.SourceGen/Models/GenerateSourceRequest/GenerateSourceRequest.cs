@@ -1,15 +1,16 @@
-﻿using System;
+﻿using PropertyBitPack.SourceGen.Models.FieldRequests;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal abstract class GenerateSourceRequest
 {
-    public abstract ImmutableArray<FieldRequest> Fields { get; }
+    public abstract ImmutableArray<IFieldRequest> Fields { get; }
 
     public abstract ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; }
 
@@ -17,7 +18,7 @@ internal abstract class GenerateSourceRequest
     {
         var totalBits = Properties.Sum(static x => x.BitsSpan.Length);
         var totalCapacity = Fields.Sum(static x => BitCountHelper.GetBitsCountForSpecialType(x.FieldType));
-        var capacities = string.Join( 
+        var capacities = string.Join(
             ", ",
             Fields.Select(static x => BitCountHelper.GetBitsCountForSpecialType(x.FieldType))
         );
@@ -29,11 +30,11 @@ internal abstract class GenerateSourceRequest
 
     [Conditional("DEBUG")]
     public void FullDebugWriteLine()
-    { 
+    {
         var stringBuilder = new StringBuilder();
 
         stringBuilder.AppendLine(GetDebuggerDisplay());
-        
+
         stringBuilder.AppendLine("Fields:");
         stringBuilder.AppendLine();
         foreach (var field in Fields)

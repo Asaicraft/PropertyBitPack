@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]

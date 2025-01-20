@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,7 +42,7 @@ internal sealed class ReadOnlyAggregator: BaseBitFieldPropertyAggregator
 
         foreach (var property in properties)
         {
-            if (property.AttributeParsedResult is ParsedReadOnlyBitFieldAttribute)
+            if (property.AttributeParsedResult is IParsedReadOnlyBitFieldAttribute)
             {
                 readonlyFieldPropertiesBuilder.Add(property);
             }
