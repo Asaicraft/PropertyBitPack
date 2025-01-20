@@ -256,7 +256,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     /// into an immutable array of <see cref="BitFieldPropertyInfoRequest"/>.
     /// </summary>
     /// <param name="fieldRequest">
-    /// The <see cref="FieldRequest"/> containing information about the field to be processed.
+    /// The <see cref="IFieldRequest"/> containing information about the field to be processed.
     /// </param>
     /// <param name="bitFieldPropertyInfos">
     /// An immutable array of <see cref="BaseBitFieldPropertyInfo"/> that provides information about the bit field properties.
@@ -267,7 +267,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     /// <exception cref="UnreachableException">
     /// Thrown if the total required bits exceed the maximum allowed bits for the field type.
     /// </exception>
-    protected static ImmutableArray<BitFieldPropertyInfoRequest> ToRequests(FieldRequest fieldRequest, ImmutableArray<BaseBitFieldPropertyInfo> bitFieldPropertyInfos)
+    protected static ImmutableArray<BitFieldPropertyInfoRequest> ToRequests(IFieldRequest fieldRequest, ImmutableArray<BaseBitFieldPropertyInfo> bitFieldPropertyInfos)
     {
         using var requests = ListsPool.Rent<BitFieldPropertyInfoRequest>();
 

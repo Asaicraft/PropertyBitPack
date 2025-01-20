@@ -10,7 +10,7 @@ namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 internal abstract class GenerateSourceRequest
 {
-    public abstract ImmutableArray<FieldRequest> Fields { get; }
+    public abstract ImmutableArray<IFieldRequest> Fields { get; }
 
     public abstract ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; }
 

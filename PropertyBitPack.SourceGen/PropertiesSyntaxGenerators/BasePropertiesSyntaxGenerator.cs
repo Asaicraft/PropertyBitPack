@@ -116,7 +116,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <param name="generateSourceRequest">The source generation request containing context information.</param>
     /// <param name="fieldRequest">The field request containing details about the field to generate.</param>
     /// <returns>A <see cref="FieldDeclarationSyntax"/> representing the generated field.</returns>
-    protected virtual FieldDeclarationSyntax GenerateField(GenerateSourceRequest generateSourceRequest, FieldRequest fieldRequest)
+    protected virtual FieldDeclarationSyntax GenerateField(GenerateSourceRequest generateSourceRequest, IFieldRequest fieldRequest)
     {
         Debug.Assert(!fieldRequest.IsExist);
 
