@@ -40,7 +40,7 @@ internal sealed class ReadOnlyAggregator: BaseBitFieldPropertyAggregator
 
         foreach (var property in properties)
         {
-            if (property.AttributeParsedResult is ParsedReadOnlyBitFieldAttribute)
+            if (property.AttributeParsedResult is IParsedReadOnlyBitFieldAttribute)
             {
                 readonlyFieldPropertiesBuilder.Add(property);
             }
