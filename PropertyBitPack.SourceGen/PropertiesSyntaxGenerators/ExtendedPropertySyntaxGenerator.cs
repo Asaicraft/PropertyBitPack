@@ -42,11 +42,11 @@ internal sealed class ExtendedPropertySyntaxGenerator(PropertyBitPackGeneratorCo
     /// <param name="sourceRequest">The source request containing generation context.</param>
     /// <param name="bitFieldPropertyInfoRequest">The property request to evaluate.</param>
     /// <returns>
-    /// <c>true</c> if the property is annotated with <see cref="ParsedExtendedBitFiledAttribute"/>; otherwise, <c>false</c>.
+    /// <c>true</c> if the property is annotated with <see cref="IParsedExtendedBitFiledAttribute"/>; otherwise, <c>false</c>.
     /// </returns>
     protected override bool IsCandidate(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
-        return bitFieldPropertyInfoRequest.AttributeParsedResult is ParsedExtendedBitFiledAttribute;
+        return bitFieldPropertyInfoRequest.AttributeParsedResult is IParsedExtendedBitFiledAttribute;
     }
 
     /// <summary>
