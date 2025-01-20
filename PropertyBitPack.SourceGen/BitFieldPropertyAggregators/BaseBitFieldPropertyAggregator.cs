@@ -55,8 +55,6 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
 
     protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics);
 
-
-
     /// <summary>
     /// Groups input properties by (Owner, IFieldName?) without using LINQ,
     /// utilizing DictionariesPool and ListsPool instead of <c>new Dictionary</c> and <c>new List</c>.
