@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PropertyBitPack.SourceGen.Models.FieldRequests;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;

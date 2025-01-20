@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.FieldRequests;
 using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 using System;
 using System.Collections.Generic;
