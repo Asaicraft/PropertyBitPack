@@ -11,10 +11,27 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.AttributeParsers;
+
+/// <summary>
+/// Provides a base implementation for attribute parsers that handle extended and read-only bit field attributes.
+/// </summary>
+/// <remarks>
+/// This class consolidates shared parsing logic, such as resolving and validating large size value symbols
+/// and handling constructor access modifiers.
+/// </remarks>
 internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributeParser
 {
     private static readonly ImmutableArray<Type> _validGetterLargeValueSymbolTypes = [typeof(IFieldSymbol), typeof(IPropertySymbol), typeof(IMethodSymbol)];
 
+    /// <summary>
+    /// Gets the collection of valid symbol types for large size value references.
+    /// </summary>
+    /// <remarks>
+    /// This property returns a read-only span of types that are considered valid for 
+    /// resolving the symbol referenced by the large size value in the attribute. 
+    /// By default, the valid types include <see cref="IFieldSymbol"/>, <see cref="IPropertySymbol"/>, 
+    /// and <see cref="IMethodSymbol"/>.
+    /// </remarks>
     protected virtual ReadOnlySpan<Type> ValidGetterLargeValueSymbolTypes => _validGetterLargeValueSymbolTypes.AsSpan();
 
     /// <summary>
@@ -32,6 +49,10 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
     /// <returns>
     /// <c>true</c> if the large size value symbol was successfully resolved; otherwise, <c>false</c>.
     /// </returns>
+    /// <remarks>
+    /// Validates that the referenced symbol matches the expected types and reports diagnostics
+    /// for any issues encountered during resolution.
+    /// </remarks>
     protected virtual bool TryGetterLargeSizeValueSymbol(SemanticModel semanticModel, PropertyDeclarationSyntax propertySyntax, AttributeData attributeData, AttributeSyntax attributeSyntax, INamedTypeSymbol owner, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out ISymbol? getterLargeSizeValueSymbol)
     {
         getterLargeSizeValueSymbol = null;
@@ -99,6 +120,10 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
     /// <returns>
     /// <c>true</c> if validation succeeds; otherwise, <c>false</c>.
     /// </returns>
+    /// <remarks>
+    /// Ensures the referenced symbol matches the property's type and reports issues such as type mismatches
+    /// or invalid references.
+    /// </remarks>
     protected virtual bool ValidateGetterLargeSizeValueAndReport(ISymbol? getterLargeValueSymbol, IPropertySymbol? propertySymbol, PropertyDeclarationSyntax propertyDeclarationSyntax, AttributeArgumentSyntax getterLargeValueSyntax, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         if (getterLargeValueSymbol is null)
@@ -178,6 +203,25 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
 
     }
 
+    /// <summary>
+    /// Attempts to resolve the constructor access modifier for a read-only bit field attribute.
+    /// </summary>
+    /// <param name="semanticModel">The semantic model used for analysis.</param>
+    /// <param name="propertySyntax">The property being analyzed.</param>
+    /// <param name="attributeData">The attribute data being parsed.</param>
+    /// <param name="attributeSyntax">The syntax representation of the attribute.</param>
+    /// <param name="owner">The owner type of the property.</param>
+    /// <param name="diagnostics">
+    /// A collection of <see cref="Diagnostic"/> instances to which any parsing errors are added.
+    /// </param>
+    /// <param name="accessModifier">The resolved constructor access modifier, or <c>null</c> if not resolved.</param>
+    /// <returns>
+    /// <c>true</c> if the constructor access modifier was successfully resolved; otherwise, <c>false</c>.
+    /// </returns>
+    /// <remarks>
+    /// If no argument is provided, the default constructor access modifier is used. If the attribute is invalid,
+    /// diagnostics are reported.
+    /// </remarks>
     protected virtual bool TryGetConstructorAccessModifier(SemanticModel semanticModel, PropertyDeclarationSyntax propertySyntax, AttributeData attributeData, AttributeSyntax attributeSyntax, INamedTypeSymbol owner, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AccessModifier? accessModifier)
     {
         const string ConstructorAccessModifier = nameof(ReadOnlyBitFieldAttribute.ConstructorAccessModifier);
