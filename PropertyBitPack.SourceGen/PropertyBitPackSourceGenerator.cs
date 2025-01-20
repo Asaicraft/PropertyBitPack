@@ -9,61 +9,156 @@ using System.Collections.Immutable;
 using PropertyBitPack.SourceGen.Collections;
 using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics;
+using PropertyBitPack.SourceGen.AttributeParsers;
+using PropertyBitPack.SourceGen.BitFieldPropertyParsers;
+using PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
+using PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 
 namespace PropertyBitPack.SourceGen;
 
 [Generator(LanguageNames.CSharp)]
-public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
+internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 {
+    private static readonly PropertyBitPackGeneratorContext _context;
+    private static readonly SymbolDisplayFormat NamespaceAndClassSymbolDisplayFormat = new(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+    static PropertyBitPackSourceGenerator()
+    {
+        var builder = PropertyBitPackGeneratorContextBuilder.Create();
+
+        builder.AttributeParsers.Add(new ExtendedBitFieldAttributeParser());
+        builder.AttributeParsers.Add(new ReadOnlyBitFieldAttributeParser());
+        builder.AttributeParsers.Add(new ParsedBitFieldAttributeParser());
+
+        builder.BitFieldPropertyParsers.Add(new BitFieldPropertyInfoParser());
+
+        builder.BitFieldPropertyAggregators.Add(new ExistingFieldAggregator());
+        builder.BitFieldPropertyAggregators.Add(new UnnamedFieldAggregator());
+        builder.BitFieldPropertyAggregators.Add(new NamedFieldPropertyAggregator());
+
+        builder.PropertiesSyntaxGenerators.Add(new NonExistingFieldPropertiesSyntaxGenerator());
+        builder.PropertiesSyntaxGenerators.Add(new ExistingFieldPropertiesGenerator());
+
+        _context = builder.Build();
+    }
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var propertiesWithAttributes = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (syntaxNode, _) => IsCandidateProperty(syntaxNode),
-                transform: static (context, cancellationToken) =>
+                transform: static Result<BaseBitFieldPropertyInfo>? (context, cancellationToken) =>
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        return default;
+                        return null;
                     }
 
-                    return PropertyToBitInfoProccessor.Process(context, cancellationToken);
+                    var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
+
+                    var semanticModel = context.SemanticModel;
+
+                    using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
+
+                    var attributeLists = propertyDeclaration.AttributeLists;
+
+
+                    using var attributeDatas = ImmutableArrayBuilder<AttributeData>.Rent();
+
+
+                    if (semanticModel.GetDeclaredSymbol(propertyDeclaration) is not IPropertySymbol propertySymbol)
+                    {
+                        return null;
+                    }
+
+                    var attributes = propertySymbol.GetAttributes()
+                        .Select(x => (x, (AttributeSyntax?)x.ApplicationSyntaxReference?.GetSyntax()))
+                        .Where(x => x.Item2 != null)!.ToImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)>();
+
+                    var candidates = GetCandidadates(attributes.AsSpan());
+
+                    if (candidates.Length == 0)
+                    {
+                        return null;
+                    }
+
+                    var candidateAttribute = candidates[0];
+
+                    if (candidates.Length != 1)
+                    {
+                        diagnosticsBuilder.Add(
+                            Diagnostic.Create(
+                                PropertyBitPackDiagnostics.AttributeConflict,
+                                propertyDeclaration.GetLocation(),
+                                string.Join(
+                                    ", ",
+                                    candidates.Select(x => x.AttributeData.AttributeClass?.ToDisplayString(NamespaceAndClassSymbolDisplayFormat))
+                                )
+                            )
+                        );
+
+                        return Result.Failure<BaseBitFieldPropertyInfo>(diagnosticsBuilder.ToImmutable());
+                    }
+
+                    var bitFieldPropertyInfo = _context.ParseBitFieldProperty(propertyDeclaration, candidateAttribute.AttributeData, candidateAttribute.AttributeSyntax, semanticModel, in diagnosticsBuilder);
+                    var diagnostics = diagnosticsBuilder.ToImmutable();
+
+                    ImmutableArray<Diagnostic>? nullableDiagnostics = diagnostics.IsDefaultOrEmpty ? null : diagnostics;
+
+                    return new(bitFieldPropertyInfo, nullableDiagnostics);
+
+                    static ImmutableArray<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> GetCandidadates(ReadOnlySpan<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)> attributes)
+                    {
+                        using var candidates = ImmutableArrayBuilder<(AttributeData AttributeData, AttributeSyntax AttributeSyntax)>.Rent();
+
+                        for (var i = 0; i < attributes.Length; i++)
+                        {
+                            var attribute = attributes[i];
+
+                            if (_context.IsCandidateAttribute(attribute.AttributeData, attribute.AttributeSyntax))
+                            {
+                                candidates.Add(attribute);
+                            }
+                        }
+
+                        return candidates.ToImmutable();
+                    }
                 }
             )
             .Where(x => x is not null)
+            .Select((x, _) => (Result<BaseBitFieldPropertyInfo>)x!)
             .Collect();
-
-        context.RegisterSourceOutput(propertiesWithAttributes, static (context, properties) =>
+        
+        context.RegisterSourceOutput(propertiesWithAttributes, static (context, results) =>
         {
-            ImmutableArray<PropertyToBitInfo> filteredResults = default;
-
             using var diagnosticsBuilder = ImmutableArrayBuilder<Diagnostic>.Rent();
 
-            filteredResults = FilterAndCollectDiagnostics(properties, diagnosticsBuilder);
+            var bitFieldPropertyInfos = ValidateAndAccumulateProperties(results.AsSpan(), in diagnosticsBuilder);
+            using var bitFieldPropertyInfoRentedList = SimpleLinkedListsPool.Rent<BaseBitFieldPropertyInfo>();
+            var bitFieldPropertyInfoList = bitFieldPropertyInfoRentedList.List;
 
-            if (filteredResults.IsEmpty)
+            bitFieldPropertyInfoList.AddRange(bitFieldPropertyInfos);
+
+            var aggregatedBitFieldProperties = _context.AggregateBitFieldProperties(bitFieldPropertyInfoList, in diagnosticsBuilder);
+
+#if DEBUG
+            for(var i = 0; i < aggregatedBitFieldProperties.Length; i++)
             {
-                goto showDiagnostics;
+                aggregatedBitFieldProperties[i].FullDebugWriteLine();
             }
+#endif
 
+            using var generateSourceRequestsRented = SimpleLinkedListsPool.Rent<GenerateSourceRequest>();
+            var generateSourceRequests = generateSourceRequestsRented.List;
 
-            var packedFieldStorages = PackedFieldStorageAggregator.Aggregate(filteredResults, diagnosticsBuilder);
+            generateSourceRequests.AddRange(aggregatedBitFieldProperties);
 
-            foreach (var packedFieldStorage in packedFieldStorages)
+            var generatedPropertySyntax = _context.GeneratePropertySyntax(generateSourceRequests);
+
+            foreach (var generatedProperty in generatedPropertySyntax)
             {
-                var ast = SyntaxGenerator.GenerateFieldAndBindedProperties(packedFieldStorage, diagnosticsBuilder);
-
-                if(ast is not null)
-                {
-                    var curentClassName = packedFieldStorage.PropertiesWhichDataStored[0].Owner.ToDisplayParts(SymbolDisplayFormat.FullyQualifiedFormat).Skip(2).ToImmutableArray().ToDisplayString();
-                    var fieldAndClassName = $"{curentClassName}.{packedFieldStorage.FieldName}.g.cs";
-                    var sourceText = ast.NormalizeWhitespace().ToFullString();
-
-                    context.AddSource(fieldAndClassName, sourceText);
-                }
+                context.AddSource(generatedProperty.FileName, generatedProperty.SourceText);
             }
-
 
         showDiagnostics:
             if (diagnosticsBuilder.Count > 0)
@@ -77,6 +172,43 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 }
             }
             return;
+
+            // This method validates and accumulates property-attribute pairs from the given candidates.
+            // Parameters:
+            // - ImmutableArray<Result<PropertyAttributePair>> candidates: A collection of candidates to validate.
+            // - ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder: A builder for accumulating diagnostics during validation.
+            // Returns:
+            // - ImmutableArray<PropertyAttributePair>: An immutable array containing valid property-attribute pairs.
+            static ImmutableArray<BaseBitFieldPropertyInfo> ValidateAndAccumulateProperties(ReadOnlySpan<Result<BaseBitFieldPropertyInfo>> candidates, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
+            {
+                // Create a temporary builder for storing valid property-attribute pairs.
+                using var properties = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
+
+                // Iterate through all the candidates.
+                for (var i = 0; i < candidates.Length; i++)
+                {
+                    var candidate = candidates[i];
+
+                    // If the candidate has errors, add the associated diagnostics to the diagnosticsBuilder.
+                    if (candidate.IsError)
+                    {
+                        diagnosticsBuilder.AddRange(candidate.Diagnostics.Value.AsSpan());
+                        continue;
+                    }
+
+                    // Skip candidates where the property declaration is not a valid PropertyDeclarationSyntax.
+                    if (candidate.Value is not BaseBitFieldPropertyInfo bitFieldPropertyInfo)
+                    {
+                        continue;
+                    }
+
+                    // Add the valid candidate to the properties builder.
+                    properties.Add(candidate.Value);
+                }
+
+                // Convert the builder to an immutable array and return the result.
+                return properties.ToImmutable();
+            }
         });
     }
 
@@ -97,37 +229,4 @@ public sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
             return attributeList.Attributes.Any();
         }
     }
-
-    private static ImmutableArray<PropertyToBitInfo> FilterAndCollectDiagnostics(ImmutableArray<Result<PropertyToBitInfo>?> results, in ImmutableArrayBuilder<Diagnostic> diagnosticsBuilder)
-    {
-        using var validatedResults = ImmutableArrayBuilder<PropertyToBitInfo>.Rent(results.Length / 2);
-
-        foreach (var result in results)
-        {
-            if (result is not Result<PropertyToBitInfo> notNullResult)
-            {
-                continue;
-            }
-
-            if (notNullResult.Diagnostics is ImmutableArray<Diagnostic> diagnostics)
-            {
-                diagnosticsBuilder.AddRange(diagnostics.AsSpan());
-            }
-
-            if (notNullResult.IsError)
-            {
-                continue;
-            }
-
-            if (notNullResult.IsEmpty)
-            {
-                continue;
-            }
-
-            validatedResults.Add(notNullResult.Value);
-        }
-
-        return validatedResults.ToImmutable();
-    }
-
 }

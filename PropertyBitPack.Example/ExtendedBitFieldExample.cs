@@ -12,13 +12,31 @@ public partial class ExtendedBitFieldExample
     [ExtendedBitField(BitsCount = BitsCountSlotCountProperty, GetterLargeSizeValueName = nameof(GetLargeSlotCount))]
     public partial int SlotCount
     {
-        get; protected set;
+        get; internal set;
     }
 
     [BitField(BitsCount = BitsCountSlotCountProperty)]
     public partial ushort SlotCount2
     {
-        get; protected set;
+        get; internal set;
+    }
+
+    [ExtendedBitField(BitsCount = BitsCountSlotCountProperty, GetterLargeSizeValueName = nameof(GetLargeSlotCount))]
+    public partial int SlotCount3
+    {
+        get; internal set;
+    }
+
+    [ExtendedBitField(BitsCount = BitsCountSlotCountProperty, GetterLargeSizeValueName = nameof(GetLargeSlotCount))]
+    public partial int SlotCount4
+    {
+        get; internal set;
+    }
+
+    [ExtendedBitField(BitsCount = BitsCountSlotCountProperty, GetterLargeSizeValueName = nameof(GetLargeSlotCount))]
+    public partial int SlotCount5
+    {
+        get; internal set;
     }
 
     public static int GetLargeSlotCount(int a = 6)

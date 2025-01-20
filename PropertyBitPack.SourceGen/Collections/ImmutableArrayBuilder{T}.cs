@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Collections;
-public ref struct ImmutableArrayBuilder<T>
+internal ref struct ImmutableArrayBuilder<T>
 {
     /// <summary>
     /// The rented <see cref="Writer"/> instance to use.
@@ -35,6 +35,8 @@ public ref struct ImmutableArrayBuilder<T>
         return new(new Writer(initialCapacity));
     }
 
+    public readonly bool IsDefault => writer is null;
+
     /// <summary>
     /// Creates a new <see cref="ImmutableArrayBuilder{T}"/> object with the specified parameters.
     /// </summary>
@@ -43,6 +45,8 @@ public ref struct ImmutableArrayBuilder<T>
     {
         this.writer = writer;
     }
+
+
 
     /// <inheritdoc cref="ImmutableArray{T}.Builder.Count"/>
     public readonly int Count
@@ -74,6 +78,14 @@ public ref struct ImmutableArrayBuilder<T>
     public readonly void AddRange(scoped ReadOnlySpan<T> items)
     {
         writer!.AddRange(items);
+    }
+
+    public readonly void AddRange(IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            Add(item);
+        }
     }
 
     /// <inheritdoc cref="ImmutableArray{T}.Builder.ToImmutable"/>

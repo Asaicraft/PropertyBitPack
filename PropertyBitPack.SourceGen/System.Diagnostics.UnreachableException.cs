@@ -6,7 +6,7 @@ namespace System.Diagnostics
     /// <summary>
     /// Exception thrown when the program executes an instruction that was thought to be unreachable.
     /// </summary>
-    public sealed class UnreachableException : Exception
+    internal sealed class UnreachableException : Exception
     {
         public const string DefaultMessage = "The program executed an instruction that was thought to be unreachable.";
 
