@@ -5,8 +5,8 @@ using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
-internal sealed class ExistingFieldGsr: GenerateSourceRequest
+namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+internal sealed class ExistingFieldGsr : GenerateSourceRequest
 {
     private readonly ImmutableArray<BitFieldPropertyInfoRequest> _bitFieldPropertyInfoRequests;
     private readonly ImmutableArray<FieldRequest> _singleFields;

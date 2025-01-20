@@ -12,6 +12,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 
 namespace PropertyBitPack.SourceGen;
 internal abstract partial class PropertyBitPackGeneratorContext

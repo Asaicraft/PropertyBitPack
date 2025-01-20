@@ -23,10 +23,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\GenerateSourceRequest\" />
-  </ItemGroup>
-
   <Import Project="..\PropertyBitPack.Shared\PropertyBitPack.Shared.projitems" Label="Shared" />
 
 

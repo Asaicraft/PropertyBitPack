@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 internal sealed class NamedFieldGsr(NamedFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties) : NonExistingFieldGsr
 {
     public NamedFieldRequest FieldRequest => Unsafe.As<NamedFieldRequest>(Fields[0]);

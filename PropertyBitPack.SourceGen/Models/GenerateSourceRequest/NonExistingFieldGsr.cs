@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models;
+namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
 internal abstract class NonExistingFieldGsr : GenerateSourceRequest
 {
     public abstract ImmutableArray<NonExistingFieldRequest> NonExistingFieldRequests { get; }
