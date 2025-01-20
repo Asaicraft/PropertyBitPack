@@ -9,7 +9,7 @@ namespace PropertyBitPack.SourceGen.Models;
 /// This interface provides access to the properties parsed from attributes 
 /// that describe extended bit fields.
 /// </remarks>
-internal interface IParsedExtendedBitFiledAttribute
+internal interface IParsedExtendedBitFiledAttribute : IAttributeParsedResult
 {
     /// <summary>
     /// Gets the symbol representing the large size value associated with the attribute.
