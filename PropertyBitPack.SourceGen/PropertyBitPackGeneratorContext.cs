@@ -12,7 +12,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
-using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 
 namespace PropertyBitPack.SourceGen;

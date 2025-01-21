@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
-using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 

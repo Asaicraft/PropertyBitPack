@@ -5,10 +5,10 @@ using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
-internal sealed class UnnamedFieldGsr(NonExistingFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties) : NonExistingFieldGsr
+namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
+internal sealed class NamedFieldGsr(NamedFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties) : NonExistingFieldGsr
 {
-    public NonExistingFieldRequest FieldRequest => Unsafe.As<NonExistingFieldRequest>(Fields[0]);
+    public NamedFieldRequest FieldRequest => Unsafe.As<NamedFieldRequest>(Fields[0]);
     public override ImmutableArray<NonExistingFieldRequest> NonExistingFieldRequests { get; } = [fieldRequest];
     public override ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; } = properties;
 }

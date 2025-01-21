@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
 using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
-using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

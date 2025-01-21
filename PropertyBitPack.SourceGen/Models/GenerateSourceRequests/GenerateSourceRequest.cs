@@ -5,10 +5,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
-namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-internal abstract class GenerateSourceRequest
+internal abstract class GenerateSourceRequest: IGenerateSourceRequest
 {
     public abstract ImmutableArray<IFieldRequest> Fields { get; }
 

@@ -13,7 +13,7 @@ using PropertyBitPack.SourceGen.AttributeParsers;
 using PropertyBitPack.SourceGen.BitFieldPropertyParsers;
 using PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 using PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
-using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 
 namespace PropertyBitPack.SourceGen;
 

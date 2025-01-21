@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
 using PropertyBitPack.SourceGen.Models.FieldRequests;
-using PropertyBitPack.SourceGen.Models.GenerateSourceRequest;
+using PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
