@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BitFieldAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BitsMappingAttributeBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtendedBitFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IBitFieldAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IExtendedBitFieldAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IReadOnlyBitFieldAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ReadOnlyBitFieldAttribute.cs" />

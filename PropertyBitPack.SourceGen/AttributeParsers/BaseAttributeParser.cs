@@ -102,7 +102,7 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     /// <param name="semanticModel">An optional semantic model for resolving symbols.</param>
     /// <param name="diagnostics">An optional diagnostics builder for reporting issues.</param>
     /// <returns>True if the field name is successfully determined; false if the retrieval fails due to invalid data.</returns>
-    protected static bool TryGetFieldName(AttributeData attributeData, out IFieldName? fieldName, SemanticModel? semanticModel = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, ITypeSymbol? owner = null)
+    protected virtual bool TryGetFieldName(AttributeData attributeData, out IFieldName? fieldName, SemanticModel? semanticModel = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, ITypeSymbol? owner = null)
     {
         fieldName = null;
         var syntax = attributeData.ApplicationSyntaxReference?.GetSyntax();
@@ -178,7 +178,7 @@ internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
     /// <param name="bitsCount">The retrieved bits count if successfully determined; otherwise, null.</param>
     /// <param name="diagnostics">An optional diagnostics builder for reporting issues.</param>
     /// <returns>True if the bits count is successfully determined; false if the retrieval fails due to invalid data.</returns>
-    protected static bool TryGetBitsCount(AttributeData attributeData, out byte? bitsCount, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default)
+    protected virtual bool TryGetBitsCount(AttributeData attributeData, out byte? bitsCount, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default)
     {
         bitsCount = null;
 

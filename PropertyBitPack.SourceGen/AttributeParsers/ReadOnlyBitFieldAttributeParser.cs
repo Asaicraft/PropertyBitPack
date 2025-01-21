@@ -11,7 +11,7 @@ using System.Text;
 using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
 namespace PropertyBitPack.SourceGen.AttributeParsers;
-internal sealed class ReadOnlyBitFieldAttributeParser : BaseAttributeParser
+internal sealed class ReadOnlyBitFieldAttributeParser : BaseExtendedAndReadonlyAttributeParser
 {
     public override bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax)
     {

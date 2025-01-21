@@ -258,4 +258,45 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
         accessModifier = candidateAccessModifier;
         return true;
     }
+
+    protected override bool TryGetFieldName(AttributeData attributeData, out IFieldName? fieldName, SemanticModel? semanticModel = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, ITypeSymbol? owner = null)
+    {
+        fieldName = null;
+        var candidateResult = base.TryGetFieldName(attributeData, out var candidateFieldName, semanticModel, in diagnostics, propertyDeclarationSyntax, owner);
+
+        // If the property declaration syntax is not provided, attempt to retrieve it.
+        propertyDeclarationSyntax ??= GetPropertyDeclaration(attributeData);
+
+        if (!HasInterface<IReadOnlyBitFieldAttribute>(attributeData))
+        {
+            goto ReturnResult;
+        }
+
+        if (candidateFieldName?.ExistingSymbol is not IFieldSymbol fieldSymbol)
+        {
+            goto ReturnResult;
+        }
+
+        if (!fieldSymbol.IsReadOnly)
+        {
+            var argument = GetAttributeArgument(attributeData, nameof(IReadOnlyBitFieldAttribute.FieldName));
+            var argumentLocation = argument?.GetLocation();
+
+            var propertyName = propertyDeclarationSyntax?.Identifier.Text;
+
+            var diagnostic = Diagnostic.Create(
+                PropertyBitPackDiagnostics.InvalidReferenceToNonReadOnlyField,
+                argumentLocation,
+                propertyName
+            );
+
+            diagnostics.Add(diagnostic);
+
+            return false;
+        }
+
+    ReturnResult:
+        fieldName = candidateFieldName;
+        return candidateResult;
+    }
 }

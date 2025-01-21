@@ -5,7 +5,7 @@ public
 #else
 internal
 #endif
-interface IExtendedBitFieldAttribute
+interface IExtendedBitFieldAttribute : IBitFieldAttribute
 {
     public string GetterLargeSizeValueName { get; set; }
 }

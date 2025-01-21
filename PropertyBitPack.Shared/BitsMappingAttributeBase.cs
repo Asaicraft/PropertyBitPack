@@ -14,7 +14,7 @@ public
 #else
 internal
 #endif
-abstract class BitsMappingAttributeBase: Attribute
+abstract class BitsMappingAttributeBase: Attribute, IBitFieldAttribute
 {
     public byte BitsCount
     {

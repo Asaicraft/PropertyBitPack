@@ -5,7 +5,7 @@ public
 #else
 internal
 #endif
-interface IReadOnlyBitFieldAttribute
+interface IReadOnlyBitFieldAttribute : IBitFieldAttribute
 {
     AccessModifier ConstructorAccessModifier { get; set; }
 }

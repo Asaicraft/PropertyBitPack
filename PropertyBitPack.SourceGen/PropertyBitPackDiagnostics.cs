@@ -121,4 +121,14 @@ internal static class PropertyBitPackDiagnostics
         description: $"The field requires more bits than the specified type can accommodate. Ensure the bit count is within the allowable limit for the chosen type.",
         isEnabledByDefault: true
     );
+
+    public static readonly DiagnosticDescriptor InvalidReferenceToNonReadOnlyField = new(
+        id: "PRBITS013",
+        title: $"Invalid reference to non-readonly field in '{nameof(ReadOnlyBitFieldAttribute.FieldName)}'",
+        messageFormat: $"The '{nameof(ReadOnlyBitFieldAttribute.FieldName)}' for property '{{0}}' must reference a readonly field when using the nameof operation",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        description: $"The '{nameof(ReadOnlyBitFieldAttribute.FieldName)}' in the {nameof(ReadOnlyBitFieldAttribute)} must reference a readonly field. Referencing mutable fields is not allowed.",
+        isEnabledByDefault: true
+    );
 }
