@@ -34,7 +34,7 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseExtendedAndReadonlyA
             return false;
         }
 
-        if (!TryGetConstantValue<AccessModifier>(attributeData, nameof(IReadOnlyBitFieldAttribute.ConstructorAccessModifier), out var accessModifier))
+        if (!TryGetConstructorAccessModifier(semanticModel, propertyDeclarationSyntax, attributeData, attributeSyntax, owner, in diagnostics, out var accessModifier))
         {
             accessModifier = AccessModifier.Default;
         }

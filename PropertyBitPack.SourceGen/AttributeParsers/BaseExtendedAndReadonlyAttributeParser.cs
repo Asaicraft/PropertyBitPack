@@ -222,7 +222,7 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
     /// If no argument is provided, the default constructor access modifier is used. If the attribute is invalid,
     /// diagnostics are reported.
     /// </remarks>
-    protected virtual bool TryGetConstructorAccessModifier(SemanticModel semanticModel, PropertyDeclarationSyntax propertySyntax, AttributeData attributeData, AttributeSyntax attributeSyntax, INamedTypeSymbol owner, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AccessModifier? accessModifier)
+    protected virtual bool TryGetConstructorAccessModifier(SemanticModel semanticModel, PropertyDeclarationSyntax propertySyntax, AttributeData attributeData, AttributeSyntax attributeSyntax, INamedTypeSymbol? owner, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out AccessModifier? accessModifier)
     {
         const string ConstructorAccessModifier = nameof(ReadOnlyBitFieldAttribute.ConstructorAccessModifier);
 
@@ -299,4 +299,5 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
         fieldName = candidateFieldName;
         return candidateResult;
     }
+
 }
