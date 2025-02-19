@@ -36,11 +36,12 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseExtendedAndReadonlyA
 
         if (!TryGetConstructorAccessModifier(semanticModel, propertyDeclarationSyntax, attributeData, attributeSyntax, owner, in diagnostics, out var accessModifier))
         {
-            accessModifier = AccessModifier.Default;
+            // There is nothing we can do
+            // Just kidding, it's not error if access modifier is not specified
         }
 
 
-        result = new ParsedReadOnlyBitFieldAttribute(attributeSyntax, attributeData, fieldName, bitsCount, accessModifier);
+        result = new ParsedReadOnlyBitFieldAttribute(attributeSyntax, attributeData, fieldName, bitsCount, accessModifier ?? AccessModifier.Default);
         return true;
     }
 

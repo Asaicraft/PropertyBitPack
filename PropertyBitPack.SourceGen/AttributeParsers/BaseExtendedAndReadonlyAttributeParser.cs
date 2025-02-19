@@ -259,6 +259,8 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
         return true;
     }
 
+
+    /// <inheritdoc/>
     protected override bool TryGetFieldName(AttributeData attributeData, out IFieldName? fieldName, SemanticModel? semanticModel = null, in ImmutableArrayBuilder<Diagnostic> diagnostics = default, PropertyDeclarationSyntax? propertyDeclarationSyntax = null, ITypeSymbol? owner = null)
     {
         fieldName = null;
