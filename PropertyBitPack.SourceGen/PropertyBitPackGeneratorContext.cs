@@ -123,11 +123,11 @@ internal abstract partial class PropertyBitPackGeneratorContext
         return null;
     }
 
-    public virtual ImmutableArray<GenerateSourceRequest> AggregateBitFieldProperties(
+    public virtual ImmutableArray<IGenerateSourceRequest> AggregateBitFieldProperties(
         ILinkedList<BaseBitFieldPropertyInfo> properties,
         in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
-        var requests = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
+        var requests = ImmutableArrayBuilder<IGenerateSourceRequest>.Rent();
         for (var i = 0; i < BitFieldPropertyAggregators.Length; i++)
         {
             var aggregator = BitFieldPropertyAggregators[i];

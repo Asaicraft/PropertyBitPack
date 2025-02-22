@@ -25,14 +25,14 @@ internal sealed class ExistingFieldAggregator : BaseBitFieldPropertyAggregator
     /// A collection of <see cref="BaseBitFieldPropertyInfo"/> objects to be inspected and grouped.
     /// </param>
     /// <param name="requestsBuilder">
-    /// The builder used to add newly generated <see cref="GenerateSourceRequest"/> objects.
+    /// The builder used to add newly generated <see cref="IGenerateSourceRequest"/> objects.
     /// </param>
     /// <param name="diagnostics">
     /// The builder used to record diagnostics if any invalid or unsupported scenario is detected.
     /// </param>
     protected override void AggregateCore(
         ILinkedList<BaseBitFieldPropertyInfo> properties,
-        in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder,
+        in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder,
         in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         // Collect all properties that refer to an existing field.

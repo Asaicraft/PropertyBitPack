@@ -455,10 +455,10 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// for each, and removing them from the original collection.
     /// </summary>
     /// <typeparam name="T">
-    /// The specific subtype of <see cref="GenerateSourceRequest"/> to process.
+    /// The specific subtype of <see cref="IGenerateSourceRequest"/> to process.
     /// </typeparam>
     /// <param name="requests">
-    /// The linked list of all <see cref="GenerateSourceRequest"/> objects to be examined.
+    /// The linked list of all <see cref="IGenerateSourceRequest"/> objects to be examined.
     /// </param>
     /// <param name="candidateRequests">
     /// An immutable array of requests of type <typeparamref name="T"/> that have been filtered out
@@ -569,7 +569,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <summary>
     /// Filters the provided source generation requests to include only those of the specified type.
     /// </summary>
-    /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="GenerateSourceRequest"/>.</typeparam>
+    /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="IGenerateSourceRequest"/>.</typeparam>
     /// <param name="generateSourceRequests">
     /// An <see cref="ImmutableArray{T}"/> containing the source generation requests to filter.
     /// </param>
@@ -603,12 +603,12 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <summary>
     /// Filters the provided source generation requests using a custom filter function.
     /// </summary>
-    /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="GenerateSourceRequest"/>.</typeparam>
+    /// <typeparam name="T">The specific type of requests to filter, derived from <see cref="IGenerateSourceRequest"/>.</typeparam>
     /// <param name="generateSourceRequests">
     /// An <see cref="ImmutableArray{T}"/> containing the source generation requests to filter.
     /// </param>
     /// <param name="filter">
-    /// A delegate function that takes a <see cref="GenerateSourceRequest"/> and returns a 
+    /// A delegate function that takes a <see cref="IGenerateSourceRequest"/> and returns a 
     /// filtered instance of type <typeparamref name="T"/> or <c>null</c> if the request does not match.
     /// </param>
     /// <returns>
@@ -618,7 +618,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// This method allows more flexible filtering logic by applying the provided delegate function 
     /// to each request. It excludes <c>null</c> results from the final array.
     /// </remarks>
-    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<GenerateSourceRequest> generateSourceRequests, Func<GenerateSourceRequest, T?> filter) where T : GenerateSourceRequest
+    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<IGenerateSourceRequest> generateSourceRequests, Func<GenerateSourceRequest, T?> filter) where T : GenerateSourceRequest
     {
         if (generateSourceRequests.IsDefaultOrEmpty)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PropertyBitPack.SourceGen.Collections;
-internal interface ILinkedList<T>: ICollection<T>
+internal interface ILinkedList<T>: ICollection<T>, IReadOnlyCollection<T>
 {
     public bool AddAfter(T existingValue, T value);
     public bool AddBefore(T existingValue, T value);

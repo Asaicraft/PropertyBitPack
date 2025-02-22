@@ -40,7 +40,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         _context = context;
     }
 
-    public ImmutableArray<GenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    public ImmutableArray<IGenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         if (properties.Count == 0)
         {
@@ -48,14 +48,14 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         }
 
         // We'll produce one or more GenerateSourceRequest objects.
-        using var requestsBuilder = ImmutableArrayBuilder<GenerateSourceRequest>.Rent();
+        using var requestsBuilder = ImmutableArrayBuilder<IGenerateSourceRequest>.Rent();
 
         AggregateCore(properties, requestsBuilder, in diagnostics);
 
         return requestsBuilder.ToImmutable();
     }
 
-    protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics);
+    protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics);
 
     /// <summary>
     /// Groups input properties by (Owner, IFieldName?) without using LINQ,

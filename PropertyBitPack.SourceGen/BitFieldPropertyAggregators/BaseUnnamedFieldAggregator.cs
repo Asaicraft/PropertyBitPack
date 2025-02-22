@@ -16,7 +16,7 @@ namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 /// <summary>
 /// Aggregates bit-field properties that do not have an explicit field name specified 
 /// (i.e., <c>fieldName == null</c> or only whitespace). Distributes them into unnamed fields,
-/// validating bit sizes and generating appropriate <see cref="GenerateSourceRequest"/> objects.
+/// validating bit sizes and generating appropriate <see cref="IGenerateSourceRequest"/> objects.
 /// </summary>
 internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregator
 {
@@ -24,7 +24,7 @@ internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregat
     /// <summary>
     /// Core implementation for selecting candidate bit-field properties without an explicit field name.
     /// </summary>
-    /// <param name="properties">A linked list of bit-field properties to analyze.</param>
+    /// <param name="properties">A read only collection of bit-field properties to analyze.</param>
     /// <param name="diagnostics">
     /// A collection of <see cref="Diagnostic"/> instances to which any validation errors are added.
     /// </param>
@@ -37,7 +37,7 @@ internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregat
     /// Otherwise, the property is added to the provided builder for further processing.
     /// </remarks>
     protected virtual void SelectCandidatesCore(
-        ILinkedList<BaseBitFieldPropertyInfo> properties,
+        IReadOnlyCollection<BaseBitFieldPropertyInfo> properties,
         in ImmutableArrayBuilder<Diagnostic> diagnostics,
         in ImmutableArrayBuilder<BaseBitFieldPropertyInfo> unnamedFieldPropertiesBuilder)
     {
@@ -105,20 +105,20 @@ internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregat
     /// <summary>
     /// Core logic for aggregating unnamed field properties. 
     /// Checks each property for a valid bit size, groups properties, calculates bits 
-    /// distribution, and produces <see cref="GenerateSourceRequest"/> entries.
+    /// distribution, and produces <see cref="IGenerateSourceRequest"/> entries.
     /// </summary>
     /// <param name="properties">
     /// A linked list of <see cref="BaseBitFieldPropertyInfo"/> that may or may not have field names.
     /// </param>
     /// <param name="requestsBuilder">
-    /// An <see cref="ImmutableArrayBuilder{T}"/> used to collect <see cref="GenerateSourceRequest"/> instances.
+    /// An <see cref="ImmutableArrayBuilder{T}"/> used to collect <see cref="IGenerateSourceRequest"/> instances.
     /// </param>
     /// <param name="diagnostics">
     /// An <see cref="ImmutableArrayBuilder{T}"/> for adding any <see cref="Diagnostic"/> objects related to errors.
     /// </param>
     protected override void AggregateCore(
         ILinkedList<BaseBitFieldPropertyInfo> properties,
-        in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder,
+        in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder,
         in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         var unnamedFieldProperties = SelectCandiadates(properties, in diagnostics);
@@ -164,18 +164,18 @@ internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregat
     }
 
     /// <summary>
-    /// Creates and adds <see cref="GenerateSourceRequest"/> instances for the properties in the group,
+    /// Creates and adds <see cref="IGenerateSourceRequest"/> instances for the properties in the group,
     /// based on their calculated bit distributions.
     /// </summary>
     /// <param name="ownerFieldNameGroup">A group of unnamed field properties associated with a specific owner.</param>
     /// <param name="calculatedBits">An array of <see cref="CalculatedBits"/> that indicates how the bits are allocated.</param>
     /// <param name="requestsBuilder">
-    /// A builder used to collect <see cref="GenerateSourceRequest"/> objects.
+    /// A builder used to collect <see cref="IGenerateSourceRequest"/> objects.
     /// </param>
     protected virtual void AddUnnamedFieldRequests(
         OwnerFieldNameGroup ownerFieldNameGroup,
         ImmutableArray<CalculatedBits> calculatedBits,
-        in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder)
+        in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder)
     {
         // We start by copying the properties into a list we can mutate
         using var list = ListsPool.Rent<BaseBitFieldPropertyInfo>();

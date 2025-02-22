@@ -20,52 +20,40 @@ namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 internal sealed class UnnamedReadOnlyAggregator : BaseUnnamedFieldAggregator
 {
 
+    public readonly ReadOnlyAggregatorComponent ReadOnlyAggregatorComponent = new();
+
     /// <inheritdoc/>
-    protected override void SelectCandidatesCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics, in ImmutableArrayBuilder<BaseBitFieldPropertyInfo> unnamedFieldPropertiesBuilder)
+    protected override void SelectCandidatesCore(IReadOnlyCollection<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics, in ImmutableArrayBuilder<BaseBitFieldPropertyInfo> unnamedFieldPropertiesBuilder)
     {
-        // Iterate over all properties
+        // Prepare a filtered list of properties that are parsed as read-only
+        var filteredProperties = new List<BaseBitFieldPropertyInfo>();
         foreach (var property in properties)
         {
-            var fieldName = property.AttributeParsedResult.FieldName;
-
-            if(property.AttributeParsedResult is not ParsedReadOnlyBitFieldAttribute)
+            if (property.AttributeParsedResult is ParsedReadOnlyBitFieldAttribute)
             {
-                // If the property is not marked as read-only, skip it
-                continue;
-            }
-
-            // If field name is null or whitespace, treat it as an unnamed field
-            if (fieldName == null || string.IsNullOrWhiteSpace(fieldName.Name))
-            {
-                // Validate that the bit size is permissible (non-zero, etc.)
-                if (!ValidateSize(property))
-                {
-                    // If invalid, we create a diagnostic about "TooManyBitsForAnyType"
-                    var size = BitCountHelper.GetEffectiveBitsCount(property);
-
-                    var diagnostic = Diagnostic.Create(
-                        PropertyBitPackDiagnostics.TooManyBitsForAnyType,
-                        property.AttributeParsedResult.BitsCountArgument()?.GetLocation(),
-                        "<unnamed>",
-                        size
-                    );
-
-                    diagnostics.Add(diagnostic);
-
-                    // Continue to the next property, skipping addition to the aggregator
-                    continue;
-                }
-
-                // If it's valid, add it to the unnamed property list
-                unnamedFieldPropertiesBuilder.Add(property);
+                filteredProperties.Add(property);
             }
         }
+
+        // Now pass only the filtered properties to the base logic,
+        // which handles the unnamed-field checks, validation, and diagnostics.
+        base.SelectCandidatesCore(filteredProperties, diagnostics, unnamedFieldPropertiesBuilder);
     }
 
-    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<GenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         // First we aggregate the unnamed properties
         base.AggregateCore(properties, requestsBuilder, diagnostics);
+
+        // Then we aggregate the read-only properties
+        var gsr = ReadOnlyAggregatorComponent.Aggregate(properties, requestsBuilder, diagnostics);
+
+        // Add the generated source request to the builder
+        for (var i = 0; i < gsr.Length; i++)
+        {
+            var request = gsr[i];
+            requestsBuilder.Add(request);
+        }
 
     }
 }
