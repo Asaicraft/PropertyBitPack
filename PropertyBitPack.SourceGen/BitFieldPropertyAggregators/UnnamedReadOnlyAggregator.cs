@@ -19,7 +19,9 @@ namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 /// </remarks>
 internal sealed class UnnamedReadOnlyAggregator : BaseUnnamedFieldAggregator
 {
-
+    /// <summary>
+    /// The component responsible for aggregating read-only properties.
+    /// </summary>
     public readonly ReadOnlyAggregatorComponent ReadOnlyAggregatorComponent = new();
 
     /// <inheritdoc/>

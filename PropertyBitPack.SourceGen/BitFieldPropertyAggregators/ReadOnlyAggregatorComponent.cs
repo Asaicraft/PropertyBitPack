@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
+using static PropertyBitPack.SourceGen.BitFieldPropertyAggregators.ReadOnlyAggregatorComponent;
 
 namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 
@@ -25,6 +26,19 @@ namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 /// </remarks>
 internal sealed class ReadOnlyAggregatorComponent
 {
+    private readonly Func<OwnerFieldPropertyGroup, ConstructorRequest, IReadOnlyFieldGsr> _createReadOnlyFieldGsr;
+
+    public ReadOnlyAggregatorComponent()
+    {
+        _createReadOnlyFieldGsr = static (group, constructor) => new ReadOnlyFieldGsr(group.Fields, group.Properties, constructor);
+    }
+
+
+    public ReadOnlyAggregatorComponent(Func<OwnerFieldPropertyGroup, ConstructorRequest, IReadOnlyFieldGsr> factory)
+    {
+        _createReadOnlyFieldGsr = factory;
+    }
+
     /// <summary>
     /// Aggregates <see cref="IReadOnlyFieldGsr"/> instances based on the provided bit field properties
     /// and the collection of <see cref="IGenerateSourceRequest"/> objects.
@@ -66,9 +80,12 @@ internal sealed class ReadOnlyAggregatorComponent
 
             // Create a constructor request for the grouped fields and properties.
             var constructor = CreateConstructor(group);
+            var readOnlyFieldGsr = _createReadOnlyFieldGsr(group, constructor);
 
             // Add the newly created ReadOnlyFieldGsr to the builder.
-            readOnlyFieldGsrBuilder.Add(new ReadOnlyFieldGsr(group.Fields, group.Properties, constructor));
+            readOnlyFieldGsrBuilder.Add(
+                readOnlyFieldGsr
+            );
         }
 
         // Return the collected IReadOnlyFieldGsr objects as an immutable array.
@@ -76,7 +93,7 @@ internal sealed class ReadOnlyAggregatorComponent
     }
 
     /// <summary>
-    /// Creates a <see cref="ConstructorRequest"/> based on the specified <see cref="OwnerFieldInfo"/>.
+    /// Creates a <see cref="ConstructorRequest"/> based on the specified <see cref="OwnerFieldPropertyGroup"/>.
     /// </summary>
     /// <param name="ownerFieldInfo">
     /// The grouped information containing the owner, access modifier, fields, and bit field properties.
@@ -85,7 +102,7 @@ internal sealed class ReadOnlyAggregatorComponent
     /// Returns a <see cref="ConstructorRequest"/> object containing the access modifier
     /// and parameters extracted from the properties.
     /// </returns>
-    private ConstructorRequest CreateConstructor(OwnerFieldInfo ownerFieldInfo)
+    private ConstructorRequest CreateConstructor(OwnerFieldPropertyGroup ownerFieldInfo)
     {
         // Extract the constructor's access modifier from the owner's stored access information.
         var constructorAccessModifier = ownerFieldInfo.ConstructorAccessModifier;
@@ -116,13 +133,13 @@ internal sealed class ReadOnlyAggregatorComponent
     /// An immutable array of <see cref="IGenerateSourceRequest"/> objects to be grouped.
     /// </param>
     /// <returns>
-    /// Returns an <see cref="ImmutableArray{T}"/> of <see cref="OwnerFieldInfo"/> items,
+    /// Returns an <see cref="ImmutableArray{T}"/> of <see cref="OwnerFieldPropertyGroup"/> items,
     /// each containing the owner, the constructor access modifier, and the grouped fields and properties.
     /// </returns>
-    private ImmutableArray<OwnerFieldInfo> Group(ImmutableArray<IGenerateSourceRequest> allReadyRequests)
+    private ImmutableArray<OwnerFieldPropertyGroup> Group(ImmutableArray<IGenerateSourceRequest> allReadyRequests)
     {
-        // Rent a builder for the final list of OwnerFieldInfo objects.
-        using var resultBuilder = ImmutableArrayBuilder<OwnerFieldInfo>.Rent();
+        // Rent a builder for the final list of OwnerFieldPropertyGroup objects.
+        using var resultBuilder = ImmutableArrayBuilder<OwnerFieldPropertyGroup>.Rent();
 
         // Rent a dictionary from the pool, keyed by (INamedTypeSymbol Owner, AccessModifier AccessModifier).
         var groupedByOwner = SymbolAccessPairDictionaryPool.Rent();
@@ -194,7 +211,7 @@ internal sealed class ReadOnlyAggregatorComponent
                 }
             }
 
-            // Convert each entry in the dictionary to an OwnerFieldInfo object.
+            // Convert each entry in the dictionary to an OwnerFieldPropertyGroup object.
             foreach (var kvp in groupedByOwner)
             {
                 var ownerSymbolAccessPair = kvp.Key;
@@ -224,9 +241,9 @@ internal sealed class ReadOnlyAggregatorComponent
                 var fieldsImmutable = fieldsBuilder.ToImmutable();
                 var propertiesImmutable = propertiesBuilder.ToImmutable();
 
-                // Add a new OwnerFieldInfo record to the result builder.
+                // Add a new OwnerFieldPropertyGroup record to the result builder.
                 resultBuilder.Add(
-                    new OwnerFieldInfo(
+                    new OwnerFieldPropertyGroup(
                         ownerSymbolAccessPair.Owner,
                         ownerSymbolAccessPair.AccessModifier,
                         fieldsImmutable,
@@ -248,14 +265,14 @@ internal sealed class ReadOnlyAggregatorComponent
             SymbolAccessPairDictionaryPool.Return(groupedByOwner);
         }
 
-        // Produce the immutable array of OwnerFieldInfo.
+        // Produce the immutable array of OwnerFieldPropertyGroup.
         return resultBuilder.ToImmutable();
     }
 
     /// <summary>
     /// Represents information about a group of fields and properties associated with a particular owner and access modifier.
-    /// </summary>
-    private class OwnerFieldInfo(
+    /// </summary>`
+    public class OwnerFieldPropertyGroup(
         INamedTypeSymbol ownerType,
         AccessModifier accessModifier,
         ImmutableArray<IFieldRequest> fields,
