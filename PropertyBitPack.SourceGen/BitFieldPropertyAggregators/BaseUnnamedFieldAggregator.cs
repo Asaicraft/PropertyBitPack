@@ -21,11 +21,26 @@ namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregator
 {
 
-    protected virtual ImmutableArray<BaseBitFieldPropertyInfo> SelectCandiadates(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    /// <summary>
+    /// Core implementation for selecting candidate bit-field properties without an explicit field name.
+    /// </summary>
+    /// <param name="properties">A linked list of bit-field properties to analyze.</param>
+    /// <param name="diagnostics">
+    /// A collection of <see cref="Diagnostic"/> instances to which any validation errors are added.
+    /// </param>
+    /// <param name="unnamedFieldPropertiesBuilder">
+    /// A builder used to collect properties that lack a valid field name and have a permissible bit size.
+    /// </param>
+    /// <remarks>
+    /// This method processes each property to check if it has an empty or null field name.
+    /// If the bit size is invalid, a diagnostic is reported, and the property is excluded.
+    /// Otherwise, the property is added to the provided builder for further processing.
+    /// </remarks>
+    protected virtual void SelectCandidatesCore(
+        ILinkedList<BaseBitFieldPropertyInfo> properties,
+        in ImmutableArrayBuilder<Diagnostic> diagnostics,
+        in ImmutableArrayBuilder<BaseBitFieldPropertyInfo> unnamedFieldPropertiesBuilder)
     {
-        // We'll gather properties that do not define a valid field name into a temporary builder
-        using var unnamedFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
-
         // Iterate over all properties
         foreach (var property in properties)
         {
@@ -57,6 +72,29 @@ internal abstract class BaseUnnamedFieldAggregator: BaseBitFieldPropertyAggregat
                 unnamedFieldPropertiesBuilder.Add(property);
             }
         }
+    }
+
+    /// <summary>
+    /// Selects candidate bit-field properties that do not have an explicit field name.
+    /// </summary>
+    /// <param name="properties">A linked list of bit-field properties to analyze.</param>
+    /// <param name="diagnostics">
+    /// A collection of <see cref="Diagnostic"/> instances to which any validation errors are added.
+    /// </param>
+    /// <returns>
+    /// An immutable array of properties that lack a valid field name but have a permissible bit size.
+    /// </returns>
+    /// <remarks>
+    /// This method iterates through the provided properties and identifies those with an empty or null field name.
+    /// If a property's bit size is invalid, a diagnostic is reported, and the property is excluded from the result.
+    /// Otherwise, the property is added to the list of unnamed field properties and returned as an immutable array.
+    /// </remarks>
+    protected virtual ImmutableArray<BaseBitFieldPropertyInfo> SelectCandiadates(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    {
+        // We'll gather properties that do not define a valid field name into a temporary builder
+        using var unnamedFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
+
+        SelectCandidatesCore(properties, in diagnostics, in unnamedFieldPropertiesBuilder);
 
         // Convert the collected unnamed properties to an immutable array
         var unnamedFieldProperties = unnamedFieldPropertiesBuilder.ToImmutable();

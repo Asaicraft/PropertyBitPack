@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using PropertyBitPack.SourceGen.Collections;
@@ -300,6 +301,41 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
     ReturnResult:
         fieldName = candidateFieldName;
         return candidateResult;
+    }
+
+    /// <summary>
+    /// Determines whether a given property declaration represents a read-only property.
+    /// </summary>
+    /// <param name="propertyDeclarationSyntax">The property declaration syntax to analyze.</param>
+    /// <returns>
+    /// <c>true</c> if the property is read-only or has an <c>init</c> accessor; otherwise, <c>false</c>.
+    /// </returns>
+    /// <remarks>
+    /// A property is considered read-only if it has the <c>readonly</c> modifier, lacks a <c>set</c> accessor, 
+    /// or has only an <c>init</c> accessor.
+    /// </remarks>
+    protected static bool IsReadOnlyProperty(PropertyDeclarationSyntax propertyDeclarationSyntax)
+    {
+        var modifiers = propertyDeclarationSyntax.Modifiers;
+
+        if(modifiers.Any(SyntaxKind.ReadOnlyKeyword))
+        {
+            return true;
+        }
+
+        var accessorList = propertyDeclarationSyntax.AccessorList!;
+
+        if(accessorList.Accessors.Any(SyntaxKind.SetAccessorDeclaration))
+        {
+            return false;
+        }
+
+        if(accessorList.Accessors.Any(SyntaxKind.InitAccessorDeclaration))
+        {
+            return true;
+        }
+
+        return true;
     }
 
 }

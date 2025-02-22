@@ -15,3 +15,8 @@ enum AccessModifier
     PrivateProtected,
     Default 
 }
+
+internal static class AccessModifiers
+{
+    public static AccessModifier Invalid = (AccessModifier)(-1);
+}

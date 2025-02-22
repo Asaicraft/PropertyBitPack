@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using static PropertyBitPack.SourceGen.PropertyBitPackConsts;
 
 namespace PropertyBitPack.SourceGen.AttributeParsers;
 internal sealed class ReadOnlyBitFieldAttributeParser : BaseExtendedAndReadonlyAttributeParser
@@ -21,6 +20,21 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseExtendedAndReadonlyA
     public override bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out IAttributeParsedResult? result)
     {
         result = null;
+
+        if(!IsReadOnlyProperty(propertyDeclarationSyntax))
+        {
+            var propertyName = propertyDeclarationSyntax.Identifier.Text;
+
+            var diagonstic = Diagnostic.Create(
+                PropertyBitPackDiagnostics.ReadOnlyPropertyRequiresNoSetterOrInitOnly,
+                propertyDeclarationSyntax.GetLocation(),
+                propertyName
+            );
+
+            diagnostics.Add(diagonstic);
+
+            return false;
+        }
 
         var owner = semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax)?.ContainingType;
 
@@ -43,6 +57,6 @@ internal sealed class ReadOnlyBitFieldAttributeParser : BaseExtendedAndReadonlyA
 
         result = new ParsedReadOnlyBitFieldAttribute(attributeSyntax, attributeData, fieldName, bitsCount, accessModifier ?? AccessModifier.Default);
         return true;
-    }
+    } 
 
 }

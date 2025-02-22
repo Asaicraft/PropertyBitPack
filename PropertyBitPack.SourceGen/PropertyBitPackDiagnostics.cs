@@ -131,4 +131,15 @@ internal static class PropertyBitPackDiagnostics
         description: $"The '{nameof(ReadOnlyBitFieldAttribute.FieldName)}' in the {nameof(ReadOnlyBitFieldAttribute)} must reference a readonly field. Referencing mutable fields is not allowed.",
         isEnabledByDefault: true
     );
+
+    public static readonly DiagnosticDescriptor ReadOnlyPropertyRequiresNoSetterOrInitOnly = new(
+        id: "PRBITS014",
+        title: $"ReadOnlyBitFieldAttribute requires property without setter or with init-only setter",
+        messageFormat: $"The property '{{0}}' with '{nameof(ReadOnlyBitFieldAttribute)}' must either be read-only or have an init-only setter",
+        category: "PropertyBitPack",
+        defaultSeverity: DiagnosticSeverity.Error,
+        description: $"Properties with '{nameof(ReadOnlyBitFieldAttribute)}' must be read-only or have an init-only setter to ensure immutability.",
+        isEnabledByDefault: true
+    );
+
 }
