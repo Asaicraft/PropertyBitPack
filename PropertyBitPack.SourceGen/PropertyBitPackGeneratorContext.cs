@@ -137,7 +137,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
         return requests.ToImmutable();
     }
 
-    public virtual ImmutableArray<FileGeneratorRequest> GeneratePropertySyntax(ILinkedList<GenerateSourceRequest> requests)
+    public virtual ImmutableArray<FileGeneratorRequest> GeneratePropertySyntax(ILinkedList<IGenerateSourceRequest> requests)
     {
         var sourceTexts = ImmutableArrayBuilder<FileGeneratorRequest>.Rent();
 

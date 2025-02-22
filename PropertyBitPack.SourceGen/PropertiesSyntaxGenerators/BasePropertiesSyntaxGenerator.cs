@@ -31,6 +31,9 @@ namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 /// <seealso cref="IContextBindable"/>
 internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerator, IContextBindable
 {
+
+    public static ImmutableArray<IPropertySyntaxGenerator> DefaultPropertySyntaxGenerators;
+
     private ImmutableArray<IPropertySyntaxGenerator> _propertySyntaxGenerators = [];
 
     /// <summary>
@@ -84,17 +87,23 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// </remarks>
     protected virtual ImmutableArray<IPropertySyntaxGenerator> GenereatePropertySyntaxGenerators(PropertyBitPackGeneratorContext context)
     {
+        if(!DefaultPropertySyntaxGenerators.IsDefaultOrEmpty)
+        {
+            return DefaultPropertySyntaxGenerators;
+        }
+
         var generators = new IPropertySyntaxGenerator[]
         {
             new ExtendedPropertySyntaxGenerator(context),
             new PropertySyntaxGenerator(context),
         };
 
-        return Unsafe.As<IPropertySyntaxGenerator[], ImmutableArray<IPropertySyntaxGenerator>>(ref generators);
+        return 
+            DefaultPropertySyntaxGenerators = Unsafe.As<IPropertySyntaxGenerator[], ImmutableArray<IPropertySyntaxGenerator>>(ref generators);
     }
 
     /// <inheritdoc/>
-    public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<GenerateSourceRequest> requests)
+    public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<IGenerateSourceRequest> requests)
     {
         using var fileGeneratorRequestsBuilder = ImmutableArrayBuilder<FileGeneratorRequest>.Rent();
 
@@ -108,7 +117,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return fileGeneratorRequestsBuilder.ToImmutable();
     }
 
-    protected abstract void GenerateCore(ILinkedList<GenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder);
+    protected abstract void GenerateCore(ILinkedList<IGenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder);
 
     /// <summary>
     /// Generates a field declaration syntax for the specified field request.
@@ -473,7 +482,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// to the output builder.
     /// </remarks>
     protected virtual void ProccessCandidates<T>(
-        ILinkedList<GenerateSourceRequest> requests,
+        ILinkedList<IGenerateSourceRequest> requests,
         ImmutableArray<T> candidateRequests,
         in ImmutableArrayBuilder<FileGeneratorRequest> fileGeneratorRequestsBuilder
     )
@@ -580,7 +589,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// This method uses a simple type check to collect requests of the specified type. 
     /// If the input array is empty or uninitialized, it returns an empty array.
     /// </remarks>
-    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<GenerateSourceRequest> generateSourceRequests) where T : GenerateSourceRequest
+    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<IGenerateSourceRequest> generateSourceRequests) where T : GenerateSourceRequest
     {
         if (generateSourceRequests.Count == 0)
         {
@@ -618,7 +627,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// This method allows more flexible filtering logic by applying the provided delegate function 
     /// to each request. It excludes <c>null</c> results from the final array.
     /// </remarks>
-    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<IGenerateSourceRequest> generateSourceRequests, Func<GenerateSourceRequest, T?> filter) where T : GenerateSourceRequest
+    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<IGenerateSourceRequest> generateSourceRequests, Func<IGenerateSourceRequest, T?> filter) where T : GenerateSourceRequest
     {
         if (generateSourceRequests.IsDefaultOrEmpty)
         {

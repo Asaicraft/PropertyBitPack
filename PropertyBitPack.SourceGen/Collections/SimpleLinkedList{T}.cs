@@ -57,6 +57,7 @@ internal sealed class SimpleLinkedList<T> : ILinkedList<T>
     }
 
     public int Count => ((ICollection<T>)_linkedList).Count;
+    int IReadOnlyCollection<T>.Count => Count;
 
     public bool IsReadOnly => ((ICollection<T>)_linkedList).IsReadOnly;
 

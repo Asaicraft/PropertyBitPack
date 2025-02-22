@@ -21,7 +21,7 @@ namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 /// </remarks>
 internal sealed class ExistingFieldPropertiesGenerator: BasePropertiesSyntaxGenerator
 {
-    protected override void GenerateCore(ILinkedList<GenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder)
+    protected override void GenerateCore(ILinkedList<IGenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> immutableArrayBuilder)
     {
         var candidateRequests = FilterCandidates<ExistingFieldGsr>(requests);
 

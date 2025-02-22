@@ -23,7 +23,7 @@ namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 /// </remarks>
 internal sealed class NonExistingFieldPropertiesSyntaxGenerator : BasePropertiesSyntaxGenerator
 {
-    protected override void GenerateCore(ILinkedList<GenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> fileGeneratorRequestsBuilder)
+    protected override void GenerateCore(ILinkedList<IGenerateSourceRequest> requests, in ImmutableArrayBuilder<FileGeneratorRequest> fileGeneratorRequestsBuilder)
     {
         var candidateRequests = FilterCandidates<NonExistingFieldGsr>(requests);
 

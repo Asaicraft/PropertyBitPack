@@ -145,11 +145,11 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
 #if DEBUG
             for(var i = 0; i < aggregatedBitFieldProperties.Length; i++)
             {
-                aggregatedBitFieldProperties[i].FullDebugWriteLine();
+                (aggregatedBitFieldProperties[i] as GenerateSourceRequest)?.FullDebugWriteLine();
             }
 #endif
 
-            using var generateSourceRequestsRented = SimpleLinkedListsPool.Rent<GenerateSourceRequest>();
+            using var generateSourceRequestsRented = SimpleLinkedListsPool.Rent<IGenerateSourceRequest>();
             var generateSourceRequests = generateSourceRequestsRented.List;
 
             generateSourceRequests.AddRange(aggregatedBitFieldProperties);

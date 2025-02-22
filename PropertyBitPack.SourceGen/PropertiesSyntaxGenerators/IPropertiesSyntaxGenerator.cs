@@ -27,5 +27,5 @@ internal interface IPropertiesSyntaxGenerator
     /// <returns>
     /// An <see cref="ImmutableArray{T}"/> of <see cref="FileGeneratorRequest"/> objects representing the generated requests.
     /// </returns>
-    public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<GenerateSourceRequest> requests);
+    public ImmutableArray<FileGeneratorRequest> Generate(ILinkedList<IGenerateSourceRequest> requests);
 }

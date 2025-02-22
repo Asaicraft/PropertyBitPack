@@ -29,7 +29,7 @@ internal abstract class GenerateSourceRequest: IGenerateSourceRequest
 
 
     [Conditional("DEBUG")]
-    public void FullDebugWriteLine()
+    public virtual void FullDebugWriteLine()
     {
         var stringBuilder = new StringBuilder();
 
