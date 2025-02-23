@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PropertyBitPack.Example;
+
 internal sealed partial class NamedFieldExample
 {
     [BitField(FieldName = "_another", BitsCount = 9)]
