@@ -30,7 +30,7 @@ internal sealed class ReadOnlyAggregatorComponent
 
     public ReadOnlyAggregatorComponent()
     {
-        _createReadOnlyFieldGsr = static (group, constructor) => new ReadOnlyFieldGsr(group.Fields, group.Properties, constructor);
+        _createReadOnlyFieldGsr = static (group, constructor) => new ConstructorGsr(group.Fields, group.Properties, constructor);
     }
 
 
@@ -82,7 +82,7 @@ internal sealed class ReadOnlyAggregatorComponent
             var constructor = CreateConstructor(group);
             var readOnlyFieldGsr = _createReadOnlyFieldGsr(group, constructor);
 
-            // Add the newly created ReadOnlyFieldGsr to the builder.
+            // Add the newly created ConstructorGsr to the builder.
             readOnlyFieldGsrBuilder.Add(
                 readOnlyFieldGsr
             );

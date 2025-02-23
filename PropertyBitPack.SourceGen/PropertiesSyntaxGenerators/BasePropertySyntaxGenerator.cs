@@ -75,7 +75,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     public PropertyBitPackGeneratorContext PropertyBitPackGeneratorContext => _propertyBitPackGeneratorContext;
 
     /// <inheritdoc/>
-    public PropertyDeclarationSyntax? GenerateProperty(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember)
+    public PropertyDeclarationSyntax? GenerateProperty(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember)
     {
         if (!IsCandidate(sourceRequest, bitFieldPropertyInfoRequest))
         {
@@ -96,7 +96,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// <c>true</c> if the property is a candidate for generation; otherwise, <c>false</c>.
     /// </returns>
-    protected virtual bool IsCandidate(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    protected virtual bool IsCandidate(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         return false;
     }
@@ -109,7 +109,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// A <see cref="PropertyDeclarationSyntax"/> representing the generated property, or <c>null</c> if not applicable.
     /// </returns>
-    protected virtual PropertyDeclarationSyntax? GeneratePropertyCore(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    protected virtual PropertyDeclarationSyntax? GeneratePropertyCore(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         var getterBlock = GetterBlockSyntax(bitFieldPropertyInfoRequest);
         var setterBlock = SetterBlockSyntax(bitFieldPropertyInfoRequest);
@@ -161,7 +161,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// A <see cref="PropertyDeclarationSyntax"/> representing the generated property, or <c>null</c> if not applicable.
     /// </returns>
-    public virtual PropertyDeclarationSyntax? GeneratePropertyCore(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember)
+    public virtual PropertyDeclarationSyntax? GeneratePropertyCore(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember)
     {
         additionalMember = default;
         return null;
@@ -663,9 +663,9 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         );
     }
 
-    protected static TypeSyntax GetTypeSyntax(IPropertySymbol propertyTypeSymbol) => GetTypeSyntaxFromSpecialType(propertyTypeSymbol.Type.SpecialType);
+    public static TypeSyntax GetTypeSyntax(IPropertySymbol propertyTypeSymbol) => GetTypeSyntaxFromSpecialType(propertyTypeSymbol.Type.SpecialType);
 
-    protected static TypeSyntax GetTypeSyntaxFromSpecialType(SpecialType specialType) => specialType switch
+    public static TypeSyntax GetTypeSyntaxFromSpecialType(SpecialType specialType) => specialType switch
     {
         SpecialType.System_Boolean => PredefinedType(Token(SyntaxKind.BoolKeyword)),
         SpecialType.System_Byte => PredefinedType(Token(SyntaxKind.ByteKeyword)),
@@ -680,7 +680,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         _ => throw new NotSupportedException()
     };
 
-    protected static TypeSyntax ToSignedVariantSyntax(SpecialType specialType) => GetTypeSyntaxFromSpecialType(ToSignedVariant(specialType));
+    public static TypeSyntax ToSignedVariantSyntax(SpecialType specialType) => GetTypeSyntaxFromSpecialType(ToSignedVariant(specialType));
 
     protected static SpecialType ToSignedVariant(SpecialType specialType) => specialType switch
     {
@@ -691,7 +691,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         _ => specialType
     };
 
-    protected static LiteralExpressionSyntax LiteralWithSpecialType(decimal value, SpecialType specialType) => specialType switch
+    public static LiteralExpressionSyntax LiteralWithSpecialType(decimal value, SpecialType specialType) => specialType switch
     {
         SpecialType.System_Byte
         or SpecialType.System_SByte

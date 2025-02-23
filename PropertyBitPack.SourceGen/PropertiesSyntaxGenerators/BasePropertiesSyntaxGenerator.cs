@@ -125,7 +125,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <param name="generateSourceRequest">The source generation request containing context information.</param>
     /// <param name="fieldRequest">The field request containing details about the field to generate.</param>
     /// <returns>A <see cref="FieldDeclarationSyntax"/> representing the generated field.</returns>
-    protected virtual FieldDeclarationSyntax GenerateField(GenerateSourceRequest generateSourceRequest, IFieldRequest fieldRequest)
+    protected virtual FieldDeclarationSyntax GenerateField(IGenerateSourceRequest generateSourceRequest, IFieldRequest fieldRequest)
     {
         Debug.Assert(!fieldRequest.IsExist);
 
@@ -151,7 +151,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <param name="generateSourceRequest">The source generation request containing context information.</param>
     /// <param name="bitFieldPropertyInfoRequest">The property request containing details about the bit field property to generate.</param>
     /// <returns>A <see cref="PropertyDeclarationSyntax"/> representing the generated property.</returns>
-    protected virtual PropertyDeclarationSyntax GenerateProperty(GenerateSourceRequest generateSourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    protected virtual PropertyDeclarationSyntax GenerateProperty(IGenerateSourceRequest generateSourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         return GenerateProperty(generateSourceRequest, bitFieldPropertyInfoRequest, out _);
     }
@@ -164,7 +164,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <param name="additionalMembers">Additional members generated as part of the property generation.</param>
     /// <returns>A <see cref="PropertyDeclarationSyntax"/> representing the generated property.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the property cannot be generated.</exception>
-    protected virtual PropertyDeclarationSyntax GenerateProperty(GenerateSourceRequest generateSourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMembers)
+    protected virtual PropertyDeclarationSyntax GenerateProperty(IGenerateSourceRequest generateSourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMembers)
     {
         PropertyDeclarationSyntax? propertyDeclaration = null;
 
@@ -193,7 +193,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A string representing the filename, including field names concatenated with underscores
     /// and the suffix ".BitPack.g.cs".
     /// </returns>
-    protected virtual string GetFileName(GenerateSourceRequest request)
+    protected virtual string GetFileName(IGenerateSourceRequest request)
     {
         var owner = request.Properties[0].Owner;
 
@@ -233,7 +233,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A <see cref="CompilationUnitSyntax"/> containing the namespace, using directives, and type declaration.
     /// </returns>
     protected virtual CompilationUnitSyntax GenerateCompilationUnit(
-        GenerateSourceRequest request,
+        IGenerateSourceRequest request,
         IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
@@ -279,7 +279,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// to delegate to the appropriate type-specific generation method.
     /// </remarks>
     protected virtual TypeDeclarationSyntax GenerateTypeDeclaration(
-        GenerateSourceRequest request,
+        IGenerateSourceRequest request,
         IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
@@ -310,7 +310,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A <see cref="ClassDeclarationSyntax"/> representing a partial class definition for the owner.
     /// </returns>
     protected virtual ClassDeclarationSyntax GenerateClassDeclaration(
-        GenerateSourceRequest request,
+        IGenerateSourceRequest request,
         IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
@@ -341,7 +341,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A <see cref="StructDeclarationSyntax"/> representing the generated struct declaration.
     /// </returns>
     protected virtual StructDeclarationSyntax GenerateStructDeclaration(
-        GenerateSourceRequest request,
+        IGenerateSourceRequest request,
         IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
@@ -372,7 +372,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A <see cref="RecordDeclarationSyntax"/> representing the generated record class declaration.
     /// </returns>
     protected virtual RecordDeclarationSyntax GenerateClassRecordDeclaration(
-        GenerateSourceRequest request,
+        IGenerateSourceRequest request,
         IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
@@ -404,7 +404,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// A <see cref="RecordDeclarationSyntax"/> representing the generated record struct declaration.
     /// </returns>
     protected virtual RecordDeclarationSyntax GenerateStructRecordDeclaration(
-        GenerateSourceRequest request,
+        IGenerateSourceRequest request,
         IEnumerable<MemberDeclarationSyntax> memberDeclarationSyntaxes)
     {
         var owner = request.Properties[0].Owner;
@@ -522,7 +522,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// and additional members if required. It combines these members into a complete compilation unit,
     /// normalizes the generated syntax, and returns the resulting source text.
     /// </remarks>
-    protected virtual SourceText GenerateSourceText(GenerateSourceRequest generateSourceRequest)
+    protected virtual SourceText GenerateSourceText(IGenerateSourceRequest generateSourceRequest)
     {
         // Generate any new fields needed (skip existing fields)
         using var fieldsRented = ListsPool.Rent<FieldDeclarationSyntax>();
@@ -589,7 +589,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// This method uses a simple type check to collect requests of the specified type. 
     /// If the input array is empty or uninitialized, it returns an empty array.
     /// </remarks>
-    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<IGenerateSourceRequest> generateSourceRequests) where T : GenerateSourceRequest
+    protected virtual ImmutableArray<T> FilterCandidates<T>(in ICollection<IGenerateSourceRequest> generateSourceRequests) where T : IGenerateSourceRequest
     {
         if (generateSourceRequests.Count == 0)
         {
@@ -627,7 +627,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// This method allows more flexible filtering logic by applying the provided delegate function 
     /// to each request. It excludes <c>null</c> results from the final array.
     /// </remarks>
-    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<IGenerateSourceRequest> generateSourceRequests, Func<IGenerateSourceRequest, T?> filter) where T : GenerateSourceRequest
+    protected virtual ImmutableArray<T> FilterCandidates<T>(ImmutableArray<IGenerateSourceRequest> generateSourceRequests, Func<IGenerateSourceRequest, T?> filter) where T : IGenerateSourceRequest
     {
         if (generateSourceRequests.IsDefaultOrEmpty)
         {

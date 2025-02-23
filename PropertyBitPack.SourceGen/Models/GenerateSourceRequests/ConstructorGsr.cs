@@ -8,13 +8,13 @@ using System.Text;
 
 namespace PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 
-internal sealed class ReadOnlyFieldGsr(ImmutableArray<IFieldRequest> fieldRequests, ImmutableArray<BitFieldPropertyInfoRequest> properties, IConstructorRequest constructorRequest) : GenerateSourceRequest, IReadOnlyFieldGsr
+internal sealed class ConstructorGsr(ImmutableArray<IFieldRequest> fieldRequests, ImmutableArray<BitFieldPropertyInfoRequest> properties, IConstructorRequest constructorRequest) : GenerateSourceRequest, IReadOnlyFieldGsr
 {
     public override ImmutableArray<IFieldRequest> Fields { get; } = fieldRequests;
     public override ImmutableArray<BitFieldPropertyInfoRequest> Properties { get; } = properties;
     public IConstructorRequest ConstructorRequest { get; } = constructorRequest;
 
-    public ReadOnlyFieldGsr(IFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties, IConstructorRequest constructorRequest): this([fieldRequest], properties, constructorRequest)
+    public ConstructorGsr(IFieldRequest fieldRequest, ImmutableArray<BitFieldPropertyInfoRequest> properties, IConstructorRequest constructorRequest): this([fieldRequest], properties, constructorRequest)
     {
     }
 }

@@ -46,7 +46,7 @@ internal sealed class ExtendedPropertySyntaxGenerator(PropertyBitPackGeneratorCo
     /// <returns>
     /// <c>true</c> if the property is annotated with <see cref="IParsedExtendedBitFiledAttribute"/>; otherwise, <c>false</c>.
     /// </returns>
-    protected override bool IsCandidate(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    protected override bool IsCandidate(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         return bitFieldPropertyInfoRequest.AttributeParsedResult is IParsedExtendedBitFiledAttribute;
     }

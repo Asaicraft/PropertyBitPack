@@ -24,5 +24,5 @@ internal interface IPropertySyntaxGenerator
     /// <returns>
     /// A <see cref="PropertyDeclarationSyntax"/> representing the generated property, or <c>null</c> if generation is not applicable.
     /// </returns>
-    public PropertyDeclarationSyntax? GenerateProperty(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember);
+    public PropertyDeclarationSyntax? GenerateProperty(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, out ImmutableArray<MemberDeclarationSyntax> additionalMember);
 }

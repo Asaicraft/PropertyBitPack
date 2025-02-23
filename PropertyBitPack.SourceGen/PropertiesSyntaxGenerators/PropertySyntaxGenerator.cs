@@ -7,7 +7,7 @@ using System.Text;
 namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 internal sealed class PropertySyntaxGenerator(PropertyBitPackGeneratorContext propertyBitPackGeneratorContext) : BasePropertySyntaxGenerator(propertyBitPackGeneratorContext)
 {
-    protected override bool IsCandidate(GenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    protected override bool IsCandidate(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
     {
         return true;
     }

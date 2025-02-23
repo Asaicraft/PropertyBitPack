@@ -249,14 +249,23 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
             return true;
         }
 
-        if (!TryGetConstantValue<AccessModifier>(attributeData, ConstructorAccessModifier, out var candidateAccessModifier))
+        if (!TryGetConstantValue<object>(attributeData, ConstructorAccessModifier, out var candidateAccessModifier))
         {
             // How is it possible to have a null value here?
             // AttributeArgumentSyntax was found, but not in the attribute data.
             ThrowHelper.ThrowUnreachableException("AttributeArgumentSyntax found, but not in data.");
         }
 
-        accessModifier = candidateAccessModifier;
+        if(candidateAccessModifier is AccessModifier enumAccessModifer)
+        {
+            accessModifier = enumAccessModifer;
+        }
+
+        if(candidateAccessModifier is int intAccessModifer)
+        {
+            accessModifier = (AccessModifier)intAccessModifer;
+        }
+
         return true;
     }
 
