@@ -19,8 +19,20 @@ internal sealed class ConstructorGsr(ImmutableArray<IFieldRequest> fieldRequests
     {
     }
 
-    public void ModifyFileName(scoped ref readonly StringBuilder stringBuilder)
+    public void ModifyFileName(scoped ref readonly StringBuilder fileNameBuilder)
     {
-        stringBuilder.Insert(0, "Constructor_");
+        using var rentedStringBuilder = StringBuildersPool.Rent();
+        var stringBuilder = rentedStringBuilder.StringBuilder;
+
+        stringBuilder.Append($"Constructor_{ConstructorRequest.ConstructorAccessModifier}");
+
+        for (var i = 0; i < Properties.Length; i++)
+        {
+            var property = Properties[i];
+
+            stringBuilder.Append($"_{property.PropertySymbol.Name}");
+        }
+
+        fileNameBuilder.Insert(0, stringBuilder.ToString());
     }
 }

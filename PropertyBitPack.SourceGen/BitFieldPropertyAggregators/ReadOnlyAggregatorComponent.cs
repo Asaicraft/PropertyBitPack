@@ -68,7 +68,7 @@ internal sealed class ReadOnlyAggregatorComponent
         var allReadyRequests = requestsBuilder.ToImmutable();
 
         // Use a builder to construct the final set of IReadOnlyFieldGsr objects.
-        using var readOnlyFieldGsrBuilder = new ImmutableArrayBuilder<IReadOnlyFieldGsr>();
+        using var readOnlyFieldGsrBuilder = ImmutableArrayBuilder<IReadOnlyFieldGsr>.Rent();
 
         // Group the requests to organize fields and properties by owner + access modifier.
         var grouped = Group(allReadyRequests);
@@ -114,7 +114,7 @@ internal sealed class ReadOnlyAggregatorComponent
         for (var i = 0; i < ownerFieldInfo.Properties.Length; i++)
         {
             var property = ownerFieldInfo.Properties[i];
-            var parameter = new ParamRequest(property.PropertyType.SpecialType, property.PropertyType.Name);
+            var parameter = new ParamRequest(property.PropertyType.SpecialType, property.PropertySymbol.Name);
             parametersBuilder.Add(parameter);
         }
 
