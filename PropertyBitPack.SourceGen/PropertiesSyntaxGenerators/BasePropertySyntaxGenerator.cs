@@ -160,7 +160,10 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// A <see cref="BlockSyntax"/> containing the logic to set the value of the property.
     /// </returns>
-    protected virtual BlockSyntax SetterBlockSyntax(BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    public virtual BlockSyntax SetterBlockSyntax(BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest, 
+        string valueVariableName = "value", 
+        string maxValueVariableName = "maxValue_",
+        string clampedValueVariableName = "clamped_")
     {
         var fieldType = bitFieldPropertyInfoRequest.BitsSpan.FieldRequest.FieldType;
         var fieldTypeSyntax = BitwiseSyntaxHelpers.GetTypeSyntaxFromSpecialType(fieldType);
@@ -183,7 +186,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
                 start,
                 length,
                 propertySymbol,
-                "value"
+                valueVariableName
             );
 
             statements.Add(ExpressionStatement(boolAssignment));
@@ -191,15 +194,15 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         else
         {
             // 1) const T maxValue_ = ((1 << length) - 1);
-            var maxValueDecl = BitwiseSyntaxHelpers.BuildConstMaskDeclaration("maxValue_", fieldType, length);
+            var maxValueDecl = BitwiseSyntaxHelpers.BuildConstMaskDeclaration(maxValueVariableName, fieldType, length);
             statements.Add(maxValueDecl);
 
             // 2) var clamped_ = Math.Min((T)value, maxValue_);
             var clampedDecl = BitwiseSyntaxHelpers.BuildClampedVarDeclaration(
-                "clamped_",
+                clampedValueVariableName,
                 fieldType,
-                IdentifierName("value"),
-                "maxValue_"
+                IdentifierName(valueVariableName),
+                maxValueVariableName
             );
             statements.Add(clampedDecl);
 
@@ -210,7 +213,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
                 start,
                 length,
                 propertySymbol,
-                "clamped_"
+                clampedValueVariableName
             );
             statements.Add(ExpressionStatement(assignmentExpr));
         }
@@ -284,7 +287,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// An <see cref="ExpressionSyntax"/> representing the bitwise operation to set or initialize the value.
     /// </returns>
-    protected virtual ExpressionSyntax SetOrInitBitwiseExpression(BitFieldPropertyInfoRequest bitFieldInfo)
+    public virtual ExpressionSyntax SetOrInitBitwiseExpression(BitFieldPropertyInfoRequest bitFieldInfo, string valueVariableName = "value")
     {
         var fieldType = bitFieldInfo.BitsSpan.FieldRequest.FieldType;
         var fieldName = bitFieldInfo.BitsSpan.FieldRequest.Name;
@@ -292,17 +295,17 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         var length = bitFieldInfo.BitsSpan.Length;
         var propertySymbol = bitFieldInfo.PropertySymbol;
 
-        return SetOrInitBitwiseExpression(fieldType, fieldName, start, length, propertySymbol, "value");
+        return SetOrInitBitwiseExpression(fieldType, fieldName, start, length, propertySymbol, valueVariableName);
     }
 
     /// <summary>
     /// Builds the expression: ((fieldName >> start) & 1) == 1
     /// </summary>
-    protected virtual ExpressionSyntax BoolGetterExpression(SpecialType fieldType, string fieldName, byte start)
+    public virtual ExpressionSyntax BoolGetterExpression(SpecialType fieldType, string fieldName, byte start)
     {
         // Step 1: shift the fieldName by 'start' bits to the right
         var shifted = BitwiseSyntaxHelpers.BuildRightShift(
-            IdentifierName(fieldName),
+            BitwiseSyntaxHelpers.ThisAccessExpression(fieldName),
             start
         );
 
@@ -326,7 +329,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <summary>
     /// Builds the expression: (TargetType)(((fieldName >> start) & ((1 << length) - 1)))
     /// </summary>
-    protected virtual ExpressionSyntax MultiBitGetterExpression(
+    public virtual ExpressionSyntax MultiBitGetterExpression(
         SpecialType fieldType,
         string fieldName,
         byte start,
@@ -335,7 +338,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     {
         // Step 1: (fieldName >> start)
         var shifted = BitwiseSyntaxHelpers.BuildRightShift(
-            IdentifierName(fieldName),
+            BitwiseSyntaxHelpers.ThisAccessExpression(fieldName),
             start
         );
 
@@ -362,7 +365,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// An <see cref="ExpressionSyntax"/> representing the bitwise operation to set or initialize the value.
     /// </returns>
-    protected virtual ExpressionSyntax SetOrInitBitwiseExpression(SpecialType fieldType, string fieldName, byte start, byte length, IPropertySymbol propertySymbol, string valueVariableName)
+    public virtual ExpressionSyntax SetOrInitBitwiseExpression(SpecialType fieldType, string fieldName, byte start, byte length, IPropertySymbol propertySymbol, string valueVariableName)
     {
         var propertyTypeSyntax = GetTypeSyntax(propertySymbol);
 
@@ -388,17 +391,17 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// An <see cref="ExpressionSyntax"/> representing the conditional assignment expression for a boolean field.
     /// </returns>
-    protected virtual ExpressionSyntax ConditionalAssignmentExpression(SpecialType fieldType, string fieldName, byte start, string valueVariableName)
+    public virtual ExpressionSyntax ConditionalAssignmentExpression(SpecialType fieldType, string fieldName, byte start, string valueVariableName)
     {
         // fieldName | (1 << start)
         var setBit = BitwiseSyntaxHelpers.BuildOr(
-            IdentifierName(fieldName),
+            BitwiseSyntaxHelpers.ThisAccessExpression(fieldName),
             BitwiseSyntaxHelpers.BuildMaskShifted(fieldType, 1, start) // (1 << start)
         );
 
         // fieldName & ~(1 << start)
         var clearBit = BitwiseSyntaxHelpers.BuildLeftAndMask(
-            IdentifierName(fieldName),
+            BitwiseSyntaxHelpers.ThisAccessExpression(fieldName),
             BitwiseSyntaxHelpers.BuildMaskShifted(fieldType, 1, start) // (1 << start)
         );
 
@@ -409,7 +412,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
             ParenthesizedExpression(clearBit)
         );
 
-        return BitwiseSyntaxHelpers.BuildAssignment(
+        return BitwiseSyntaxHelpers.BuildThisAssignment(
             fieldName,
             conditionExpression,
             fieldType
@@ -426,12 +429,12 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// <returns>
     /// An <see cref="ExpressionSyntax"/> representing the assignment expression for a multi-bit field.
     /// </returns>
-    protected virtual ExpressionSyntax MultiBitAssignmentExpression(SpecialType fieldType, string fieldName, byte start, byte length, string valueVariableName, TypeSyntax propertyType)
+    public virtual ExpressionSyntax MultiBitAssignmentExpression(SpecialType fieldType, string fieldName, byte start, byte length, string valueVariableName, TypeSyntax propertyType)
     {
         // Left operand:
         //   (fieldName & ~(((1 << length) - 1) << start))
         var leftMask = BitwiseSyntaxHelpers.BuildLeftAndMask(
-            IdentifierName(fieldName),
+            BitwiseSyntaxHelpers.ThisAccessExpression(fieldName),
             BitwiseSyntaxHelpers.BuildMaskShifted(fieldType, length, start)
         );
 
@@ -448,7 +451,7 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         //   leftMask | rightMask
         var combinedExpr = BitwiseSyntaxHelpers.BuildOr(leftMask, rightMask);
 
-        return BitwiseSyntaxHelpers.BuildAssignment(
+        return BitwiseSyntaxHelpers.BuildThisAssignment(
             fieldName,
             combinedExpr,
             fieldType

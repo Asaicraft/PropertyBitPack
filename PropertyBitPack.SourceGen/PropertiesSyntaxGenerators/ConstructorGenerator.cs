@@ -47,7 +47,7 @@ internal sealed class ConstructorGenerator : BasePropertiesSyntaxGenerator
 
         return ConstructorDeclaration(
             List<AttributeListSyntax>(),
-            TokenList(GetAccessModifer(constructorGsr.ConstructorRequest.ConstructorAccessModifier)),
+            BitwiseSyntaxHelpers.GetAccessModifers(constructorGsr.ConstructorRequest.ConstructorAccessModifier),
             Identifier(owner.Name),
             GenerateParameterListSyntax(constructorRequest),
             null,
@@ -55,24 +55,71 @@ internal sealed class ConstructorGenerator : BasePropertiesSyntaxGenerator
         );
     }
 
+    /// <summary>
+    /// Generates a constructor block that initializes bit-field properties based on constructor parameters.
+    /// </summary>
+    /// <param name="constructorGsr">The <see cref="ConstructorGsr"/> containing property information.</param>
+    /// <param name="constructorRequest">The <see cref="IConstructorRequest"/> containing parameter details.</param>
+    /// <returns>A <see cref="BlockSyntax"/> representing the constructor body.</returns>
     private BlockSyntax GenerateBlockSyntax(ConstructorGsr constructorGsr, IConstructorRequest constructorRequest)
     {
-        using var rentedStatements = ListsPool.Rent<StatementSyntax>();
-        var statements = rentedStatements.List;
+        // Here we will accumulate all expressions inside the constructor
+        using var statementsRented = ListsPool.Rent<StatementSyntax>();
+        var statements = statementsRented.List;
 
-        throw new NotImplementedException();
-    }
+        // We need to find the corresponding BitFieldPropertyInfoRequest for each parameter.
+        // Let's assume a 1:1 match by name: if a parameter has the name "flag1",
+        // then the corresponding property (BitFieldPropertyInfoRequest) has propertySymbol.Name = "flag1".
+        //
+        // If you have more complex matching rules, replace this search logic with your own.
 
-    private SyntaxToken GetAccessModifer(AccessModifier accessModifier)
-    {
-        return accessModifier switch
+        for (var i = 0; i < constructorRequest.ParamRequests.Length; i++)
         {
-            AccessModifier.Public => Token(SyntaxKind.PublicKeyword),
-            AccessModifier.Protected => Token(SyntaxKind.ProtectedKeyword),
-            AccessModifier.Internal => Token(SyntaxKind.InternalKeyword),
-            AccessModifier.Private => Token(SyntaxKind.PrivateKeyword),
-            _ => throw new ArgumentOutOfRangeException(nameof(accessModifier))
-        };
+            var paramRequest = constructorRequest.ParamRequests[i];
+            var paramName = paramRequest.Name;
+
+            // Find the property whose propertySymbol.Name matches the parameter name
+            BitFieldPropertyInfoRequest? propertyInfo = null;
+            for (var propertyIndex = 0; propertyIndex < constructorGsr.Properties.Length; propertyIndex++)
+            {
+                var property = constructorGsr.Properties[propertyIndex];
+                if (property.PropertySymbol.Name == paramName)
+                {
+                    propertyInfo = property;
+                    break;
+                }
+            }
+
+            if (propertyInfo is null)
+            {
+                continue;
+            }
+
+            var propertyGenerator = FindPropertySyntaxGenerator(constructorGsr, propertyInfo);
+
+            if (propertyGenerator is not BasePropertySyntaxGenerator basePropertySyntaxGenerator)
+            {
+                continue;
+            }
+
+            // Extract all necessary information from propertyInfo
+            var fieldType = propertyInfo.BitsSpan.FieldRequest.FieldType;
+            var fieldName = propertyInfo.BitsSpan.FieldRequest.Name;
+            var start = propertyInfo.BitsSpan.Start;
+            var length = propertyInfo.BitsSpan.Length;
+
+            var setterBlock = basePropertySyntaxGenerator.SetterBlockSyntax(
+                propertyInfo,
+                valueVariableName: paramName,
+                maxValueVariableName: $"max{paramName}_",
+                clampedValueVariableName: $"clamped{paramName}_"
+            );
+
+            statements.Add(setterBlock);
+        }
+
+        // Finally, return the completed Block(...)
+        return Block(statements);
     }
 
     private ParameterListSyntax GenerateParameterListSyntax(IConstructorRequest constructorRequest)

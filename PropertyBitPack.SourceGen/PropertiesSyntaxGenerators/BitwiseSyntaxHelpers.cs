@@ -15,6 +15,96 @@ internal static class BitwiseSyntaxHelpers
 {
 
     /// <summary>
+    /// Gets the corresponding C# access modifiers as a <see cref="SyntaxTokenList"/>.
+    /// </summary>
+    /// <param name="accessModifier">The <see cref="AccessModifier"/> value to convert.</param>
+    /// <returns>A <see cref="SyntaxTokenList"/> containing the appropriate access modifier tokens.</returns>
+    /// <exception cref="NotSupportedException">Thrown if the provided <paramref name="accessModifier"/> is not recognized.</exception>
+    public static SyntaxTokenList GetAccessModifers(AccessModifier accessModifier)
+    {
+        return accessModifier switch
+        {
+            AccessModifier.Public => TokenList(Token(SyntaxKind.PublicKeyword)),
+            AccessModifier.Protected => TokenList(Token(SyntaxKind.ProtectedKeyword)),
+            AccessModifier.Internal => TokenList(Token(SyntaxKind.InternalKeyword)),
+            AccessModifier.ProtectedInternal => TokenList(Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.InternalKeyword)),
+            AccessModifier.Private => TokenList(Token(SyntaxKind.PrivateKeyword)),
+            AccessModifier.PrivateProtected => TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ProtectedKeyword)),
+            AccessModifier.Default => TokenList(),
+            _ => throw new NotSupportedException()
+        };
+    }
+
+    /// <summary>
+    /// Builds a field declaration with the specified type, name, access modifier, and optional read-only modifier.
+    /// </summary>
+    /// <param name="specialType">The <see cref="SpecialType"/> representing the field type.</param>
+    /// <param name="fieldedName">The name of the field.</param>
+    /// <param name="accessModifier">The access modifier for the field (default is <see cref="AccessModifier.Private"/>).</param>
+    /// <param name="isReadOnly">Indicates whether the field should be read-only.</param>
+    /// <returns>A <see cref="FieldDeclarationSyntax"/> representing the generated field declaration.</returns>
+    public static FieldDeclarationSyntax BuildField(
+        SpecialType specialType,
+        string fieldedName,
+        AccessModifier accessModifier = AccessModifier.Private,
+        bool isReadOnly = false)
+    {
+        var fieldType = GetTypeSyntaxFromSpecialType(specialType);
+        var accessModifierTokens = GetAccessModifers(accessModifier);
+
+        var modifiers = isReadOnly ? TokenList(Token(SyntaxKind.ReadOnlyKeyword)) : TokenList();
+        modifiers = accessModifierTokens.AddRange(modifiers);
+
+        return FieldDeclaration(
+            List<AttributeListSyntax>(),
+            modifiers,
+            VariableDeclaration(
+                fieldType,
+                SingletonSeparatedList(
+                    VariableDeclarator(fieldedName)
+                )
+            )
+        );
+    }
+
+    /// <summary>
+    /// Builds an expression to set bits in <paramref name="currentValueExpr"/>
+    /// using <paramref name="newValueExpr"/> within the specified start and length.
+    /// For example: <c>( (current &amp; ~(mask &lt;&lt; start)) | ((newValue &amp; mask) &lt;&lt; start) )</c>.
+    /// </summary>
+    /// <param name="currentValueExpr">The expression representing the current value holding bits.</param>
+    /// <param name="newValueExpr">The expression representing the new value to apply bits from.</param>
+    /// <param name="fieldType">The <see cref="SpecialType"/> for numeric type operations.</param>
+    /// <param name="start">The starting bit position.</param>
+    /// <param name="length">The number of bits to set.</param>
+    /// <returns>An <see cref="ExpressionSyntax"/> combining both bit operations.</returns>
+    public static ExpressionSyntax BuildBitSet(
+        ExpressionSyntax currentValueExpr,
+        ExpressionSyntax newValueExpr,
+        SpecialType fieldType,
+        byte start,
+        byte length)
+    {
+        // 1) (currentValueExpr & ~(... << start))
+        var leftAndMask = BuildLeftAndMask(
+            currentValueExpr,
+            BuildMaskShifted(fieldType, length, start)
+        );
+
+        // 2) ((newValueExpr & mask) << start)
+        var rightValueShift = BuildValueAndShift(
+            newValueExpr,
+            fieldType,
+            length,
+            start
+        );
+
+        // 3) Combine via bitwise OR
+        return BuildOr(leftAndMask, rightValueShift);
+    }
+
+
+    /// <summary>
     /// Generates a setter accessor syntax with the specified modifiers and body.
     /// </summary>
     /// <param name="modifiers">The modifiers for the setter accessor.</param>
@@ -97,31 +187,34 @@ internal static class BitwiseSyntaxHelpers
     }
 
     /// <summary>
-    /// Builds an invocation of Math.Min, e.g. <c>Math.Min(left, right)</c>.
+    /// Builds an invocation of <c>global::System.Math.Min</c>, e.g. <c>global::System.Math.Min(left, right)</c>.
     /// </summary>
     /// <param name="left">The left-hand argument to Math.Min.</param>
     /// <param name="right">The right-hand argument to Math.Min.</param>
-    /// <returns>An <see cref="InvocationExpressionSyntax"/> representing the Math.Min call.</returns>
+    /// <returns>An <see cref="InvocationExpressionSyntax"/> representing the global System.Math.Min call.</returns>
     public static InvocationExpressionSyntax BuildMathMin(ExpressionSyntax left, ExpressionSyntax right)
     {
         return InvocationExpression(
-            MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                IdentifierName("Math"),
-                IdentifierName("Min")
-            ),
-            ArgumentList(
-                SeparatedList<ArgumentSyntax>(
-                    new SyntaxNodeOrToken[]
-                    {
-                        Argument(left),
-                        Token(SyntaxKind.CommaToken),
-                        Argument(right)
-                    }
-                )
-            )
-        );
+                   MemberAccessExpression(
+                       SyntaxKind.SimpleMemberAccessExpression,
+                       MemberAccessExpression(
+                           SyntaxKind.SimpleMemberAccessExpression,
+                           AliasQualifiedName(
+                               IdentifierName(Token(SyntaxKind.GlobalKeyword)),
+                               IdentifierName("System")),
+                           IdentifierName("Math")),
+                       IdentifierName("Min")))
+               .WithArgumentList(
+                   ArgumentList(
+                       SeparatedList<ArgumentSyntax>(
+                           new SyntaxNodeOrToken[]
+                           {
+                                Argument(left),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(right)
+                           })));
     }
+
 
     /// <summary>
     /// Builds a local declaration of the form:
@@ -146,10 +239,10 @@ internal static class BitwiseSyntaxHelpers
             ParenthesizedExpression(valueExpr)
         );
 
-        // Math.Min((T)value, maxValue_)
+        // global::System.Math.Min((T)value, maxValue_)
         var minCall = BuildMathMin(castedValue, IdentifierName(maxValueVar));
 
-        // var clamped_ = Math.Min(...);
+        // var clamped_ = global::System.Math.Min(...);
         return LocalDeclarationStatement(
             VariableDeclaration(
                 IdentifierName("var"),
@@ -308,6 +401,42 @@ internal static class BitwiseSyntaxHelpers
             )
         );
     }
+
+    /// <summary>
+    /// Builds an assignment expression of the form <c>this.fieldName = (T)someExpr</c>.
+    /// </summary>
+    /// <param name="fieldName">The name of the field to assign to.</param>
+    /// <param name="someExpr">The expression to be assigned to the field.</param>
+    /// <param name="fieldType">The <see cref="SpecialType"/> representing the type of the field.</param>
+    /// <returns>An <see cref="ExpressionSyntax"/> representing the assignment operation.</returns>
+    public static ExpressionSyntax BuildThisAssignment(
+        string fieldName,
+        ExpressionSyntax someExpr,
+        SpecialType fieldType)
+    {
+        var castTypeSyntax = GetTypeSyntaxFromSpecialType(fieldType);
+
+        return AssignmentExpression(
+            SyntaxKind.SimpleAssignmentExpression,
+            ThisAccessExpression(fieldName),
+            CastExpression(
+                castTypeSyntax,
+                ParenthesizedExpression(someExpr)
+            )
+        );
+    }
+
+    /// <summary>
+    /// Constructs a member access expression for accessing a field on <c>this</c>.
+    /// For example, <c>this.fieldName</c>.
+    /// </summary>
+    /// <param name="fieldName">The name of the field to access.</param>
+    /// <returns>A <see cref="MemberAccessExpressionSyntax"/> representing <c>this.fieldName</c>.</returns>
+    public static MemberAccessExpressionSyntax ThisAccessExpression(string fieldName) => MemberAccessExpression(
+        SyntaxKind.SimpleMemberAccessExpression,
+        ThisExpression(),
+        IdentifierName(fieldName)
+    );
 
     /// <summary>
     /// Builds an expression for right shifting the <paramref name="leftExpr"/> by <paramref name="shiftAmount"/>.

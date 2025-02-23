@@ -87,7 +87,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// </remarks>
     protected virtual ImmutableArray<IPropertySyntaxGenerator> GenereatePropertySyntaxGenerators(PropertyBitPackGeneratorContext context)
     {
-        if(!DefaultPropertySyntaxGenerators.IsDefaultOrEmpty)
+        if (!DefaultPropertySyntaxGenerators.IsDefaultOrEmpty)
         {
             return DefaultPropertySyntaxGenerators;
         }
@@ -98,7 +98,7 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
             new PropertySyntaxGenerator(context),
         };
 
-        return 
+        return
             DefaultPropertySyntaxGenerators = Unsafe.As<IPropertySyntaxGenerator[], ImmutableArray<IPropertySyntaxGenerator>>(ref generators);
     }
 
@@ -125,22 +125,11 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     /// <param name="generateSourceRequest">The source generation request containing context information.</param>
     /// <param name="fieldRequest">The field request containing details about the field to generate.</param>
     /// <returns>A <see cref="FieldDeclarationSyntax"/> representing the generated field.</returns>
-    protected virtual FieldDeclarationSyntax GenerateField(IGenerateSourceRequest generateSourceRequest, IFieldRequest fieldRequest)
+    protected virtual FieldDeclarationSyntax GenerateField(IGenerateSourceRequest generateSourceRequest, IFieldRequest fieldRequest, bool isReadOnly = false)
     {
         Debug.Assert(!fieldRequest.IsExist);
 
-        var fieldType = GetTypeSyntaxFrom(fieldRequest.FieldType);
-
-        var fieldDeclaration = FieldDeclaration(
-            VariableDeclaration(
-                fieldType,
-                SingletonSeparatedList(
-                    VariableDeclarator(
-                        fieldRequest.Name
-                    )
-                )
-            )
-        );
+        var fieldDeclaration = BitwiseSyntaxHelpers.BuildField(fieldRequest.FieldType, fieldRequest.Name, isReadOnly: isReadOnly);
 
         return fieldDeclaration;
     }
@@ -168,9 +157,12 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
     {
         PropertyDeclarationSyntax? propertyDeclaration = null;
 
-        foreach (var propertyGenerator in PropertySyntaxGenerators)
+        for (var i = 0; i < PropertySyntaxGenerators.Length; i++)
         {
+            var propertyGenerator = PropertySyntaxGenerators[i];
+
             propertyDeclaration = propertyGenerator.GenerateProperty(generateSourceRequest, bitFieldPropertyInfoRequest, out additionalMembers);
+
             if (propertyDeclaration is not null)
             {
                 break;
@@ -287,15 +279,15 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         return owner.TypeKind switch
         {
 
-            TypeKind.Class => !owner.IsRecord 
+            TypeKind.Class => !owner.IsRecord
                 ? GenerateClassDeclaration(request, memberDeclarationSyntaxes)
                 : GenerateClassRecordDeclaration(request, memberDeclarationSyntaxes),
 
             TypeKind.Struct => !owner.IsRecord
                 ? GenerateStructDeclaration(request, memberDeclarationSyntaxes)
                 : GenerateStructRecordDeclaration(request, memberDeclarationSyntaxes),
-            
-            _ => throw new UnreachableException() 
+
+            _ => throw new UnreachableException()
         };
     }
 
@@ -646,6 +638,23 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         }
 
         return candidateRequestsBuilder.ToImmutable();
+    }
+
+
+    protected virtual IPropertySyntaxGenerator? FindPropertySyntaxGenerator(IGenerateSourceRequest sourceRequest, BitFieldPropertyInfoRequest bitFieldPropertyInfoRequest)
+    {
+        var generators = GenereatePropertySyntaxGenerators(PropertyBitPackGeneratorContext);
+
+        for (var i = 0; i < generators.Length; i++)
+        {
+            var propertyGenerator = generators[i];
+
+            if (propertyGenerator.GenerateProperty(sourceRequest, bitFieldPropertyInfoRequest, out _) is { })
+            {
+                return propertyGenerator;
+            }
+        }
+        return null!;
     }
 
     /// <summary>
