@@ -211,6 +211,11 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
         // Append the suffix to the filename
         stringBuilder.Append(".BitPack.g.cs");
 
+        if(request is IFileNameModifier nameModifier)
+        {
+            nameModifier.ModifyFileName(in stringBuilder);
+        }
+
         return stringBuilder.ToString();
     }
 
