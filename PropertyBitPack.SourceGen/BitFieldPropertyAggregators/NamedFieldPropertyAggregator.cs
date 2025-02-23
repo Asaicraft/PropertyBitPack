@@ -21,24 +21,8 @@ namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 internal sealed class NamedFieldPropertyAggregator : BaseBitFieldPropertyAggregator
 {
 
-    /// <summary>
-    /// Aggregates properties into named fields, grouping by field name and owner,
-    /// and ensuring each field's bit size does not exceed the maximum allowed capacity.
-    /// </summary>
-    /// <param name="properties">
-    /// A collection of <see cref="BaseBitFieldPropertyInfo"/> to be processed.
-    /// </param>
-    /// <param name="requestsBuilder">
-    /// The builder used to accumulate generated source requests.
-    /// </param>
-    /// <param name="diagnostics">
-    /// The builder used to collect any diagnostic issues encountered during processing.
-    /// </param>
-    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    protected override void SelectCandidatesCore(IReadOnlyCollection<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics, in ImmutableArrayBuilder<BaseBitFieldPropertyInfo> candidates)
     {
-        // Collects properties that have named but non-existing fields.
-        using var unnamedFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
-
         foreach (var property in properties)
         {
             var fieldName = property.AttributeParsedResult.FieldName;
@@ -55,19 +39,35 @@ internal sealed class NamedFieldPropertyAggregator : BaseBitFieldPropertyAggrega
                 continue;
             }
 
-            unnamedFieldPropertiesBuilder.Add(property);
+            candidates.Add(property);
         }
+    }
 
-        var unnamedFieldProperties = unnamedFieldPropertiesBuilder.ToImmutable();
+    /// <summary>
+    /// Aggregates properties into named fields, grouping by field name and owner,
+    /// and ensuring each field's bit size does not exceed the maximum allowed capacity.
+    /// </summary>
+    /// <param name="properties">
+    /// A collection of <see cref="BaseBitFieldPropertyInfo"/> to be processed.
+    /// </param>
+    /// <param name="requestsBuilder">
+    /// The builder used to accumulate generated source requests.
+    /// </param>
+    /// <param name="diagnostics">
+    /// The builder used to collect any diagnostic issues encountered during processing.
+    /// </param>
+    protected override void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    {
+        var namedFieldProperties = SelectCandiadates(properties, in diagnostics);
 
         // If no unnamed properties are found, exit early.
-        if (unnamedFieldProperties.Length == 0)
+        if (namedFieldProperties.Length == 0)
         {
             return;
         }
 
         // Group properties by field name and owner.
-        var groupedFieldProperties = GroupPropertiesByFieldNameAndOwner(unnamedFieldProperties);
+        var groupedFieldProperties = GroupPropertiesByFieldNameAndOwner(namedFieldProperties);
 
         for (var i = 0; i < groupedFieldProperties.Length; i++)
         {

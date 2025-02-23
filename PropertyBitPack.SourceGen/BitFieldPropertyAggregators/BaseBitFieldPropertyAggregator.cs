@@ -58,6 +58,53 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics);
 
     /// <summary>
+    /// Selects candidate properties for processing.
+    /// </summary>
+    /// <param name="properties">A collection of bit-field properties to evaluate.</param>
+    /// <param name="diagnostics">A builder for collecting diagnostics during the selection process.</param>
+    /// <param name="candidates">A builder for collecting selected candidate properties.</param>
+    /// <remarks>
+    /// This method is intended to be overridden by derived classes to implement custom selection logic.
+    /// </remarks>
+    protected virtual void SelectCandidatesCore(
+        IReadOnlyCollection<BaseBitFieldPropertyInfo> properties,
+        in ImmutableArrayBuilder<Diagnostic> diagnostics,
+        in ImmutableArrayBuilder<BaseBitFieldPropertyInfo> candidates)
+    {
+    }
+
+    /// <summary>
+    /// Selects and returns valid candidate properties from the given linked list.
+    /// </summary>
+    /// <param name="properties">A linked list of bit-field properties to evaluate.</param>
+    /// <param name="diagnostics">A builder for collecting diagnostics during the selection process.</param>
+    /// <returns>An immutable array containing the selected candidate properties.</returns>
+    /// <remarks>
+    /// This method uses <see cref="SelectCandidatesCore"/> to perform the selection and 
+    /// returns the collected candidates as an immutable array.
+    /// </remarks>
+    protected virtual ImmutableArray<BaseBitFieldPropertyInfo> SelectCandiadates(
+        ILinkedList<BaseBitFieldPropertyInfo> properties,
+        in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    {
+        // We'll gather properties that do not define a valid temporaryFieldProperties name into a temporary builder
+        using var temporaryFieldPropertiesBuilder = ImmutableArrayBuilder<BaseBitFieldPropertyInfo>.Rent();
+
+        SelectCandidatesCore(properties, in diagnostics, in temporaryFieldPropertiesBuilder);
+
+        if (temporaryFieldPropertiesBuilder.Count == 0)
+        {
+            return [];
+        }
+
+        // Convert the collected unnamed properties to an immutable array
+        var temporaryFieldProperties = temporaryFieldPropertiesBuilder.ToImmutable();
+
+        return temporaryFieldProperties;
+    }
+
+
+    /// <summary>
     /// Groups input properties by (Owner, IFieldName?) without using LINQ,
     /// utilizing DictionariesPool and ListsPool instead of <c>new Dictionary</c> and <c>new List</c>.
     /// </summary>
@@ -236,7 +283,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
                 return;
             }
 
-            // Determine the appropriate field size for the total bits (8, 16, 32, 64)
+            // Determine the appropriate temporaryFieldProperties size for the total bits (8, 16, 32, 64)
             var fieldSize = DetermineFieldBitSize(total);
 
             // Throw if an invalid bit size is encountered
@@ -252,20 +299,20 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
 
 
     /// <summary>
-    /// Converts a field request and a collection of bit field property information
+    /// Converts a temporaryFieldProperties request and a collection of bit temporaryFieldProperties property information
     /// into an immutable array of <see cref="BitFieldPropertyInfoRequest"/>.
     /// </summary>
     /// <param name="fieldRequest">
-    /// The <see cref="IFieldRequest"/> containing information about the field to be processed.
+    /// The <see cref="IFieldRequest"/> containing information about the temporaryFieldProperties to be processed.
     /// </param>
     /// <param name="bitFieldPropertyInfos">
-    /// An immutable array of <see cref="BaseBitFieldPropertyInfo"/> that provides information about the bit field properties.
+    /// An immutable array of <see cref="BaseBitFieldPropertyInfo"/> that provides information about the bit temporaryFieldProperties properties.
     /// </param>
     /// <returns>
-    /// An immutable array of <see cref="BitFieldPropertyInfoRequest"/> representing the bit field requests.
+    /// An immutable array of <see cref="BitFieldPropertyInfoRequest"/> representing the bit temporaryFieldProperties requests.
     /// </returns>
     /// <exception cref="UnreachableException">
-    /// Thrown if the total required bits exceed the maximum allowed bits for the field type.
+    /// Thrown if the total required bits exceed the maximum allowed bits for the temporaryFieldProperties type.
     /// </exception>
     protected static ImmutableArray<BitFieldPropertyInfoRequest> ToRequests(IFieldRequest fieldRequest, ImmutableArray<BaseBitFieldPropertyInfo> bitFieldPropertyInfos)
     {
@@ -303,7 +350,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     /// Validates whether the total required bits fit within the specified <see cref="BitSize"/>.
     /// </summary>
     /// <param name="bitSize">The maximum allowable bit size.</param>
-    /// <param name="requestedBits">The requested bit field properties.</param>
+    /// <param name="requestedBits">The requested bit temporaryFieldProperties properties.</param>
     /// <returns>
     /// <c>true</c> if the total required bits fit within the <see cref="BitSize"/>; otherwise, <c>false</c>.
     /// </returns>
@@ -315,9 +362,9 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
     /// <summary>
-    /// Calculates the total number of bits required for the given bit field properties.
+    /// Calculates the total number of bits required for the given bit temporaryFieldProperties properties.
     /// </summary>
-    /// <param name="requestedBits">The bit field properties.</param>
+    /// <param name="requestedBits">The bit temporaryFieldProperties properties.</param>
     /// <returns>The total number of bits required.</returns>
     protected static int RequiredBits(ImmutableArray<BaseBitFieldPropertyInfo> requestedBits)
     {
@@ -333,7 +380,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
     /// <summary>
-    /// Determines the minimal field size for a given total bit count.
+    /// Determines the minimal temporaryFieldProperties size for a given total bit count.
     /// For example, 1..8 => Byte, 9..16 => UInt16, 17..32 => UInt32, 33..64 => UInt64.
     /// </summary>
     /// <param name="bits">The total bit count.</param>
@@ -364,9 +411,9 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
     /// <summary>
-    /// Represents the calculated bits required for a bit field, including the field's capacity.
+    /// Represents the calculated bits required for a bit temporaryFieldProperties, including the temporaryFieldProperties's capacity.
     /// </summary>
-    /// <param name="fieldCapacity">The capacity of the field in bits.</param>
+    /// <param name="fieldCapacity">The capacity of the temporaryFieldProperties in bits.</param>
     /// <param name="bits">The individual bit sizes required.</param>
     protected readonly struct CalculatedBits(BitSize fieldCapacity, ImmutableArray<byte> bits)
     {
@@ -396,11 +443,11 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
 
 
     /// <summary>
-    /// Represents a group of properties associated with a specific owner and field name.
+    /// Represents a group of properties associated with a specific owner and temporaryFieldProperties name.
     /// </summary>
     /// <param name="owner">The type symbol representing the owner.</param>
-    /// <param name="fieldName">The optional field name.</param>
-    /// <param name="properties">The properties associated with the field.</param>
+    /// <param name="fieldName">The optional temporaryFieldProperties name.</param>
+    /// <param name="properties">The properties associated with the temporaryFieldProperties.</param>
     protected sealed class OwnerFieldNameGroup(INamedTypeSymbol owner, IFieldName? fieldName, ImmutableArray<BaseBitFieldPropertyInfo> properties)
     {
         public INamedTypeSymbol Owner { get; } = owner;
@@ -466,9 +513,9 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
     }
 
     /// <summary>
-    /// Gets the effective number of bits required for the given bit field property information.
+    /// Gets the effective number of bits required for the given bit temporaryFieldProperties property information.
     /// </summary>
-    /// <param name="baseBitFieldPropertyInfo">The bit field property information.</param>
+    /// <param name="baseBitFieldPropertyInfo">The bit temporaryFieldProperties property information.</param>
     /// <returns>The number of bits required.</returns>
     protected static byte GetEffectiveBitsCount(BaseBitFieldPropertyInfo baseBitFieldPropertyInfo)
     {

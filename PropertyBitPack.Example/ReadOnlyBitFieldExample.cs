@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace PropertyBitPack.Example;
 public sealed partial class ReadOnlyBitFieldExample
 {
+
     [ReadOnlyBitField(ConstructorAccessModifier = AccessModifier.Internal)]
     public partial bool Flag1 
     { 
@@ -27,6 +28,18 @@ public sealed partial class ReadOnlyBitFieldExample
 
     [ReadOnlyBitField]
     public partial int AdditionalData
+    {
+        get;
+    }
+
+    [ReadOnlyBitField(BitsCount = 15, FieldName = "_bitField")]
+    public partial int AdditionalData2
+    {
+        get;
+    }
+
+    [ReadOnlyBitField(BitsCount = 1, FieldName = "_bitField")]
+    public partial int AdditionalData3
     {
         get;
     }
