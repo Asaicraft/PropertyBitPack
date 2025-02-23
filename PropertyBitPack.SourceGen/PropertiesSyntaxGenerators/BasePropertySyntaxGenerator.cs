@@ -17,56 +17,6 @@ namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorContext propertyBitPackGeneratorContext) : IPropertySyntaxGenerator
 {
 
-    /// <summary>
-    /// Generates a setter accessor syntax with the specified modifiers and body.
-    /// </summary>
-    /// <param name="modifiers">The modifiers for the setter accessor.</param>
-    /// <param name="body">The body of the setter accessor.</param>
-    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the setter.</returns>
-    protected static AccessorDeclarationSyntax Setter(SyntaxTokenList modifiers, BlockSyntax body)
-    {
-        return AccessorDeclaration(
-            SyntaxKind.SetAccessorDeclaration,
-            List<AttributeListSyntax>(),
-            modifiers,
-            body
-        );
-    }
-
-
-    /// <summary>
-    /// Generates a getter accessor syntax with the specified body.
-    /// </summary>
-    /// <param name="body">The body of the getter accessor.</param>
-    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the getter.</returns>
-    protected static AccessorDeclarationSyntax Getter(BlockSyntax body)
-    {
-        return AccessorDeclaration(
-            SyntaxKind.GetAccessorDeclaration,
-            List<AttributeListSyntax>(),
-            TokenList(),
-            body
-        );
-    }
-
-    /// <summary>
-    /// Generates an initializer accessor syntax with the specified modifiers and body.
-    /// </summary>
-    /// <param name="modifiers">The modifiers for the initializer accessor.</param>
-    /// <param name="body">The body of the initializer accessor.</param>
-    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the initializer.</returns>
-
-    protected static AccessorDeclarationSyntax Initter(SyntaxTokenList modifiers, BlockSyntax body)
-    {
-        return AccessorDeclaration(
-            SyntaxKind.InitAccessorDeclaration,
-            List<AttributeListSyntax>(),
-            modifiers,
-            body
-        );
-    }
-
-
     private readonly PropertyBitPackGeneratorContext _propertyBitPackGeneratorContext = propertyBitPackGeneratorContext;
 
     /// <summary>
@@ -116,11 +66,11 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
 
         var modifiers = bitFieldPropertyInfoRequest.SetterOrInitModifiers;
 
-        var getter = Getter(getterBlock);
+        var getter = BitwiseSyntaxHelpers.Getter(getterBlock);
         var setterOrInitter = bitFieldPropertyInfoRequest.HasInitOrSet
             ? bitFieldPropertyInfoRequest.IsInit
-                ? Initter(modifiers, setterBlock)
-                : Setter(modifiers, setterBlock)
+                ? BitwiseSyntaxHelpers.Initter(modifiers, setterBlock)
+                : BitwiseSyntaxHelpers.Setter(modifiers, setterBlock)
             : null;
 
         AccessorListSyntax accessors;
@@ -220,7 +170,6 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         var start = bitFieldPropertyInfoRequest.BitsSpan.Start;
         var length = bitFieldPropertyInfoRequest.BitsSpan.Length;
 
-        // Collect statements for the setter block
         using var statementsRented = ListsPool.Rent<StatementSyntax>();
         var statements = statementsRented.List;
 
@@ -234,84 +183,27 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
                 start,
                 length,
                 propertySymbol,
-                "value" // In the setter, the value is represented by "value"
+                "value"
             );
 
-            // Wrap the expression in an ExpressionStatement and add to the block
             statements.Add(ExpressionStatement(boolAssignment));
         }
         else
         {
-            // For multi-bit properties, clamp the value to ensure it fits within the specified bit length
-
-            // 1) Define a constant maxValue_: const {PropertyType} maxValue_ = (1 << length) - 1;
-            var maxValueDecl = LocalDeclarationStatement(
-                VariableDeclaration(
-                    fieldTypeSyntax,
-                    SingletonSeparatedList(
-                        VariableDeclarator("maxValue_")
-                            .WithInitializer(
-                                EqualsValueClause(
-                                    BinaryExpression(
-                                        SyntaxKind.SubtractExpression,
-                                        ParenthesizedExpression(
-                                            BinaryExpression(
-                                                SyntaxKind.LeftShiftExpression,
-                                                BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType),
-                                                LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(length))
-                                            )
-                                        ),
-                                        LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))
-                                    )
-                                )
-                            )
-                    )
-                )
-            )
-            .WithModifiers(
-                TokenList(Token(SyntaxKind.ConstKeyword))
-            );
+            // 1) const T maxValue_ = ((1 << length) - 1);
+            var maxValueDecl = BitwiseSyntaxHelpers.BuildConstMaskDeclaration("maxValue_", fieldType, length);
             statements.Add(maxValueDecl);
 
-
-            // 2) Declare a clamped variable: var clamped_ = Math.Min(({PropertyType})value, maxValue_);
-            using var mathMinArguments = ListsPool.Rent<SyntaxNodeOrToken>();
-            mathMinArguments.Add(
-                Argument(
-                    CastExpression(
-                        fieldTypeSyntax,
-                        IdentifierName("value")
-                    )
-                )
-            );
-            mathMinArguments.Add(Token(SyntaxKind.CommaToken));
-            mathMinArguments.Add(Argument(IdentifierName("maxValue_")));
-
-            var clampedDecl = LocalDeclarationStatement(
-                VariableDeclaration(
-                    IdentifierName("var"),
-                    SingletonSeparatedList(
-                        VariableDeclarator("clamped_")
-                            .WithInitializer(
-                                EqualsValueClause(
-                                    InvocationExpression(
-                                        MemberAccessExpression(
-                                            SyntaxKind.SimpleMemberAccessExpression,
-                                            IdentifierName("Math"),
-                                            IdentifierName("Min")
-                                        ),
-                                        ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(mathMinArguments.List)
-                                        )
-                                    )
-                                )
-                            )
-                    )
-                )
+            // 2) var clamped_ = Math.Min((T)value, maxValue_);
+            var clampedDecl = BitwiseSyntaxHelpers.BuildClampedVarDeclaration(
+                "clamped_",
+                fieldType,
+                IdentifierName("value"),
+                "maxValue_"
             );
             statements.Add(clampedDecl);
 
-            // 3) Assign the clamped value using SetOrInitBitwiseExpression(...), replacing "value" with "clamped_"
+            // 3) fieldName = (fieldType)((fieldName & ~...) | ... )  // or whatever logic
             var assignmentExpr = SetOrInitBitwiseExpression(
                 fieldType,
                 fieldName,
@@ -320,12 +212,9 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
                 propertySymbol,
                 "clamped_"
             );
-
-            // Add the assignment as a separate statement
             statements.Add(ExpressionStatement(assignmentExpr));
         }
 
-        // Return the full block containing all statements
         return Block(statements);
     }
 
@@ -411,26 +300,24 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// </summary>
     protected virtual ExpressionSyntax BoolGetterExpression(SpecialType fieldType, string fieldName, byte start)
     {
-        // Step by step:
-        // 1) (fieldName >> start)
-        var shifted = BinaryExpression(
-            SyntaxKind.RightShiftExpression,
+        // Step 1: shift the fieldName by 'start' bits to the right
+        var shifted = BitwiseSyntaxHelpers.BuildRightShift(
             IdentifierName(fieldName),
-            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(start))
+            start
         );
 
-        // 2) ((fieldName >> start) & 1)
-        var bitAnd1 = BinaryExpression(
-            SyntaxKind.BitwiseAndExpression,
-            ParenthesizedExpression(shifted),
-            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))
+        // Step 2: (shifted & 1)
+        // Use LiteralWithSpecialType(1, fieldType) for correct integer literal based on the field's type
+        var bitAnd1 = BitwiseSyntaxHelpers.BuildAnd(
+            shifted,
+            BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType)
         );
 
-        // 3) ((fieldName >> start) & 1) == 1
+        // Step 3: compare to 1 -> ((shifted & 1) == 1)
         var equals1 = BinaryExpression(
             SyntaxKind.EqualsExpression,
             ParenthesizedExpression(bitAnd1),
-            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))
+            BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType)
         );
 
         return equals1;
@@ -446,53 +333,21 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
         byte length,
         ITypeSymbol propertyTypeSymbol)
     {
-        // Example final shape:
-        // (PropertyType)(
-        //     (
-        //       (fieldName >> start)
-        //       & ((1 << length) - 1)
-        //     )
-        // )
-
-        // 1) (fieldName >> start)
-        var shifted = BinaryExpression(
-            SyntaxKind.RightShiftExpression,
+        // Step 1: (fieldName >> start)
+        var shifted = BitwiseSyntaxHelpers.BuildRightShift(
             IdentifierName(fieldName),
-            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(start))
+            start
         );
 
-        // 2) ((1 << length) - 1)
-        var mask = BinaryExpression(
-            SyntaxKind.SubtractExpression,
-            ParenthesizedExpression(
-                BinaryExpression(
-                    SyntaxKind.LeftShiftExpression,
-                    LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1)),
-                    LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(length))
-                )
-            ),
-            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))
-        );
+        // Step 2: Apply mask of length bits to the shifted value:
+        //         (shifted & ((1 << length) - 1))
+        var masked = BitwiseSyntaxHelpers.BuildMaskExtract(shifted, fieldType, length);
 
-        // 3) ((fieldName >> start) & mask)
-        var masked = BinaryExpression(
-            SyntaxKind.BitwiseAndExpression,
-            ParenthesizedExpression(shifted),
-            ParenthesizedExpression(mask)
-        );
+        // Step 3: Cast to the target property type:
+        //         (PropertyTypeSymbol)(masked)
+        var castExpr = BitwiseSyntaxHelpers.BuildCast(propertyTypeSymbol, masked);
 
-        // 4) (PropertyType)(masked)
-        // We need a TypeSyntax for the cast. For simplicity, let's do:
-        // IdentifierName(propertyTypeSymbol.ToDisplayString())
-        // But you might want a more robust approach in real code.
-        var propertyTypeName = propertyTypeSymbol.ToDisplayString();
-        var cast = CastExpression(
-            // If this is a known primitive, you could also consider using PredefinedType(...)
-            IdentifierName(propertyTypeName),
-            ParenthesizedExpression(masked)
-        );
-
-        return cast;
+        return castExpr;
     }
 
     /// <summary>
@@ -535,47 +390,29 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// </returns>
     protected virtual ExpressionSyntax ConditionalAssignmentExpression(SpecialType fieldType, string fieldName, byte start, string valueVariableName)
     {
-        var fieldTypeSyntax = BitwiseSyntaxHelpers.GetTypeSyntaxFromSpecialType(fieldType);
-
-        // Generate the following expression:
-        // fieldName =  (fieldTypeSyntax)(valueVariableName ? (fieldName | (1 << start)) : (fieldName & ~(1 << start)))
-        return AssignmentExpression(
-            SyntaxKind.SimpleAssignmentExpression,
+        // fieldName | (1 << start)
+        var setBit = BitwiseSyntaxHelpers.BuildOr(
             IdentifierName(fieldName),
-            CastExpression(fieldTypeSyntax,
-                ParenthesizedExpression(
-                    ConditionalExpression(
-                        IdentifierName(valueVariableName),
-                        ParenthesizedExpression(
-                            BinaryExpression(
-                                SyntaxKind.BitwiseOrExpression,
-                                IdentifierName(fieldName),
-                                BinaryExpression(
-                                    SyntaxKind.LeftShiftExpression,
-                                    BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType),
-                                    LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(start))
-                                )
-                            )
-                        ),
-                        ParenthesizedExpression(
-                            BinaryExpression(
-                                SyntaxKind.BitwiseAndExpression,
-                                IdentifierName(fieldName),
-                                PrefixUnaryExpression(
-                                    SyntaxKind.BitwiseNotExpression,
-                                    ParenthesizedExpression(
-                                        BinaryExpression(
-                                            SyntaxKind.LeftShiftExpression,
-                                            BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType),
-                                            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(start))
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+            BitwiseSyntaxHelpers.BuildMaskShifted(fieldType, 1, start) // (1 << start)
+        );
+
+        // fieldName & ~(1 << start)
+        var clearBit = BitwiseSyntaxHelpers.BuildLeftAndMask(
+            IdentifierName(fieldName),
+            BitwiseSyntaxHelpers.BuildMaskShifted(fieldType, 1, start) // (1 << start)
+        );
+
+        // (valueVariableName ? setBit : clearBit)
+        var conditionExpression = ConditionalExpression(
+            IdentifierName(valueVariableName),
+            ParenthesizedExpression(setBit),
+            ParenthesizedExpression(clearBit)
+        );
+
+        return BitwiseSyntaxHelpers.BuildAssignment(
+            fieldName,
+            conditionExpression,
+            fieldType
         );
     }
 
@@ -591,75 +428,30 @@ internal abstract class BasePropertySyntaxGenerator(PropertyBitPackGeneratorCont
     /// </returns>
     protected virtual ExpressionSyntax MultiBitAssignmentExpression(SpecialType fieldType, string fieldName, byte start, byte length, string valueVariableName, TypeSyntax propertyType)
     {
-        // Left operand: (fieldName & ~(((1 << length) - 1) << start))
-        var leftAndMask = BinaryExpression(
-            SyntaxKind.BitwiseAndExpression,
+        // Left operand:
+        //   (fieldName & ~(((1 << length) - 1) << start))
+        var leftMask = BitwiseSyntaxHelpers.BuildLeftAndMask(
             IdentifierName(fieldName),
-            PrefixUnaryExpression(
-                SyntaxKind.BitwiseNotExpression,
-                ParenthesizedExpression(
-                    BinaryExpression(
-                        SyntaxKind.LeftShiftExpression,
-                        ParenthesizedExpression(
-                            BinaryExpression(
-                                SyntaxKind.SubtractExpression,
-                                ParenthesizedExpression(
-                                    BinaryExpression(
-                                        SyntaxKind.LeftShiftExpression,
-                                        BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType),
-                                        LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(length))
-                                    )
-                                ),
-                                LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))
-                            )
-                        ),
-                        LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(start))
-                    )
-                )
-            )
+            BitwiseSyntaxHelpers.BuildMaskShifted(fieldType, length, start)
         );
 
-        // Right operand: ((valueVariableName & ((1 << length) - 1)) << start)
-        var rightMaskAndShift = BinaryExpression(
-            SyntaxKind.LeftShiftExpression,
-            ParenthesizedExpression(
-                BinaryExpression(
-                    SyntaxKind.BitwiseAndExpression,
-                    IdentifierName(valueVariableName),
-                    ParenthesizedExpression(
-                        BinaryExpression(
-                            SyntaxKind.SubtractExpression,
-                            ParenthesizedExpression(
-                                BinaryExpression(
-                                    SyntaxKind.LeftShiftExpression,
-                                    BitwiseSyntaxHelpers.LiteralWithSpecialType(1, fieldType),
-                                    LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(length))
-                                )
-                            ),
-                            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))
-                        )
-                    )
-                )
-            ),
-            LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(start))
+        // Right operand:
+        //   ((valueVariableName & ((1 << length) - 1)) << start)
+        var rightMask = BitwiseSyntaxHelpers.BuildValueAndShift(
+            IdentifierName(valueVariableName),
+            fieldType,
+            length,
+            start
         );
-
-        var fieldTypeSyntax = BitwiseSyntaxHelpers.GetTypeSyntaxFromSpecialType(fieldType);
 
         // Combine left and right operands using a bitwise OR
-        return AssignmentExpression(
-            SyntaxKind.SimpleAssignmentExpression,
-            IdentifierName(fieldName),
-            CastExpression(
-                fieldTypeSyntax,
-                ParenthesizedExpression(
-                    BinaryExpression(
-                        SyntaxKind.BitwiseOrExpression,
-                        leftAndMask,
-                        rightMaskAndShift
-                    )
-                )
-            )
+        //   leftMask | rightMask
+        var combinedExpr = BitwiseSyntaxHelpers.BuildOr(leftMask, rightMask);
+
+        return BitwiseSyntaxHelpers.BuildAssignment(
+            fieldName,
+            combinedExpr,
+            fieldType
         );
     }
 

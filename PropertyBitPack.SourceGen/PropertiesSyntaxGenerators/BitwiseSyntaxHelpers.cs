@@ -13,6 +13,154 @@ namespace PropertyBitPack.SourceGen.PropertiesSyntaxGenerators;
 /// </summary>
 internal static class BitwiseSyntaxHelpers
 {
+
+    /// <summary>
+    /// Generates a setter accessor syntax with the specified modifiers and body.
+    /// </summary>
+    /// <param name="modifiers">The modifiers for the setter accessor.</param>
+    /// <param name="body">The body of the setter accessor.</param>
+    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the setter.</returns>
+    public static AccessorDeclarationSyntax Setter(SyntaxTokenList modifiers, BlockSyntax body)
+    {
+        return AccessorDeclaration(
+            SyntaxKind.SetAccessorDeclaration,
+            List<AttributeListSyntax>(),
+            modifiers,
+            body
+        );
+    }
+
+
+    /// <summary>
+    /// Generates a getter accessor syntax with the specified body.
+    /// </summary>
+    /// <param name="body">The body of the getter accessor.</param>
+    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the getter.</returns>
+    public static AccessorDeclarationSyntax Getter(BlockSyntax body)
+    {
+        return AccessorDeclaration(
+            SyntaxKind.GetAccessorDeclaration,
+            List<AttributeListSyntax>(),
+            TokenList(),
+            body
+        );
+    }
+
+    /// <summary>
+    /// Generates an initializer accessor syntax with the specified modifiers and body.
+    /// </summary>
+    /// <param name="modifiers">The modifiers for the initializer accessor.</param>
+    /// <param name="body">The body of the initializer accessor.</param>
+    /// <returns>An <see cref="AccessorDeclarationSyntax"/> for the initializer.</returns>
+    public static AccessorDeclarationSyntax Initter(SyntaxTokenList modifiers, BlockSyntax body)
+    {
+        return AccessorDeclaration(
+            SyntaxKind.InitAccessorDeclaration,
+            List<AttributeListSyntax>(),
+            modifiers,
+            body
+        );
+    }
+
+    /// <summary>
+    /// Builds a local declaration of the form:
+    /// <c>const {FieldType} {variableName} = ((1 &lt;&lt; length) - 1);</c>.
+    /// </summary>
+    /// <param name="variableName">The name of the const variable (e.g. "maxValue_").</param>
+    /// <param name="fieldType">The <see cref="SpecialType"/> for the variable type.</param>
+    /// <param name="length">The number of bits to set in the mask.</param>
+    /// <returns>A <see cref="LocalDeclarationStatementSyntax"/> representing the const declaration.</returns>
+    public static LocalDeclarationStatementSyntax BuildConstMaskDeclaration(
+        string variableName,
+        SpecialType fieldType,
+        byte length)
+    {
+        // const T variableName = ((1 << length) - 1);
+        var fieldTypeSyntax = GetTypeSyntaxFromSpecialType(fieldType);
+
+        var maskLiteral = BuildMaskLiteral(fieldType, length); // ((1 << length) - 1)
+
+        return LocalDeclarationStatement(
+            VariableDeclaration(
+                fieldTypeSyntax,
+                SingletonSeparatedList(
+                    VariableDeclarator(variableName)
+                        .WithInitializer(
+                            EqualsValueClause(maskLiteral)
+                        )
+                )
+            )
+        )
+        .WithModifiers(
+            TokenList(Token(SyntaxKind.ConstKeyword))
+        );
+    }
+
+    /// <summary>
+    /// Builds an invocation of Math.Min, e.g. <c>Math.Min(left, right)</c>.
+    /// </summary>
+    /// <param name="left">The left-hand argument to Math.Min.</param>
+    /// <param name="right">The right-hand argument to Math.Min.</param>
+    /// <returns>An <see cref="InvocationExpressionSyntax"/> representing the Math.Min call.</returns>
+    public static InvocationExpressionSyntax BuildMathMin(ExpressionSyntax left, ExpressionSyntax right)
+    {
+        return InvocationExpression(
+            MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                IdentifierName("Math"),
+                IdentifierName("Min")
+            ),
+            ArgumentList(
+                SeparatedList<ArgumentSyntax>(
+                    new SyntaxNodeOrToken[]
+                    {
+                        Argument(left),
+                        Token(SyntaxKind.CommaToken),
+                        Argument(right)
+                    }
+                )
+            )
+        );
+    }
+
+    /// <summary>
+    /// Builds a local declaration of the form:
+    /// <c>var clamped_ = Math.Min((T)valueExpr, IdentifierName(maxValueVar));</c>.
+    /// </summary>
+    /// <param name="variableName">The name of the local variable (e.g. "clamped_").</param>
+    /// <param name="fieldType">The <see cref="SpecialType"/> of the target numeric type.</param>
+    /// <param name="valueExpr">Expression from which we clamp (e.g. "value").</param>
+    /// <param name="maxValueVar">The name of the variable holding the max mask (e.g. "maxValue_").</param>
+    /// <returns>A <see cref="LocalDeclarationStatementSyntax"/> declaring the clamped variable.</returns>
+    public static LocalDeclarationStatementSyntax BuildClampedVarDeclaration(
+        string variableName,
+        SpecialType fieldType,
+        ExpressionSyntax valueExpr,
+        string maxValueVar)
+    {
+        var fieldTypeSyntax = GetTypeSyntaxFromSpecialType(fieldType);
+
+        // (T)valueExpr
+        var castedValue = CastExpression(
+            fieldTypeSyntax,
+            ParenthesizedExpression(valueExpr)
+        );
+
+        // Math.Min((T)value, maxValue_)
+        var minCall = BuildMathMin(castedValue, IdentifierName(maxValueVar));
+
+        // var clamped_ = Math.Min(...);
+        return LocalDeclarationStatement(
+            VariableDeclaration(
+                IdentifierName("var"),
+                SingletonSeparatedList(
+                    VariableDeclarator(variableName)
+                        .WithInitializer(EqualsValueClause(minCall))
+                )
+            )
+        );
+    }
+
     /// <summary>
     /// Builds the expression for <c>1 &lt;&lt; length</c> or <c>1UL &lt;&lt; length</c>, depending on <paramref name="fieldType"/>.
     /// </summary>
@@ -60,6 +208,7 @@ internal static class BitwiseSyntaxHelpers
     {
         var maskLiteral = BuildMaskLiteral(fieldType, length);
 
+        // (((1 << length) - 1) << start)
         return BinaryExpression(
             SyntaxKind.LeftShiftExpression,
             ParenthesizedExpression(maskLiteral),
@@ -81,6 +230,7 @@ internal static class BitwiseSyntaxHelpers
             ParenthesizedExpression(maskShiftedExpr)
         );
 
+        // (fieldName & ~(((1 << length) - 1) << start))
         return BinaryExpression(
             SyntaxKind.BitwiseAndExpression,
             fieldNameExpr,
@@ -156,6 +306,67 @@ internal static class BitwiseSyntaxHelpers
                 castTypeSyntax,
                 ParenthesizedExpression(someExpr)
             )
+        );
+    }
+
+    /// <summary>
+    /// Builds an expression for right shifting the <paramref name="leftExpr"/> by <paramref name="shiftAmount"/>.
+    /// </summary>
+    /// <param name="leftExpr">The expression to be shifted.</param>
+    /// <param name="shiftAmount">The number of bits to shift right.</param>
+    /// <returns>An <see cref="ExpressionSyntax"/> for the right shift operation.</returns>
+    public static ExpressionSyntax BuildRightShift(ExpressionSyntax leftExpr, byte shiftAmount)
+    {
+        return BinaryExpression(
+            SyntaxKind.RightShiftExpression,
+            leftExpr,
+            NumericLiteral(shiftAmount)
+        );
+    }
+
+    /// <summary>
+    /// Builds an expression for <c>(expr &amp; maskExpr)</c>.
+    /// </summary>
+    /// <param name="leftExpr">The left-hand expression.</param>
+    /// <param name="maskExpr">The right-hand mask expression.</param>
+    /// <returns>An <see cref="ExpressionSyntax"/> representing <c>(leftExpr &amp; maskExpr)</c>.</returns>
+    public static ExpressionSyntax BuildAnd(ExpressionSyntax leftExpr, ExpressionSyntax maskExpr)
+    {
+        return BinaryExpression(
+            SyntaxKind.BitwiseAndExpression,
+            ParenthesizedExpression(leftExpr),
+            ParenthesizedExpression(maskExpr)
+        );
+    }
+
+    /// <summary>
+    /// Builds an expression for extracting bits: <c>(expr &amp; ((1 &lt;&lt; length) - 1))</c>.
+    /// </summary>
+    /// <param name="expr">The expression to be masked.</param>
+    /// <param name="fieldType">The numeric type used for creating the mask.</param>
+    /// <param name="length">The number of bits to include in the mask.</param>
+    /// <returns>An <see cref="ExpressionSyntax"/> representing <c>(expr &amp; mask)</c>.</returns>
+    public static ExpressionSyntax BuildMaskExtract(ExpressionSyntax expr, SpecialType fieldType, byte length)
+    {
+        var maskLiteral = BuildMaskLiteral(fieldType, length);
+        return BuildAnd(expr, maskLiteral);
+    }
+
+    /// <summary>
+    /// Builds a cast expression to the type represented by <paramref name="propertyTypeSymbol"/>.
+    /// </summary>
+    /// <param name="propertyTypeSymbol">The symbol of the target type.</param>
+    /// <param name="expression">The expression to be cast.</param>
+    /// <returns>An <see cref="ExpressionSyntax"/> representing the cast.</returns>
+    public static ExpressionSyntax BuildCast(ITypeSymbol propertyTypeSymbol, ExpressionSyntax expression)
+    {
+        // We can convert the symbol to a string to create an IdentifierName,
+        // or you might prefer a more sophisticated approach for known primitives.
+        var propertyTypeName = propertyTypeSymbol.ToDisplayString();
+
+        return CastExpression(
+            IdentifierName(propertyTypeName),
+            ParenthesizedExpression(expression)
         );
     }
 
@@ -264,3 +475,4 @@ internal static class BitwiseSyntaxHelpers
     public static LiteralExpressionSyntax NumericLiteral(decimal value)
         => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(value));
 }
+
