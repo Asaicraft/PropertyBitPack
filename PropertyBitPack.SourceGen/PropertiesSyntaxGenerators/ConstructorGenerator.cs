@@ -88,7 +88,7 @@ internal sealed class ConstructorGenerator : BasePropertiesSyntaxGenerator
                 Parameter(
                     List<AttributeListSyntax>(),
                     TokenList(),
-                    BasePropertySyntaxGenerator.ToSignedVariantSyntax(paramterRequest.SpecialType),
+                    BitwiseSyntaxHelpers.ToSignedVariantSyntax(paramterRequest.SpecialType),
                     Identifier(paramterRequest.Name),
                     null
                 )
