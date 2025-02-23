@@ -1,0 +1,63 @@
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PropertyBitPack.SourceGen.Collections;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+
+namespace PropertyBitPack.SourceGen.AttributeParsers;
+internal sealed class ReadOnlyExtendedBitFieldAttributeParser : BaseExtendedAndReadonlyAttributeParser
+{
+    public override bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax)
+    {
+        return HasInterface<IReadOnlyBitFieldAttribute>(attributeData) && HasInterface<IExtendedBitFieldAttribute>(attributeData);
+    }
+
+    public override bool TryParse(AttributeData attributeData, AttributeSyntax attributeSyntax, PropertyDeclarationSyntax propertyDeclarationSyntax, SemanticModel semanticModel, in ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out IAttributeParsedResult? result)
+    {
+        result = null;
+
+        if (!IsReadOnlyProperty(propertyDeclarationSyntax))
+        {
+            var propertyName = propertyDeclarationSyntax.Identifier.Text;
+
+            var diagonstic = Diagnostic.Create(
+                PropertyBitPackDiagnostics.ReadOnlyPropertyRequiresNoSetterOrInitOnly,
+                propertyDeclarationSyntax.GetLocation(),
+                propertyName
+            );
+
+            diagnostics.Add(diagonstic);
+
+            return false;
+        }
+
+        var owner = semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax)?.ContainingType;
+
+        if (!TryGetBitsCount(attributeData, out var bitsCount, propertyDeclarationSyntax, in diagnostics))
+        {
+            return false;
+        }
+
+        if (!TryGetFieldName(attributeData, out var fieldName, semanticModel, in diagnostics, propertyDeclarationSyntax, owner))
+        {
+            return false;
+        }
+
+        if (!TryGetConstructorAccessModifier(semanticModel, propertyDeclarationSyntax, attributeData, attributeSyntax, owner, in diagnostics, out var accessModifier))
+        {
+            // There is nothing we can do
+            // Just kidding, it's not error if access modifier is not specified
+        }
+
+        if (!TryGetterLargeSizeValueSymbol(semanticModel, propertyDeclarationSyntax, attributeData, attributeSyntax, owner, in diagnostics, out var getterLargeSizeValueSymbol))
+        {
+            return false;
+        }
+
+        result = new ParsedReadOnlyExtendedBitFieldAttribute(attributeSyntax, attributeData, fieldName, bitsCount, accessModifier ?? AccessModifier.Default, getterLargeSizeValueSymbol);
+        return true;
+    }
+}

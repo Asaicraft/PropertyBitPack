@@ -54,7 +54,7 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
     /// Validates that the referenced symbol matches the expected types and reports diagnostics
     /// for any issues encountered during resolution.
     /// </remarks>
-    protected virtual bool TryGetterLargeSizeValueSymbol(SemanticModel semanticModel, PropertyDeclarationSyntax propertySyntax, AttributeData attributeData, AttributeSyntax attributeSyntax, INamedTypeSymbol owner, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out ISymbol? getterLargeSizeValueSymbol)
+    protected virtual bool TryGetterLargeSizeValueSymbol(SemanticModel semanticModel, PropertyDeclarationSyntax propertySyntax, AttributeData attributeData, AttributeSyntax attributeSyntax, INamedTypeSymbol? owner, ref readonly ImmutableArrayBuilder<Diagnostic> diagnostics, [NotNullWhen(true)] out ISymbol? getterLargeSizeValueSymbol)
     {
         getterLargeSizeValueSymbol = null;
 
@@ -62,6 +62,11 @@ internal abstract class BaseExtendedAndReadonlyAttributeParser : BaseAttributePa
         {
             // Return early if the attribute does not implement IExtendedBitFieldAttribute
             // and we have nothing to parse and no diagnostics to report.
+            return false;
+        }
+
+        if(owner is null)
+        {
             return false;
         }
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace PropertyBitPack.Example;
 public sealed partial class ReadOnlyBitFieldExample
 {
+    private readonly byte _existing;
 
     [ReadOnlyBitField(ConstructorAccessModifier = AccessModifier.Internal)]
     public partial bool Flag1 
@@ -43,4 +44,18 @@ public sealed partial class ReadOnlyBitFieldExample
     {
         get;
     }
+
+    [ReadOnlyBitField(BitsCount = 4, FieldName = nameof(_existing))]
+    public partial byte AdditionalData4
+    {
+        get;
+    }
+
+    [ReadOnlyExtendedBitField(BitsCount = 4, FieldName = nameof(_existing), GetterLargeSizeValueName = nameof(MaxByteValue))]
+    public partial byte AdditionalData5
+    {
+        get;
+    }
+
+    public static byte MaxByteValue() => 255;
 }

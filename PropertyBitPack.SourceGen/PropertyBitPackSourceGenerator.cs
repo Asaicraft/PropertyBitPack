@@ -27,6 +27,7 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
     {
         var builder = PropertyBitPackGeneratorContextBuilder.Create();
 
+        builder.AttributeParsers.Add(new ReadOnlyExtendedBitFieldAttributeParser());
         builder.AttributeParsers.Add(new ExtendedBitFieldAttributeParser());
         builder.AttributeParsers.Add(new ReadOnlyBitFieldAttributeParser());
         builder.AttributeParsers.Add(new ParsedBitFieldAttributeParser());
