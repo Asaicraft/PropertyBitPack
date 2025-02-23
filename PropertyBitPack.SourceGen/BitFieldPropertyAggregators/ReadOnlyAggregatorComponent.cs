@@ -39,6 +39,36 @@ internal sealed class ReadOnlyAggregatorComponent
         _createReadOnlyFieldGsr = factory;
     }
 
+    public ImmutableArray<IReadOnlyFieldGsr> Aggregate(
+        ILinkedList<BaseBitFieldPropertyInfo> properties,
+        in ImmutableArray<IGenerateSourceRequest> requests,
+        in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    {
+        // Use a builder to construct the final set of IReadOnlyFieldGsr objects.
+        using var readOnlyFieldGsrBuilder = ImmutableArrayBuilder<IReadOnlyFieldGsr>.Rent();
+
+        // Group the requests to organize fields and properties by owner + access modifier.
+        var grouped = Group(requests);
+
+        // For each group, create a corresponding IReadOnlyFieldGsr.
+        for (var i = 0; i < grouped.Length; i++)
+        {
+            var group = grouped[i];
+
+            // Create a constructor request for the grouped fields and properties.
+            var constructor = CreateConstructor(group);
+            var readOnlyFieldGsr = _createReadOnlyFieldGsr(group, constructor);
+
+            // Add the newly created ConstructorGsr to the builder.
+            readOnlyFieldGsrBuilder.Add(
+                readOnlyFieldGsr
+            );
+        }
+
+        // Return the collected IReadOnlyFieldGsr objects as an immutable array.
+        return readOnlyFieldGsrBuilder.ToImmutable();
+    }
+
     /// <summary>
     /// Aggregates <see cref="IReadOnlyFieldGsr"/> instances based on the provided bit field properties
     /// and the collection of <see cref="IGenerateSourceRequest"/> objects.
@@ -67,29 +97,7 @@ internal sealed class ReadOnlyAggregatorComponent
         // Convert the builder to an immutable array of GenerateSourceRequest.
         var allReadyRequests = requestsBuilder.ToImmutable();
 
-        // Use a builder to construct the final set of IReadOnlyFieldGsr objects.
-        using var readOnlyFieldGsrBuilder = ImmutableArrayBuilder<IReadOnlyFieldGsr>.Rent();
-
-        // Group the requests to organize fields and properties by owner + access modifier.
-        var grouped = Group(allReadyRequests);
-
-        // For each group, create a corresponding IReadOnlyFieldGsr.
-        for (var i = 0; i < grouped.Length; i++)
-        {
-            var group = grouped[i];
-
-            // Create a constructor request for the grouped fields and properties.
-            var constructor = CreateConstructor(group);
-            var readOnlyFieldGsr = _createReadOnlyFieldGsr(group, constructor);
-
-            // Add the newly created ConstructorGsr to the builder.
-            readOnlyFieldGsrBuilder.Add(
-                readOnlyFieldGsr
-            );
-        }
-
-        // Return the collected IReadOnlyFieldGsr objects as an immutable array.
-        return readOnlyFieldGsrBuilder.ToImmutable();
+        return Aggregate(properties, allReadyRequests, diagnostics);
     }
 
     /// <summary>
@@ -167,20 +175,14 @@ internal sealed class ReadOnlyAggregatorComponent
                     var property = request.Properties[i1];
                     var owner = property.Owner;
                     var accessModifier =
-                        property.AttributeParsedResult is ParsedReadOnlyBitFieldAttribute parsedReadOnly
+                        property.AttributeParsedResult is IParsedReadOnlyBitFieldAttribute parsedReadOnly
                             ? parsedReadOnly.ConstructorAccessModifier
                             : AccessModifiers.Invalid;
 
-                    // If we detect an invalid access modifier, log and possibly break for debugging.
+                    // Skip properties with invalid access modifiers. 
+                    // Because it's not readonly property.
                     if (accessModifier == AccessModifiers.Invalid)
                     {
-                        Debug.WriteLine("Invalid access modifier");
-
-                        if (Debugger.IsAttached)
-                        {
-                            Debugger.Break();
-                        }
-
                         continue;
                     }
 

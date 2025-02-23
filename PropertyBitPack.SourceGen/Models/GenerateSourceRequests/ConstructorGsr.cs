@@ -21,18 +21,15 @@ internal sealed class ConstructorGsr(ImmutableArray<IFieldRequest> fieldRequests
 
     public void ModifyFileName(scoped ref readonly StringBuilder fileNameBuilder)
     {
-        using var rentedStringBuilder = StringBuildersPool.Rent();
-        var stringBuilder = rentedStringBuilder.StringBuilder;
+        var owner = Properties[0].Owner;
 
-        stringBuilder.Append($"Constructor_{ConstructorRequest.ConstructorAccessModifier}");
+        fileNameBuilder.Clear();
 
-        for (var i = 0; i < Properties.Length; i++)
-        {
-            var property = Properties[i];
+        fileNameBuilder.Append($"Constructor_{ConstructorRequest.ConstructorAccessModifier}.");
 
-            stringBuilder.Append($"_{property.PropertySymbol.Name}");
-        }
+        fileNameBuilder.Append(owner.ToDisplayString());
+        fileNameBuilder.Append('.');
 
-        fileNameBuilder.Insert(0, stringBuilder.ToString());
+        fileNameBuilder.Append(".BitPack.g.cs");
     }
 }

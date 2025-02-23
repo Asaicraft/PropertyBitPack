@@ -131,7 +131,7 @@ internal abstract partial class PropertyBitPackGeneratorContext
         for (var i = 0; i < BitFieldPropertyAggregators.Length; i++)
         {
             var aggregator = BitFieldPropertyAggregators[i];
-            var aggregatedRequests = aggregator.Aggregate(properties, diagnostics);
+            var aggregatedRequests = aggregator.Aggregate(properties, in requests, diagnostics);
             requests.AddRange(aggregatedRequests.AsSpan());
         }
         return requests.ToImmutable();

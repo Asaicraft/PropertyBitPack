@@ -40,7 +40,7 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         _context = context;
     }
 
-    public ImmutableArray<IGenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    public virtual ImmutableArray<IGenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> readyRequests, in ImmutableArrayBuilder<Diagnostic> diagnostics)
     {
         if (properties.Count == 0)
         {
@@ -55,7 +55,10 @@ internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggreg
         return requestsBuilder.ToImmutable();
     }
 
-    protected abstract void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics);
+    protected virtual void AggregateCore(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> requestsBuilder, in ImmutableArrayBuilder<Diagnostic> diagnostics)
+    {
+
+    }
 
     /// <summary>
     /// Selects candidate properties for processing.

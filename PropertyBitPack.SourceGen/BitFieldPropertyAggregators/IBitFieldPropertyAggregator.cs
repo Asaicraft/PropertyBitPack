@@ -10,8 +10,9 @@ using System.Text;
 namespace PropertyBitPack.SourceGen.BitFieldPropertyAggregators;
 internal interface IBitFieldPropertyAggregator
 {
+
     /// <summary>
     /// Remove properties in <paramref name="properties"/> which aggregated 
     /// </summary>
-    public ImmutableArray<IGenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<Diagnostic> diagnostics);
+    public ImmutableArray<IGenerateSourceRequest> Aggregate(ILinkedList<BaseBitFieldPropertyInfo> properties, in ImmutableArrayBuilder<IGenerateSourceRequest> readyRequests, in ImmutableArrayBuilder<Diagnostic> diagnostics);
 }
