@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using PropertyBitPack.SourceGen.Collections;
 using PropertyBitPack.SourceGen.Models;
+using PropertyBitPack.SourceGen.Models.AttributeParsedResults;
 using PropertyBitPack.SourceGen.Models.FieldRequests;
 using PropertyBitPack.SourceGen.Models.GenerateSourceRequests;
 using System;
@@ -535,7 +536,22 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
                 continue;
             }
 
-            fields.Add(GenerateField(generateSourceRequest, field));
+            // If all properties using this field are marked with ReadOnlyBitFieldAttribute,  
+            // then the field itself can also be considered as readonly.
+            var isReadOnly = true;
+
+            for (var propertyIndex = 0; propertyIndex < generateSourceRequest.Properties.Length; propertyIndex++)
+            {
+                var property = generateSourceRequest.Properties[propertyIndex];
+
+                if (property.AttributeParsedResult is not IParsedReadOnlyBitFieldAttribute)
+                {
+                    isReadOnly = false;
+                    break;
+                }
+            }
+
+            fields.Add(GenerateField(generateSourceRequest, field, isReadOnly));
         }
 
         // Generate properties, collecting additional members as needed
