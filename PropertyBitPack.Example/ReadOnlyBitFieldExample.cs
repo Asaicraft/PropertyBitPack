@@ -15,43 +15,43 @@ public sealed partial class ReadOnlyBitFieldExample
         get; 
     }
 
-    [ReadOnlyBitField]
+    [ReadOnlyBitField(ConstructorAccessModifier = AccessModifier.Public)]
     public partial bool Flag2
     {
         get;
     }
 
-    [ReadOnlyBitField]
+    [ReadOnlyBitField(ConstructorAccessModifier = AccessModifier.Public)]
     public partial bool Flag3
     {
         get;
     }
 
-    [ReadOnlyBitField]
+    [ReadOnlyBitField(ConstructorAccessModifier = AccessModifier.Public)]
     public partial int AdditionalData
     {
         get;
     }
 
-    [ReadOnlyBitField(BitsCount = 15, FieldName = "_bitField")]
+    [ReadOnlyBitField(BitsCount = 15, FieldName = "_bitField", ConstructorAccessModifier = AccessModifier.Public)]
     public partial int AdditionalData2
     {
         get;
     }
 
-    [ReadOnlyBitField(BitsCount = 1, FieldName = "_bitField")]
+    [ReadOnlyBitField(BitsCount = 1, FieldName = "_bitField", ConstructorAccessModifier = AccessModifier.Public)]
     public partial int AdditionalData3
     {
         get;
     }
 
-    [ReadOnlyBitField(BitsCount = 4, FieldName = nameof(_existing))]
+    [ReadOnlyBitField(BitsCount = 4, FieldName = nameof(_existing), ConstructorAccessModifier = AccessModifier.Public)]
     public partial byte AdditionalData4
     {
         get;
     }
 
-    [ReadOnlyExtendedBitField(BitsCount = 4, FieldName = nameof(_existing), GetterLargeSizeValueName = nameof(MaxByteValue))]
+    [ReadOnlyExtendedBitField(BitsCount = 4, FieldName = nameof(_existing), GetterLargeSizeValueName = nameof(MaxByteValue), ConstructorAccessModifier = AccessModifier.Public)]
     public partial byte AdditionalData5
     {
         get;

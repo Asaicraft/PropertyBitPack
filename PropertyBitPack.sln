@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.Example", "
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PropertyBitPack.Shared", "PropertyBitPack.Shared\PropertyBitPack.Shared.shproj", "{9FC57BAC-8713-4547-9F36-9281869F7F29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.Tests", "PropertyBitPack.Tests\PropertyBitPack.Tests.csproj", "{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FE73B02-915D-45D8-A3BC-7F42FC7CC72A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
