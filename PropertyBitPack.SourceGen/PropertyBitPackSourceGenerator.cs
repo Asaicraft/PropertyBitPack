@@ -164,7 +164,6 @@ internal sealed class PropertyBitPackSourceGenerator : IIncrementalGenerator
                 context.AddSource(generatedProperty.FileName, generatedProperty.SourceText);
             }
 
-        showDiagnostics:
             if (diagnosticsBuilder.Count > 0)
             {
                 var diagnostics = diagnosticsBuilder.ToImmutable();
