@@ -16,7 +16,14 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '9.0.x'  # Укажите нужную версию .NET
+          dotnet-version: '9.0.x'  # Укажите нужную версию .NET (или нужную вам)
+
+      # Извлекаем версию из имени тега (удаляем префикс 'v')
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Restore dependencies
         run: dotnet restore PropertyBitPack/PropertyBitPack.csproj
@@ -25,11 +32,16 @@ jobs:
         run: dotnet build PropertyBitPack/PropertyBitPack.csproj --configuration Release --no-restore
 
       - name: Pack project
-        run: dotnet pack PropertyBitPack/PropertyBitPack.csproj --configuration Release --no-build -o ./nupkg
+        run: dotnet pack PropertyBitPack/PropertyBitPack.csproj \
+          --configuration Release \
+          --no-build \
+          -o ./nupkg \
+          /p:PackageVersion=${{ steps.get_version.outputs.version }}
 
       - name: Add GitHub Packages source
         run: |
-          dotnet nuget add source --username ${{ github.repository_owner }} \
+          dotnet nuget add source \
+            --username ${{ github.repository_owner }} \
             --password ${{ secrets.PAT }} \
             --store-password-in-clear-text \
             --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
@@ -38,4 +50,7 @@ jobs:
         run: |
           PACKAGE=$(ls ./nupkg/*.nupkg)
           echo "Found package: $PACKAGE"
-          dotnet nuget push "$PACKAGE" --api-key ${{ secrets.PAT }} --source github --skip-duplicate
+          dotnet nuget push "$PACKAGE" \
+            --api-key ${{ secrets.PAT }} \
+            --source github \
+            --skip-duplicate
