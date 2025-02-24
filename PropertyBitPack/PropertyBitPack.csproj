@@ -17,6 +17,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Asaicraft/PropertyBitPack</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon.png</PackageIcon>
 
   </PropertyGroup>
 
