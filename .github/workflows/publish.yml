@@ -3,7 +3,7 @@ name: Publish NuGet Package
 on:
   push:
     tags:
-      - 'v*' 
+      - 'v*'  # Запускается при пуше тегов, начинающихся с "v" (например, v1.0.0)
 
 jobs:
   publish:
@@ -16,16 +16,16 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '9.0.x'  # Задайте нужную версию .NET
+          dotnet-version: '9.0.x'  # Укажите нужную версию .NET
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore PropertyBitPack/PropertyBitPack.csproj
 
       - name: Build project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build PropertyBitPack/PropertyBitPack.csproj --configuration Release --no-restore
 
       - name: Pack project
-        run: dotnet pack --configuration Release --no-build -o ./nupkg
+        run: dotnet pack PropertyBitPack/PropertyBitPack.csproj --configuration Release --no-build -o ./nupkg
 
       - name: Add GitHub Packages source
         run: |
