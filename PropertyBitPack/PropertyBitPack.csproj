@@ -9,7 +9,7 @@
     <DefineConstants>$(DefineConstants);PUBLIC_PACKAGE</DefineConstants>
 
     <PackageId>PropertyBitPack</PackageId>
-    <Version>0.6.0</Version>
+    <Version>1.0.0</Version>
     <Authors>2Xpro-pop</Authors>
     <Description>Provides attributes and a source generator to pack properties into bits efficiently.</Description>
   </PropertyGroup>
