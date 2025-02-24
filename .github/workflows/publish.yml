@@ -1,0 +1,41 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*' 
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'  # Задайте нужную версию .NET
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Pack project
+        run: dotnet pack --configuration Release --no-build -o ./nupkg
+
+      - name: Add GitHub Packages source
+        run: |
+          dotnet nuget add source --username ${{ github.repository_owner }} \
+            --password ${{ secrets.PAT }} \
+            --store-password-in-clear-text \
+            --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Push NuGet Package
+        run: |
+          PACKAGE=$(ls ./nupkg/*.nupkg)
+          echo "Found package: $PACKAGE"
+          dotnet nuget push "$PACKAGE" --api-key ${{ secrets.PAT }} --source github --skip-duplicate
