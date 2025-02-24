@@ -12,6 +12,10 @@
     <Version>1.0.0</Version>
     <Authors>2Xpro-pop</Authors>
     <Description>Provides attributes and a source generator to pack properties into bits efficiently.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,5 +27,9 @@
   </ItemGroup>
 
   <Import Project="..\PropertyBitPack.Shared\PropertyBitPack.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
