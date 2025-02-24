@@ -217,6 +217,14 @@ internal abstract class BasePropertiesSyntaxGenerator : IPropertiesSyntaxGenerat
             nameModifier.ModifyFileName(in stringBuilder);
         }
 
+        if(stringBuilder.Length > 200)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append(owner.ToDisplayString());
+            stringBuilder.Append(Guid.NewGuid().ToString("N"));
+            stringBuilder.Append(".BitPack.g.cs");
+        }
+
         return stringBuilder.ToString();
     }
 
