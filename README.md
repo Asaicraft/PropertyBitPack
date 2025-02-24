@@ -1,3 +1,4 @@
+![Build](https://github.com/Asaicraft/PropertyBitPack/actions/workflows/dotnet.yml/badge.svg)
 [![NuGet Stats](https://img.shields.io/nuget/v/PropertyBitPack.svg)](https://www.nuget.org/packages/PropertyBitPack)
 
 # PropertyBitPack
