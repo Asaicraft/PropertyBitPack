@@ -42,11 +42,20 @@ jobs:
             --store-password-in-clear-text \
             --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
-      - name: Push NuGet Package
+      - name: Push NuGet Package To GitHub Packages
         run: |
           PACKAGE=$(ls ./nupkg/*.nupkg)
           echo "Found package: $PACKAGE"
           dotnet nuget push "$PACKAGE" \
             --api-key ${{ secrets.PAT }} \
             --source github \
+            --skip-duplicate
+
+      - name: Push NuGet Package To NuGet.org
+        run: |
+          PACKAGE=$(ls ./nupkg/*.nupkg)
+          echo "Found package: $PACKAGE"
+          dotnet nuget push "$PACKAGE" \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
