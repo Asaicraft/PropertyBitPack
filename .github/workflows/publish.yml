@@ -32,7 +32,7 @@ jobs:
         run: dotnet build PropertyBitPack/PropertyBitPack.csproj --configuration Release --no-restore
 
       - name: Pack project
-        run: dotnet pack "PropertyBitPack/PropertyBitPack.csproj" --configuration Release --no-build -o "./nupkg" /p:PackageVersion=${{ steps.get_version.outputs.version }}
+        run: dotnet pack "PropertyBitPack/PropertyBitPack.csproj" --configuration Release --no-build -o "./nupkg" /p:PackageVersion=${{ steps.get_version.outputs.version }} /p:Version=${{ steps.get_version.outputs.version }}
 
       - name: Add GitHub Packages source
         run: |
