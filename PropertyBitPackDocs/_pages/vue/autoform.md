@@ -165,7 +165,7 @@ and the custom [Field and Input](/locode/declarative#custom-fields-and-inputs) a
 ```csharp
 [Description("Update an existing Booking")]
 [Notes("Find out how to create a <a href='https://youtu.be/rSFiikDjGos'>C# Bookings App from Scratch</a>")]
-[Route("/booking/{Id}", "PATCH")]
+[Route("booking/{Id}", "PATCH")]
 [ValidateHasRole("Employee")]
 [AutoApply(Behavior.AuditModify)]
 public class UpdateBooking : IPatchDb<Booking>, IReturn<IdResponse>

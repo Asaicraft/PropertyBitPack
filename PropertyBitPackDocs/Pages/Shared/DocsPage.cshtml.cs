@@ -23,7 +23,7 @@ public class DocsPage : PageModel
         Doc = markdown.GetBySlug($"{Folder}/{Slug}");
         if (Doc == null)
         {
-            page.Response.Redirect("/404");
+            page.Response.Redirect("404");
             return this;
         }
 

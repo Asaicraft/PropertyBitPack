@@ -298,7 +298,7 @@ public class MarkdownIncludes(ILogger<MarkdownIncludes> log, IWebHostEnvironment
         }
     }
 
-    public override List<MarkdownFileBase> GetAll() => Pages.Where(IsVisible).Map(doc => ToMetaDoc(doc, x => x.Url = $"/{x.Slug}"));
+    public override List<MarkdownFileBase> GetAll() => Pages.Where(IsVisible).Map(doc => ToMetaDoc(doc, x => x.Url = $"{x.Slug}"));
 }
 
 public struct HeadingInfo(int level, string id, string content)

@@ -22,16 +22,16 @@ public class MarkdownMeta
                 .ThenBy(x => x.FileName)
                 .ToList();
             allDocs.ForEach(x => {
-                if (x.Url?.StartsWith("/") == true)
+                if (x.Url?.StartsWith("") == true)
                     x.Url = baseUrl.CombineWith(x.Url);
-                if (x.Image?.StartsWith("/") == true)
+                if (x.Image?.StartsWith("") == true)
                     x.Image = baseUrl.CombineWith(x.Image);
             });
             featureDocs[feature.Id] = allDocs;
             var featureYears = allDocs.Select(x => x.Date!.Value.Year).Distinct().OrderBy(x => x).ToList();
             featureYears.ForEach(x => allYears.Add(x));
             
-            index[feature.Id] = featureYears.Map(x => baseUrl.CombineWith($"/meta/{x}/{feature.Id}.json"));
+            index[feature.Id] = featureYears.Map(x => baseUrl.CombineWith($"meta/{x}/{feature.Id}.json"));
             foreach (var year in featureYears)
             {
                 var yearDocs = allDocs

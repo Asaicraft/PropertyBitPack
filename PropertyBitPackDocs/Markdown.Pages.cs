@@ -82,7 +82,7 @@ public class MarkdownPages(ILogger<MarkdownPages> log, IWebHostEnvironment env, 
         }
     }
 
-    public override List<MarkdownFileBase> GetAll() => Pages.Where(IsVisible).Map(doc => ToMetaDoc(doc, x => x.Url = $"/{x.Slug}"));
+    public override List<MarkdownFileBase> GetAll() => Pages.Where(IsVisible).Map(doc => ToMetaDoc(doc, x => x.Url = $"{x.Slug}"));
 
     public virtual List<MarkdownMenu> GetSidebar(string folder, MarkdownMenu? defaultMenu=null)
     {
@@ -117,7 +117,7 @@ public class MarkdownPages(ILogger<MarkdownPages> log, IWebHostEnvironment env, 
             {
                 menuItem.Children ??= [];
                 var link = page.Slug!;
-                if (link.EndsWith("/index"))
+                if (link.EndsWith("index"))
                 {
                     link = link.Substring(0, link.Length - "index".Length);
                     // Hide /index from auto Sidebar as it's included in Docs Page Sidebar Header by default

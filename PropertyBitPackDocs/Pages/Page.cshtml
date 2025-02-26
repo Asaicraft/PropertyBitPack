@@ -1,4 +1,4 @@
-@page "/{slug}"
+@page "{slug}"
 @model PropertyBitPackDocs.Page
 @inject MarkdownPages Markdown
 
@@ -21,6 +21,6 @@
    DefaultMenu = new MarkdownMenu {
        Icon = Markdown.DefaultMenuIcon,
        Text = "Home",
-       Link = "/",
+       Link = "",
    },
 }.Init(this, Markdown))

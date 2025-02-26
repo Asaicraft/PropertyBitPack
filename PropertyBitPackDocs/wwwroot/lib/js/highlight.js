@@ -63,7 +63,7 @@ begin:"[ ]*(?=(TODO|FIXME|NOTE|BUG|OPTIMIZE|HACK|XXX):)",
 end:/(TODO|FIXME|NOTE|BUG|OPTIMIZE|HACK|XXX):/,excludeBegin:!0,relevance:0})
 ;const r=m("I","a","is","so","us","to","at","if","in","it","on",/[A-Za-z]+['](d|ve|re|ll|t|s|n)/,/[A-Za-z]+[-][a-z]+/,/[A-Za-z][a-z]{2,}/)
 ;return i.contains.push({begin:b(/[ ]+/,"(",r,/[.]?[:]?([.][ ]|[ ])/,"){3}")}),i
-},M=x("//","$"),S=x("/\\*","\\*/"),A=x("#","$");var C=Object.freeze({
+},M=x("/","$"),S=x("\\*","\\*/"),A=x("#","$");var C=Object.freeze({
 __proto__:null,MATCH_NOTHING_RE:/\b\B/,IDENT_RE:f,UNDERSCORE_IDENT_RE:E,
 NUMBER_RE:y,C_NUMBER_RE:N,BINARY_NUMBER_RE:w,
 RE_STARTERS_RE:"!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|-|-=|/=|/|:|;|<<|<<=|<=|<|===|==|=|>>>=|>>=|>=|>>>|>>|>|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~",
@@ -419,7 +419,7 @@ literal:["true","false"],
 built_in:["break","cd","continue","eval","exec","exit","export","getopts","hash","pwd","readonly","return","shift","test","times","trap","umask","unset","alias","bind","builtin","caller","command","declare","echo","enable","help","let","local","logout","mapfile","printf","read","readarray","source","type","typeset","ulimit","unalias","set","shopt","autoload","bg","bindkey","bye","cap","chdir","clone","comparguments","compcall","compctl","compdescribe","compfiles","compgroups","compquote","comptags","comptry","compvalues","dirs","disable","disown","echotc","echoti","emulate","fc","fg","float","functions","getcap","getln","history","integer","jobs","kill","limit","log","noglob","popd","print","pushd","pushln","rehash","sched","setcap","setopt","stat","suspend","ttyctl","unfunction","unhash","unlimit","unsetopt","vared","wait","whence","where","which","zcompile","zformat","zftp","zle","zmodload","zparseopts","zprof","zpty","zregexparse","zsocket","zstyle","ztcp","chcon","chgrp","chown","chmod","cp","dd","df","dir","dircolors","ln","ls","mkdir","mkfifo","mknod","mktemp","mv","realpath","rm","rmdir","shred","sync","touch","truncate","vdir","b2sum","base32","base64","cat","cksum","comm","csplit","cut","expand","fmt","fold","head","join","md5sum","nl","numfmt","od","paste","ptx","pr","sha1sum","sha224sum","sha256sum","sha384sum","sha512sum","shuf","sort","split","sum","tac","tail","tr","tsort","unexpand","uniq","wc","arch","basename","chroot","date","dirname","du","echo","env","expr","factor","groups","hostid","id","link","logname","nice","nohup","nproc","pathchk","pinky","printenv","printf","pwd","readlink","runcon","seq","sleep","stat","stdbuf","stty","tee","test","timeout","tty","uname","unlink","uptime","users","who","whoami","yes"]
 },contains:[l,e.SHEBANG(),c,o,e.HASH_COMMENT_MODE,r,{match:/(\/[a-z._-]+)+/},s,{
 className:"",begin:/\\"/},{className:"string",begin:/'/,end:/'/},t]}},
-grmr_c:e=>{const n=e.regex,t=e.COMMENT("//","$",{contains:[{begin:/\\\n/}]
+grmr_c:e=>{const n=e.regex,t=e.COMMENT("/","$",{contains:[{begin:/\\\n/}]
 }),a="decltype\\(auto\\)",i="[a-zA-Z_]\\w*::",r="("+a+"|"+n.optional(i)+"[a-zA-Z_]\\w*"+n.optional("<[^<>]+>")+")",s={
 className:"type",variants:[{begin:"\\b[a-z\\d_]*_t\\b"},{
 match:/\batomic_[a-z]{3,6}\b/}]},o={className:"string",variants:[{
@@ -456,7 +456,7 @@ disableAutodetect:!0,illegal:"</",contains:[].concat(m,p,b,[c,{
 begin:e.IDENT_RE+"::",keywords:u},{className:"class",
 beginKeywords:"enum class struct union",end:/[{;:<>=]/,contains:[{
 beginKeywords:"final class struct"},e.TITLE_MODE]}]),exports:{preprocessor:c,
-strings:o,keywords:u}}},grmr_cpp:e=>{const n=e.regex,t=e.COMMENT("//","$",{
+strings:o,keywords:u}}},grmr_cpp:e=>{const n=e.regex,t=e.COMMENT("/","$",{
 contains:[{begin:/\\\n/}]
 }),a="decltype\\(auto\\)",i="[a-zA-Z_]\\w*::",r="(?!struct)("+a+"|"+n.optional(i)+"[a-zA-Z_]\\w*"+n.optional("<[^<>]+>")+")",s={
 className:"type",begin:"\\b[a-z\\d_]*_t\\b"},o={className:"string",variants:[{
@@ -510,7 +510,7 @@ begin:"(-?)\\b([\\d']+(\\.[\\d']*)?|\\.[\\d']+)(u|U|l|L|ul|UL|f|F|b|B)"},{
 begin:"(-?)(\\b0[xX][a-fA-F0-9']+|(\\b[\\d']+(\\.[\\d']*)?|\\.[\\d']+)([eE][-+]?[\\d']+)?)"
 }],relevance:0},i={className:"string",begin:'@"',end:'"',contains:[{begin:'""'}]
 },r=e.inherit(i,{illegal:/\n/}),s={className:"subst",begin:/\{/,end:/\}/,
-keywords:n},o=e.inherit(s,{illegal:/\n/}),l={className:"string",begin:/\$"/,
+keywords:n},o=e.inherit(s,{illegal:/\n/}),l={className:"string",begin:/\$",
 end:'"',illegal:/\n/,contains:[{begin:/\{\{/},{begin:/\}\}/
 },e.BACKSLASH_ESCAPE,o]},c={className:"string",begin:/\$@"/,end:'"',contains:[{
 begin:/\{\{/},{begin:/\}\}/},{begin:'""'},s]},d=e.inherit(c,{illegal:/\n/,
@@ -521,7 +521,7 @@ illegal:/\n/})];const g={variants:[c,l,i,e.APOS_STRING_MODE,e.QUOTE_STRING_MODE]
 },u={begin:"<",end:">",contains:[{beginKeywords:"in out"},t]
 },b=e.IDENT_RE+"(<"+e.IDENT_RE+"(\\s*,\\s*"+e.IDENT_RE+")*>)?(\\[\\])?",m={
 begin:"@"+e.IDENT_RE,relevance:0};return{name:"C#",aliases:["cs","c#"],
-keywords:n,illegal:/::/,contains:[e.COMMENT("///","$",{returnBegin:!0,
+keywords:n,illegal:/::/,contains:[e.COMMENT("//","$",{returnBegin:!0,
 contains:[{className:"doctag",variants:[{begin:"///",relevance:0},{
 begin:"\x3c!--|--\x3e"},{begin:"</?",end:">"}]}]
 }),e.C_LINE_COMMENT_MODE,e.C_BLOCK_COMMENT_MODE,{className:"meta",begin:"#",
@@ -614,7 +614,7 @@ built_in:["super","this"]},r={className:"meta",begin:"@"+t,contains:[{
 begin:/\(/,end:/\)/,contains:["self"]}]},s={className:"params",begin:/\(/,
 end:/\)/,keywords:i,relevance:0,contains:[e.C_BLOCK_COMMENT_MODE],endsParent:!0}
 ;return{name:"Java",aliases:["jsp"],keywords:i,illegal:/<\/|#/,
-contains:[e.COMMENT("/\\*\\*","\\*/",{relevance:0,contains:[{begin:/\w+@/,
+contains:[e.COMMENT("\\*\\*","\\*/",{relevance:0,contains:[{begin:/\w+@/,
 relevance:0},{className:"doctag",begin:"@[A-Za-z]+"}]}),{
 begin:/import java\.[a-z]+\./,keywords:"import",relevance:2
 },e.C_LINE_COMMENT_MODE,e.C_BLOCK_COMMENT_MODE,{begin:/"""/,end:/"""/,
@@ -649,11 +649,11 @@ className:"meta",
 begin:"@(?:file|property|field|get|set|receiver|param|setparam|delegate)\\s*:(?:\\s*"+e.UNDERSCORE_IDENT_RE+")?"
 },o={className:"meta",begin:"@"+e.UNDERSCORE_IDENT_RE,contains:[{begin:/\(/,
 end:/\)/,contains:[e.inherit(r,{className:"string"}),"self"]}]
-},l=me,c=e.COMMENT("/\\*","\\*/",{contains:[e.C_BLOCK_COMMENT_MODE]}),d={
+},l=me,c=e.COMMENT("\\*","\\*/",{contains:[e.C_BLOCK_COMMENT_MODE]}),d={
 variants:[{className:"type",begin:e.UNDERSCORE_IDENT_RE},{begin:/\(/,end:/\)/,
 contains:[]}]},g=d;return g.variants[1].contains=[d],d.variants[1].contains=[g],
 {name:"Kotlin",aliases:["kt","kts"],keywords:n,
-contains:[e.COMMENT("/\\*\\*","\\*/",{relevance:0,contains:[{className:"doctag",
+contains:[e.COMMENT("\\*\\*","\\*/",{relevance:0,contains:[{className:"doctag",
 begin:"@[A-Za-z]+"}]}),e.C_LINE_COMMENT_MODE,c,{className:"keyword",
 begin:/\b(break|continue|return|this)\b/,starts:{contains:[{className:"symbol",
 begin:/@\w+/}]}},t,s,o,{className:"function",beginKeywords:"fun",end:"[(]|$",
@@ -872,7 +872,7 @@ keywords:m,contains:[{begin:n.concat(/#\[\s*/,i),beginScope:"meta",end:/]/,
 endScope:"meta",keywords:{literal:g,keyword:["new","array"]},contains:[{
 begin:/\[/,end:/]/,keywords:{literal:g,keyword:["new","array"]},
 contains:["self",...w]},...w,{scope:"meta",match:i}]
-},e.HASH_COMMENT_MODE,e.COMMENT("//","$"),e.COMMENT("/\\*","\\*/",{contains:[{
+},e.HASH_COMMENT_MODE,e.COMMENT("/","$"),e.COMMENT("\\*","\\*/",{contains:[{
 scope:"doctag",match:"@[A-Za-z]+"}]}),{match:/__halt_compiler\(\);/,
 keywords:"__halt_compiler",starts:{scope:"comment",end:e.MATCH_NOTHING_RE,
 contains:[{match:/\?>/,scope:"meta",endsParent:!0}]}},{scope:"meta",variants:[{
@@ -1005,7 +1005,7 @@ begin:"(\\$\\W)|((\\$|@@?)(\\w+))(?=[^@$?])(?![A-Za-z])(?![@$?'])"},{
 className:"params",begin:/\|/,end:/\|/,excludeBegin:!0,excludeEnd:!0,
 relevance:0,keywords:r},{begin:"("+e.RE_STARTERS_RE+"|unless)\\s*",
 keywords:"unless",contains:[{className:"regexp",contains:[e.BACKSLASH_ESCAPE,c],
-illegal:/\n/,variants:[{begin:"/",end:"/[a-z]*"},{begin:/%r\{/,end:/\}[a-z]*/},{
+illegal:/\n/,variants:[{begin:"",end:"/[a-z]*"},{begin:/%r\{/,end:/\}[a-z]*/},{
 begin:"%r\\(",end:"\\)[a-z]*"},{begin:"%r!",end:"![a-z]*"},{begin:"%r\\[",
 end:"\\][a-z]*"}]}].concat(o,l),relevance:0}].concat(o,l)
 ;c.contains=m,b.contains=m;const p=[{begin:/^\s*=>/,starts:{end:"$",contains:m}
@@ -1020,7 +1020,7 @@ begin:n.concat(/\b/,/(?!let\b)/,e.IDENT_RE,n.lookahead(/\s*\(/))
 ;return{name:"Rust",aliases:["rs"],keywords:{$pattern:e.IDENT_RE+"!?",type:r,
 keyword:["abstract","as","async","await","become","box","break","const","continue","crate","do","dyn","else","enum","extern","false","final","fn","for","if","impl","in","let","loop","macro","match","mod","move","mut","override","priv","pub","ref","return","self","Self","static","struct","super","trait","true","try","type","typeof","unsafe","unsized","use","virtual","where","while","yield"],
 literal:["true","false","Some","None","Ok","Err"],built_in:i},illegal:"</",
-contains:[e.C_LINE_COMMENT_MODE,e.COMMENT("/\\*","\\*/",{contains:["self"]
+contains:[e.C_LINE_COMMENT_MODE,e.COMMENT("\\*","\\*/",{contains:["self"]
 }),e.inherit(e.QUOTE_STRING_MODE,{begin:/b?"/,illegal:null}),{
 className:"string",variants:[{begin:/b?r(#*)"(.|\n)*?"\1(?!#)/},{
 begin:/b?'\\?(x\w{2}|u\w{4}|U\w{8}|.)'/}]},{className:"symbol",
@@ -1078,7 +1078,7 @@ variants:[{begin:/'/,end:/'/,contains:[{begin:/''/}]}]},{begin:/"/,end:/"/,
 contains:[{begin:/""/}]},e.C_NUMBER_MODE,e.C_BLOCK_COMMENT_MODE,t,{
 className:"operator",begin:/[-+*/=%^~]|&&?|\|\|?|!=?|<(?:=>?|<|>)?|>[>=]?/,
 relevance:0}]}},grmr_swift:e=>{const n={match:/\s+/,relevance:0
-},t=e.COMMENT("/\\*","\\*/",{contains:["self"]}),a=[e.C_LINE_COMMENT_MODE,t],i={
+},t=e.COMMENT("\\*","\\*/",{contains:["self"]}),a=[e.C_LINE_COMMENT_MODE,t],i={
 match:[/\./,m(...xe,...Me)],className:{2:"keyword"}},r={match:b(/\./,m(...Ae)),
 relevance:0},s=Ae.filter((e=>"string"==typeof e)).concat(["_|0"]),o={variants:[{
 className:"keyword",

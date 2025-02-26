@@ -743,7 +743,7 @@ export class JsonServiceClient {
     cookies;
     parseJson;
     static toBase64;
-    constructor(baseUrl = "/") {
+    constructor(baseUrl = "") {
         this.baseUrl = baseUrl;
         this.mode = "cors";
         this.credentials = "include";
@@ -764,12 +764,12 @@ export class JsonServiceClient {
     }
     set basePath(path) {
         if (!path) {
-            this.replyBaseUrl = combinePaths(this.baseUrl, "json", "reply") + "/";
-            this.oneWayBaseUrl = combinePaths(this.baseUrl, "json", "oneway") + "/";
+            this.replyBaseUrl = combinePaths(this.baseUrl, "json", "reply") + "";
+            this.oneWayBaseUrl = combinePaths(this.baseUrl, "json", "oneway") + "";
         }
         else {
-            this.replyBaseUrl = combinePaths(this.baseUrl, path) + "/";
-            this.oneWayBaseUrl = combinePaths(this.baseUrl, path) + "/";
+            this.replyBaseUrl = combinePaths(this.baseUrl, path) + "";
+            this.oneWayBaseUrl = combinePaths(this.baseUrl, path) + "";
         }
     }
     apply(f) {
@@ -1126,7 +1126,7 @@ export class JsonServiceClient {
     }
 }
 export class JsonApiClient {
-    static create(baseUrl = "/", f) {
+    static create(baseUrl = "", f) {
         let client = new JsonServiceClient(baseUrl).apply(c => {
             c.basePath = "/api";
             c.headers = new Headers(); //avoid pre-flight CORS requests
@@ -1384,8 +1384,8 @@ export function combinePaths(...paths) {
     for (i = 0, l = paths.length; i < l; i++) {
         let arg = paths[i];
         parts = arg.indexOf("://") === -1
-            ? parts.concat(arg.split("/"))
-            : parts.concat(arg.lastIndexOf("/") === arg.length - 1 ? arg.substring(0, arg.length - 1) : arg);
+            ? parts.concat(arg.split(""))
+            : parts.concat(arg.lastIndexOf("") === arg.length - 1 ? arg.substring(0, arg.length - 1) : arg);
     }
     let combinedPaths = [];
     for (i = 0, l = parts.length; i < l; i++) {
@@ -1399,14 +1399,14 @@ export function combinePaths(...paths) {
     }
     if (parts[0] === "")
         combinedPaths.unshift("");
-    return combinedPaths.join("/") || (combinedPaths.length ? "/" : ".");
+    return combinedPaths.join("") || (combinedPaths.length ? "" : ".");
 }
 export function createPath(route, args) {
     let argKeys = {};
     for (let k in args) {
         argKeys[k.toLowerCase()] = k;
     }
-    let parts = route.split("/");
+    let parts = route.split("");
     let url = "";
     for (let i = 0; i < parts.length; i++) {
         let p = parts[i];
@@ -1420,7 +1420,7 @@ export function createPath(route, args) {
             }
         }
         if (url.length > 0)
-            url += "/";
+            url += "";
         url += p;
     }
     return url;
@@ -1510,7 +1510,7 @@ export function parseCookie(setCookie) {
         let name = parts[0].trim();
         let value = parts.length > 1 ? tryDecode(stripQuotes(parts[1].trim())) : null;
         if (i == 0) {
-            to = { name, value, path: "/" };
+            to = { name, value, path: "" };
         }
         else {
             let lower = name.toLowerCase();

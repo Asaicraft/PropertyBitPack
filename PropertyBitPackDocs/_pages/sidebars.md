@@ -11,7 +11,7 @@ which adopts the same structure as [VitePress Sidebars](https://vitepress.dev/re
 [
   {
     "text": "Introduction",
-    "link": "/",
+    "link": "",
     "children": [
       {
         "text": "What is Razor Press?",
