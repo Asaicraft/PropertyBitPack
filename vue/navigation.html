@@ -121,9 +121,9 @@ mount('#header', Header)
     color: #0ea5e9 !important;
 }
 </style>
-<link rel="stylesheet" href="/css/highlight.css">
-<link rel="stylesheet" href="/css/typography.css">
-<link rel="stylesheet" href="/css/lite-yt-embed.css">
+<link rel="stylesheet" href="css/highlight.css">
+<link rel="stylesheet" href="css/typography.css">
+<link rel="stylesheet" href="css/lite-yt-embed.css">
 
 <div class="w-full max-w-[100rem] mx-auto">
     <div class="flex flex-wrap">
@@ -294,23 +294,23 @@ const tabs = { A, B, C }
 <p><api-reference component="Breadcrumbs"></api-reference></p>
 <h2 id="breadcrumbs">Breadcrumbs<a class="header-anchor" href="javascript:;" onclick="location.hash='#breadcrumbs'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <p>Breadcrumb example:</p>
-<pre><code class="language-html">&lt;Breadcrumbs home-href=&quot;/vue/&quot;&gt;
-  &lt;Breadcrumb href=&quot;/vue/gallery&quot;&gt;gallery&lt;/Breadcrumb&gt;
+<pre><code class="language-html">&lt;Breadcrumbs home-href=&quot;vue/&quot;&gt;
+  &lt;Breadcrumb href=&quot;vue/gallery&quot;&gt;gallery&lt;/Breadcrumb&gt;
   &lt;Breadcrumb&gt;Navigation Examples&lt;/Breadcrumb&gt;
 &lt;/Breadcrumbs&gt;
 </code></pre>
-<Breadcrumbs class="not-prose my-8" home-href="/vue/">
-  <Breadcrumb href="/vue#gallery">gallery</Breadcrumb>
+<Breadcrumbs class="not-prose my-8" home-href="vue/">
+  <Breadcrumb href="vue#gallery">gallery</Breadcrumb>
   <Breadcrumb>Navigation Examples</Breadcrumb>
 </Breadcrumbs>
 <p><api-reference component="NavList"></api-reference></p>
 <h2 id="navlist">NavList<a class="header-anchor" href="javascript:;" onclick="location.hash='#navlist'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <p>Use <code>NavList</code> for rendering a vertical navigation list with Icons:</p>
 <pre><code class="language-html">&lt;NavList title=&quot;Explore Vue Tailwind Components&quot;&gt;
-    &lt;NavListItem title=&quot;DataGrid&quot; href=&quot;/vue/gallery/datagrid&quot; :iconSvg=&quot;Icons.DataGrid&quot;&gt;
+    &lt;NavListItem title=&quot;DataGrid&quot; href=&quot;vue/gallery/datagrid&quot; :iconSvg=&quot;Icons.DataGrid&quot;&gt;
         DataGrid Component Examples for rendering tabular data
     &lt;/NavListItem&gt;
-    &lt;NavListItem title=&quot;AutoQuery Grid&quot; href=&quot;/vue/gallery/autoquerygrid&quot; :iconSvg=&quot;Icons.AutoQueryGrid&quot;&gt;
+    &lt;NavListItem title=&quot;AutoQuery Grid&quot; href=&quot;vue/gallery/autoquerygrid&quot; :iconSvg=&quot;Icons.AutoQueryGrid&quot;&gt;
         Instant customizable UIs for calling AutoQuery CRUD APIs
     &lt;/NavListItem&gt;
 &lt;/NavList&gt;
@@ -325,13 +325,13 @@ const tabs = { A, B, C }
     Vue.mjs Template
 &lt;/PrimaryButton&gt;
 
-&lt;SecondaryButton href=&quot;/vue/&quot;&gt;
+&lt;SecondaryButton href=&quot;vue/&quot;&gt;
     Vue Component Docs
 &lt;/SecondaryButton&gt;
 </code></pre>
 <div class="my-8 not-prose">
     <primary-button href="https://vue-mjs.web-templates.io/" class="mr-2">Vue.mjs Template</primary-button>
-    <secondary-button href="/vue/">Vue Component Docs</secondary-button>
+    <secondary-button href="vue/">Vue Component Docs</secondary-button>
 </div>
 <p><api-reference component="PrimaryButton"></api-reference></p>
 <h2 id="primarybutton">PrimaryButton<a class="header-anchor" href="javascript:;" onclick="location.hash='#primarybutton'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
@@ -358,12 +358,12 @@ const tabs = { A, B, C }
 <p><api-reference component="TextLink"></api-reference></p>
 <h2 id="textlink">TextLink<a class="header-anchor" href="javascript:;" onclick="location.hash='#textlink'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <p>Tailwind <code>&lt;a&gt;</code> hyper links, e.g:</p>
-<pre><code class="language-html">&lt;TextLink href=&quot;/vue/&quot; class=&quot;text-xl&quot;&gt;
+<pre><code class="language-html">&lt;TextLink href=&quot;vue/&quot; class=&quot;text-xl&quot;&gt;
     docs.servicestack.net/vue
 &lt;/TextLink&gt;
 </code></pre>
 <div class="not-prose">
-<text-link href="/vue/" class="text-xl">docs.servicestack.net/vue</text-link>
+<text-link href="vue/" class="text-xl">docs.servicestack.net/vue</text-link>
 </div>
 <p>That can also use <strong>color</strong> to render it in different colors:</p>
 <pre><code class="language-html">&lt;TextLink @click=&quot;say('Hi!')&quot; title=&quot;Greetings&quot;&gt;Default &lt;b&gt;Link&lt;/b&gt;&lt;/TextLink&gt;

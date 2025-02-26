@@ -121,7 +121,7 @@ implemented in just markdown, Razor or a hybrid mix of both. The [Vue](/vue/) sp
 [/Vue/Index.cshtml](https://github.com/NetCoreTemplates/razor-press/blob/main/PropertyBitPackDocs/Pages/Vue/Index.cshtml) Razor Page.
 
 <div class="not-prose mt-8 grid grid-cols-2 gap-4">
-    <a class="block group border dark:border-gray-800 hover:border-indigo-700 dark:hover:border-indigo-700" href="/vue/">
+    <a class="block group border dark:border-gray-800 hover:border-indigo-700 dark:hover:border-indigo-700" href="vue/">
         <img class="p-2" src="https://docs.servicestack.net/img/pages/ssg/razor-pages-vue.png">
         <div class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-semibold group-hover:bg-indigo-700 group-hover:text-white text-center py-2">docs.servicestack.net</div>
     </a>
@@ -436,7 +436,7 @@ The `<markdown />` tag helper renders plain HTML, which you can apply [Tailwind'
 styles by including **typography.css** and annotating it with your preferred `prose` variant, e.g:
 
 ```html
-<link rel="stylesheet" href="/css/typography.css">
+<link rel="stylesheet" href="css/typography.css">
 <markdown class="prose">
   Markdown content...
 </markdown>
@@ -903,7 +903,7 @@ Alternatively markdown can be rendered inline with:
 ## Using Formatters
 
 Your App and custom templates can also utilize @servicestack/vue's
-[built-in formatting functions](href="/vue/use-formatters).
+[built-in formatting functions](href="vue/use-formatters).
 </markdown>
 ```
 
@@ -3563,14 +3563,14 @@ defineProps<{
 Breadcrumb example:
 
 ```html
-<Breadcrumbs home-href="/vue/">
-  <Breadcrumb href="/vue/gallery">gallery</Breadcrumb>
+<Breadcrumbs home-href="vue/">
+  <Breadcrumb href="vue/gallery">gallery</Breadcrumb>
   <Breadcrumb>Navigation Examples</Breadcrumb>
 </Breadcrumbs>
 ```
 
-<Breadcrumbs class="not-prose my-8" home-href="/vue/">
-  <Breadcrumb href="/vue#gallery">gallery</Breadcrumb>
+<Breadcrumbs class="not-prose my-8" home-href="vue/">
+  <Breadcrumb href="vue#gallery">gallery</Breadcrumb>
   <Breadcrumb>Navigation Examples</Breadcrumb>
 </Breadcrumbs>
 
@@ -3581,10 +3581,10 @@ Use `NavList` for rendering a vertical navigation list with Icons:
 
 ```html
 <NavList title="Explore Vue Tailwind Components">
-    <NavListItem title="DataGrid" href="/vue/gallery/datagrid" :iconSvg="Icons.DataGrid">
+    <NavListItem title="DataGrid" href="vue/gallery/datagrid" :iconSvg="Icons.DataGrid">
         DataGrid Component Examples for rendering tabular data
     </NavListItem>
-    <NavListItem title="AutoQuery Grid" href="/vue/gallery/autoquerygrid" :iconSvg="Icons.AutoQueryGrid">
+    <NavListItem title="AutoQuery Grid" href="vue/gallery/autoquerygrid" :iconSvg="Icons.AutoQueryGrid">
         Instant customizable UIs for calling AutoQuery CRUD APIs
     </NavListItem>
 </NavList>
@@ -3604,14 +3604,14 @@ Using `href` with Button components will style hyper links to behave like button
     Vue.mjs Template
 </PrimaryButton>
 
-<SecondaryButton href="/vue/">
+<SecondaryButton href="vue/">
     Vue Component Docs
 </SecondaryButton>
 ```
 
 <div class="my-8 not-prose">
     <primary-button href="https://vue-mjs.web-templates.io/" class="mr-2">Vue.mjs Template</primary-button>
-    <secondary-button href="/vue/">Vue Component Docs</secondary-button>
+    <secondary-button href="vue/">Vue Component Docs</secondary-button>
 </div>
 
 <api-reference component="PrimaryButton"></api-reference>
@@ -3647,13 +3647,13 @@ That can use **color** to render it in different colors:
 Tailwind `<a>` hyper links, e.g:
 
 ```html
-<TextLink href="/vue/" class="text-xl">
+<TextLink href="vue/" class="text-xl">
     docs.servicestack.net/vue
 </TextLink>
 ```
 
 <div class="not-prose">
-<text-link href="/vue/" class="text-xl">docs.servicestack.net/vue</text-link>
+<text-link href="vue/" class="text-xl">docs.servicestack.net/vue</text-link>
 </div>
 
 That can also use **color** to render it in different colors:
