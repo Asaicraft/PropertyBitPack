@@ -1,11 +1,11 @@
 [
   {
     "text": "Vue",
-    "link": "vue",
+    "link": "PropertyBitPack/vue",
     "children": [
       {
         "text": "Install",
-        "link": "vue/install"
+        "link": "PropertyBitPack/vue/install"
       }
     ]
   },
@@ -14,51 +14,51 @@
     "children": [
       {
         "text": "AutoQueryGrid",
-        "link": "vue/autoquerygrid"
+        "link": "PropertyBitPack/vue/autoquerygrid"
       },
       {
         "text": "DataGrid",
-        "link": "vue/datagrid"
+        "link": "PropertyBitPack/vue/datagrid"
       },
       {
         "text": "Auto Forms",
-        "link": "vue/autoform"
+        "link": "PropertyBitPack/vue/autoform"
       },
       {
         "text": "Form Inputs",
-        "link": "vue/form-inputs"
+        "link": "PropertyBitPack/vue/form-inputs"
       },
       {
         "text": "FileInput",
-        "link": "vue/fileinput"
+        "link": "PropertyBitPack/vue/fileinput"
       },
       {
         "text": "TagInput",
-        "link": "vue/taginput"
+        "link": "PropertyBitPack/vue/taginput"
       },
       {
         "text": "Combobox",
-        "link": "vue/combobox"
+        "link": "PropertyBitPack/vue/combobox"
       },
       {
         "text": "Autocomplete",
-        "link": "vue/autocomplete"
+        "link": "PropertyBitPack/vue/autocomplete"
       },
       {
         "text": "Modals",
-        "link": "vue/modals"
+        "link": "PropertyBitPack/vue/modals"
       },
       {
         "text": "Navigation",
-        "link": "vue/navigation"
+        "link": "PropertyBitPack/vue/navigation"
       },
       {
         "text": "Alerts",
-        "link": "vue/alerts"
+        "link": "PropertyBitPack/vue/alerts"
       },
       {
         "text": "Formats",
-        "link": "vue/formats"
+        "link": "PropertyBitPack/vue/formats"
       }
     ]
   },
@@ -67,31 +67,31 @@
     "children": [
       {
         "text": "useMetadata",
-        "link": "vue/use-metadata"
+        "link": "PropertyBitPack/vue/use-metadata"
       },
       {
         "text": "useClient",
-        "link": "vue/use-client"
+        "link": "PropertyBitPack/vue/use-client"
       },
       {
         "text": "useAuth",
-        "link": "vue/use-auth"
+        "link": "PropertyBitPack/vue/use-auth"
       },
       {
         "text": "useFormatters",
-        "link": "vue/use-formatters"
+        "link": "PropertyBitPack/vue/use-formatters"
       },
       {
         "text": "useFiles",
-        "link": "vue/use-files"
+        "link": "PropertyBitPack/vue/use-files"
       },
       {
         "text": "useConfig",
-        "link": "vue/use-config"
+        "link": "PropertyBitPack/vue/use-config"
       },
       {
         "text": "useUtils",
-        "link": "vue/use-utils"
+        "link": "PropertyBitPack/vue/use-utils"
       }
     ]
   }

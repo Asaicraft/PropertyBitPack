@@ -11,15 +11,15 @@ which adopts the same structure as [VitePress Sidebars](https://vitepress.dev/re
 [
   {
     "text": "Introduction",
-    "link": "",
+    "link": "PropertyBitPack/",
     "children": [
       {
         "text": "What is Razor Press?",
-        "link": "what-is-razor-press"
+        "link": "PropertyBitPack/what-is-razor-press"
       },
       {
         "text": "Structure",
-        "link": "structure"
+        "link": "PropertyBitPack/structure"
       }
     ]
   },
@@ -28,7 +28,7 @@ which adopts the same structure as [VitePress Sidebars](https://vitepress.dev/re
     "children": [
       {
         "text": "Sidebars",
-        "link": "sidebars"
+        "link": "PropertyBitPack/sidebars"
       }
     ]
   }
@@ -44,7 +44,7 @@ with a custom icon, e.g:
 {
     "icon": "<svg xmlns='http://www.w3.org/2000/svg'>....</svg>", 
     "text": "Markdown",
-    "link": "markdown/",
+    "link": "PropertyBitPack/markdown/",
     "children": [
     ]
 }
@@ -78,11 +78,11 @@ For more flexibility a custom sidebar can be defined for each group by defining 
 [
   {
     "text": "Vue",
-    "link": "vue",
+    "link": "PropertyBitPack/vue",
     "children": [
       {
         "text": "Install",
-        "link": "vue/install"
+        "link": "PropertyBitPack/vue/install"
       }
     ]
   },
@@ -91,7 +91,7 @@ For more flexibility a custom sidebar can be defined for each group by defining 
     "children": [
       {
         "text": "AutoQueryGrid",
-        "link": "vue/autoquerygrid"
+        "link": "PropertyBitPack/vue/autoquerygrid"
       }
     ]
   }
