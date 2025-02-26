@@ -1,5 +1,5 @@
 # What is Razor Press?
-Source: https://razor-press.web-templates.io/what-is-razor-press
+Source: https://asaicraft.github.io/PropertyBitPack/what-is-razor-press
 
 Razor Press is a Razor Pages powered Markdown alternative to Ruby's Jekyll, Vue & VitePress that's ideal for 
 generating fast, static content-centric & documentation websites. Inspired by [VitePress](https://vitepress.dev), 
@@ -141,7 +141,7 @@ websites, for which we welcome any feedback or new feature requests at:
 
 
 # Structure
-Source: https://razor-press.web-templates.io/structure
+Source: https://asaicraft.github.io/PropertyBitPack/structure
 
 ### Markdown Feature Structure
 
@@ -444,7 +444,7 @@ styles by including **typography.css** and annotating it with your preferred `pr
 
 
 # Static Site Generation (SSG)
-Source: https://razor-press.web-templates.io/ssg
+Source: https://asaicraft.github.io/PropertyBitPack/ssg
 
 All features up till now describes how this template implements a Markdown powered Razor Pages .NET application, where this template
 differs in its published output, where instead of a .NET App deployed to a VM or App server it generates static `*.html` files that's
@@ -658,7 +658,7 @@ That you can preview with your browser at `http://localhost:8080`.
 
 
 # Deployments
-Source: https://razor-press.web-templates.io/deployments
+Source: https://asaicraft.github.io/PropertyBitPack/deployments
 
 ## Enable GitHub Pages
 
@@ -686,7 +686,7 @@ www.mydomain.org
 
 
 # Markdown Syntax
-Source: https://razor-press.web-templates.io/syntax
+Source: https://asaicraft.github.io/PropertyBitPack/syntax
 
 ## Configuring Markdig
 
@@ -909,7 +909,7 @@ Your App and custom templates can also utilize @servicestack/vue's
 
 
 # Custom Markdown Containers
-Source: https://razor-press.web-templates.io/containers
+Source: https://asaicraft.github.io/PropertyBitPack/containers
 
 [Custom Containers](https://github.com/xoofx/markdig/blob/master/src/Markdig.Tests/Specs/CustomContainerSpecs.md) are a 
 popular method for implementing Markdown Extensions for enabling rich, wrist-friendly consistent content in your Markdown documents. 
@@ -1195,7 +1195,7 @@ Where it can then be used in your Markdown documentation:
 
 
 # Using Vue in Markdown
-Source: https://razor-press.web-templates.io/vue-in-markdown
+Source: https://asaicraft.github.io/PropertyBitPack/vue-in-markdown
 
 ## Progressive Enhancement
 
@@ -1313,7 +1313,7 @@ If needed custom styles can also be added for individual pages by adding a `.css
 
 
 # Sidebars
-Source: https://razor-press.web-templates.io/sidebars
+Source: https://asaicraft.github.io/PropertyBitPack/sidebars
 
 ## Main Sidebar
 
@@ -1413,7 +1413,7 @@ For more flexibility a custom sidebar can be defined for each group by defining 
 
 
 # Redirects
-Source: https://razor-press.web-templates.io/redirects
+Source: https://asaicraft.github.io/PropertyBitPack/redirects
 
 ## Static HTML Page Redirects
 
@@ -1442,7 +1442,7 @@ redirects on the server by defining them in
 
 
 # Typesense Real-Time Search
-Source: https://razor-press.web-templates.io/typesense
+Source: https://asaicraft.github.io/PropertyBitPack/typesense
 
 Many popular Open Source products use [Algolia DocSearch](https://docsearch.algolia.com) to power their real-time search
 features, however, it's a less appealing product for commercial products which is a paid service with a per request 
@@ -1795,7 +1795,7 @@ that we hope also serves useful for implementing Typesense real-time search in y
 
 
 # Installation
-Source: https://razor-press.web-templates.io/vue/install
+Source: https://asaicraft.github.io/PropertyBitPack/vue/install
 
 ## Manual Installation
 
@@ -1901,7 +1901,7 @@ app.component('RouterLink', ServiceStackVue.component('RouterLink'))
 
 
 # AutoQueryGrid Component
-Source: https://razor-press.web-templates.io/vue/autoquerygrid
+Source: https://asaicraft.github.io/PropertyBitPack/vue/autoquerygrid
 
 <div class="flex justify-center">
     <lite-youtube class="w-full mx-4 my-4" width="560" height="315" videoid="znCoC-Ct0Ps" style="background-image: url('https://img.youtube.com/vi/znCoC-Ct0Ps/maxresdefault.jpg')"></lite-youtube>
@@ -2313,7 +2313,7 @@ AutoQuery CRUD APIs.
 
 
 # DataGrid Component
-Source: https://razor-press.web-templates.io/vue/datagrid
+Source: https://asaicraft.github.io/PropertyBitPack/vue/datagrid
 
 <api-reference component="DataGrid<Model>"></api-reference>
 ## Default
@@ -2618,7 +2618,7 @@ it's used to enhance ServiceStack's built-in UI's and Components like:
 
 
 # Auto Form Components
-Source: https://razor-press.web-templates.io/vue/autoform
+Source: https://asaicraft.github.io/PropertyBitPack/vue/autoform
 
 <api-reference Component="AutoForm"></api-reference>
 ## AutoForm
@@ -2878,7 +2878,7 @@ onMounted(async () => {
 
 
 # Form Inputs Components
-Source: https://razor-press.web-templates.io/vue/form-inputs
+Source: https://asaicraft.github.io/PropertyBitPack/vue/form-inputs
 
 <api-reference component="TextInput"></api-reference>
 ## Bookings Form
@@ -2987,7 +2987,7 @@ This also shows how we can utilize `enumOptions` from our [App Metadata](/vue/us
 
 
 # FileInput Component
-Source: https://razor-press.web-templates.io/vue/fileinput
+Source: https://asaicraft.github.io/PropertyBitPack/vue/fileinput
 
 The `<FileInput>` component beautifies the browsers default HTML file Input, supporting both Single file: 
 
@@ -3079,7 +3079,7 @@ This metadata information is also available to [AutoForm components](/vue/autofo
 
 
 # TagInput Component
-Source: https://razor-press.web-templates.io/vue/taginput
+Source: https://asaicraft.github.io/PropertyBitPack/vue/taginput
 
 The `TagInput` component provides a user friendly control for managing a free-form `List<string>` tags or symbols
 which is also supported in declarative Auto Forms using the `[Input(Type="tag")]` attribute as seen in the 
@@ -3234,7 +3234,7 @@ ScriptContext.Args[nameof(AppData)] = new AppData {
 
 
 # Combobox Component
-Source: https://razor-press.web-templates.io/vue/combobox
+Source: https://asaicraft.github.io/PropertyBitPack/vue/combobox
 
 The `Combobox` component provides an Autocomplete Input optimized for searching a List of string values, Key Value Pairs or Object Dictionary, e.g:
 
@@ -3337,7 +3337,7 @@ display an ordered list of Key/Value pairs.
 
 
 # Autocomplete Component
-Source: https://razor-press.web-templates.io/vue/autocomplete
+Source: https://asaicraft.github.io/PropertyBitPack/vue/autocomplete
 
 The `Autocomplete` component provides a user friendly Input for being able to search and quickly select items
 with support for partial items view and infinite scrolling.
@@ -3420,7 +3420,7 @@ with support for partial items view and infinite scrolling.
 
 
 # Modal Components
-Source: https://razor-press.web-templates.io/vue/modals
+Source: https://asaicraft.github.io/PropertyBitPack/vue/modals
 
 <api-reference component="ModalDialog"></api-reference>
 ## ModalDialog
@@ -3519,7 +3519,7 @@ defineEmits<{
 
 
 # Navigation Components
-Source: https://razor-press.web-templates.io/vue/navigation
+Source: https://asaicraft.github.io/PropertyBitPack/vue/navigation
 
 <api-reference component="Tabs"></api-reference>
 ## Tabs
@@ -3680,7 +3680,7 @@ That can also use **color** to render it in different colors:
 
 
 # Alert Components
-Source: https://razor-press.web-templates.io/vue/alerts
+Source: https://asaicraft.github.io/PropertyBitPack/vue/alerts
 
 <api-reference component="Alert"></api-reference>
 ## Alert
@@ -3747,7 +3747,7 @@ Show failed Summary API Error Message:
 
 
 # Format Examples
-Source: https://razor-press.web-templates.io/vue/formats
+Source: https://asaicraft.github.io/PropertyBitPack/vue/formats
 
 <api-reference component="PreviewFormat"></api-reference>
 ## PreviewFormat
@@ -3957,7 +3957,7 @@ function classes(type:'array'|'object', tag:'div'|'table'|'thead'|'th'|'tr'|'td'
 
 
 # App Metadata
-Source: https://razor-press.web-templates.io/vue/use-metadata
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-metadata
 
 The rich server metadata about your APIs that's used to generate your App's DTOs in 
 [Multiple Programming Languages](/add-servicestack-reference), power ServiceStack's 
@@ -4226,7 +4226,7 @@ function getId(type: MetadataType, row: any): any;
 
 
 # JSON API Client Features
-Source: https://razor-press.web-templates.io/vue/use-client
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-client
 
 [useClient()](https://github.com/ServiceStack/servicestack-vue/blob/main/src/api.ts) provides managed APIs around the `JsonServiceClient` 
 instance registered in Vue App's with:
@@ -4532,7 +4532,7 @@ async function apiFormVoid(request: IReturnVoid | ApiRequest, body: FormData, ar
 
 
 # Auth Features
-Source: https://razor-press.web-templates.io/vue/use-auth
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-auth
 
 Vue.js Apps can access Authenticated Users using [useAuth()](/vue/use-auth)
 which can also be populated without the overhead of an Ajax request by embedding the response of the built-in
@@ -4607,7 +4607,7 @@ function isAdmin(): boolean;
 
 
 # Formatting Functions and Methods
-Source: https://razor-press.web-templates.io/vue/use-formatters
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-formatters
 
 ### Using Formatters
 
@@ -4830,7 +4830,7 @@ function apiValueFmt(o: any, format?: FormatInfo | null, attrs?: any): any;
 
 
 # File Utils
-Source: https://razor-press.web-templates.io/vue/use-files
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-files
 
 The file utils are utilized by the `<FileInput>` [Input component](/vue/form-inputs) and 
 `icon`, `iconRounded` and `attachment` [formatters](/vue/use-formatters) for resolving file SVG Icons 
@@ -4921,7 +4921,7 @@ function iconFallbackSrc(src: string, fallbackSrc?: string): string | null;
 
 
 # Vue Tailwind Global Configuration
-Source: https://razor-press.web-templates.io/vue/use-config
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-config
 
 ## Manage Global Configuration
 
@@ -5012,7 +5012,7 @@ function fallbackPathResolver(src?: string): string | undefined;
 
 
 # General Utils
-Source: https://razor-press.web-templates.io/vue/use-utils
+Source: https://asaicraft.github.io/PropertyBitPack/vue/use-utils
 
 General utils used by Vue Components you may also find useful in your Apps:
 
