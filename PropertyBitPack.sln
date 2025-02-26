@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEM
 		.github\ISSUE_TEMPLATE\feature_request.yml = .github\ISSUE_TEMPLATE\feature_request.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPackDocs", "PropertyBitPackDocs\PropertyBitPackDocs\PropertyBitPackDocs.csproj", "{E8E5799D-1053-4F8D-88EF-EB577812EC2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBE9312A-BAC3-4E0C-A5B6-6D9E0A984D2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8E5799D-1053-4F8D-88EF-EB577812EC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8E5799D-1053-4F8D-88EF-EB577812EC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8E5799D-1053-4F8D-88EF-EB577812EC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8E5799D-1053-4F8D-88EF-EB577812EC2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
