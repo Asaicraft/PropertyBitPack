@@ -52,7 +52,7 @@ jobs:
           npm run build
 
       - name: prerender
-        working-directory: ./PropertyBitPackDocs
+        working-directory: ./PropertyBitPackDocs/PropertyBitPackDocs
         run: |
           site_base_href=${{ env.ssg_base_href }}
           site_base_url="https://${{ env.custom_domain }}"
