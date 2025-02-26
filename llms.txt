@@ -3,43 +3,43 @@
 ## Docs
 
 Introduction
- - [What is Razor Press?](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/what-is-razor-press.md)
- - [Structure](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/structure.md)
- - [Static Site Generation](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/ssg.md): Static Site Generation (SSG)
- - [Deployments](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/deployments.md)
+ - [What is Razor Press?](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/PropertyBitPack/what-is-razor-press.md)
+ - [Structure](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/structure.md)
+ - [Static Site Generation](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/ssg.md)
+ - [Deployments](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/deployments.md)
 
 Markdown
- - [Markdown Syntax](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/syntax.md)
- - [Markdown Containers](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/containers.md): Custom Markdown Containers
- - [Using Vue in Markdown](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue-in-markdown.md)
+ - [Markdown Syntax](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/syntax.md)
+ - [Markdown Containers](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/containers.md)
+ - [Using Vue in Markdown](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue-in-markdown.md)
 
 Features
- - [Sidebars](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/sidebars.md)
- - [Redirects](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/redirects.md)
- - [Typesense Real-Time Search](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/typesense.md)
+ - [Sidebars](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/sidebars.md)
+ - [Redirects](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/redirects.md)
+ - [Typesense Real-Time Search](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/typesense.md)
 
 Vue
- - [Install](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/install.md): Installation
+ - [Install](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/install.md)
 
 Component Gallery
- - [AutoQueryGrid](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/autoquerygrid.md): AutoQueryGrid Component
- - [DataGrid](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/datagrid.md): DataGrid Component
- - [Auto Forms](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/autoform.md): Auto Form Components
- - [Form Inputs](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/form-inputs.md): Form Inputs Components
- - [FileInput](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/fileinput.md): FileInput Component
- - [TagInput](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/taginput.md): TagInput Component
- - [Combobox](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/combobox.md): Combobox Component
- - [Autocomplete](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/autocomplete.md): Autocomplete Component
- - [Modals](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/modals.md): Modal Components
- - [Navigation](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/navigation.md): Navigation Components
- - [Alerts](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/alerts.md): Alert Components
- - [Formats](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/formats.md): Format Examples
+ - [AutoQueryGrid](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/autoquerygrid.md)
+ - [DataGrid](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/datagrid.md)
+ - [Auto Forms](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/autoform.md)
+ - [Form Inputs](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/form-inputs.md)
+ - [FileInput](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/fileinput.md)
+ - [TagInput](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/taginput.md)
+ - [Combobox](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/combobox.md)
+ - [Autocomplete](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/autocomplete.md)
+ - [Modals](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/modals.md)
+ - [Navigation](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/navigation.md)
+ - [Alerts](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/alerts.md)
+ - [Formats](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/formats.md)
 
 Library
- - [useMetadata](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-metadata.md): App Metadata
- - [useClient](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-client.md): JSON API Client Features
- - [useAuth](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-auth.md): Auth Features
- - [useFormatters](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-formatters.md): Formatting Functions and Methods
- - [useFiles](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-files.md): File Utils
- - [useConfig](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-config.md): Vue Tailwind Global Configuration
- - [useUtils](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/vue/use-utils.md): General Utils
+ - [useMetadata](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-metadata.md)
+ - [useClient](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-client.md)
+ - [useAuth](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-auth.md)
+ - [useFormatters](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-formatters.md)
+ - [useFiles](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-files.md)
+ - [useConfig](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-config.md)
+ - [useUtils](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue/use-utils.md)
