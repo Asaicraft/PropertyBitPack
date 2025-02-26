@@ -2723,7 +2723,7 @@ By default Auto Forms are rendered in a `SlideOver` dialog:
 <AutoCreateForm type="CreateBooking" />
 ```
 
-<iframe src="/pages/vue/autoform/new.html" class="border-none h-[45em] w-[1330px] -ml-40 mb-4 relative z-20"></iframe>
+<iframe src="pages/vue/autoform/new.html" class="border-none h-[45em] w-[1330px] -ml-40 mb-4 relative z-20"></iframe>
 
 These Auto Forms are powered by the rich [App Metadata](/vue/use-metadata) surrounding your APIs,
 which contain all the necessary metadata to invoke the API and bind any contextual validation errors adjacent to the invalid field inputs.
@@ -2739,7 +2739,7 @@ which contain all the necessary metadata to invoke the API and bind any contextu
     heading="Change an existing Room Booking" sub-heading="Manage reservations for PropertyBitPackDocs hotels." />
 ```
 
-<iframe src="/pages/vue/autoform/edit.html" class="border-none h-[46em] w-[1330px] -ml-40 mb-4 relative z-20"></iframe>
+<iframe src="pages/vue/autoform/edit.html" class="border-none h-[46em] w-[1330px] -ml-40 mb-4 relative z-20"></iframe>
 
 The same form rendered in a traditional inline form with a **card** formStyle with some more advanced
 customization examples using rich markup in custom `<template #heading>` and `<template #sub-heading>` slots:
