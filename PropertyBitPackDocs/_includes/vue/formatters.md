@@ -2,7 +2,7 @@
     Using Formatters
 </h2>
 
-Your App and custom templates can also utilize @servicestack/vue's <TextLink href="/vue/use-formatters">built-in formatting functions</TextLink> from:
+Your App and custom templates can also utilize @servicestack/vue's <TextLink href="vue/use-formatters">built-in formatting functions</TextLink> from:
 
 ```js
 import { useFormatters } from '@servicestack/vue'

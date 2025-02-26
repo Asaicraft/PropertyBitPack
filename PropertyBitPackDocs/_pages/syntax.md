@@ -217,6 +217,6 @@ Alternatively markdown can be rendered inline with:
 ## Using Formatters
 
 Your App and custom templates can also utilize @servicestack/vue's
-[built-in formatting functions](href="/vue/use-formatters).
+[built-in formatting functions](href="vue/use-formatters).
 </markdown>
 ```

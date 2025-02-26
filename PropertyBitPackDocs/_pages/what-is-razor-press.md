@@ -123,7 +123,7 @@ implemented in just markdown, Razor or a hybrid mix of both. The [Vue](/vue/) sp
 [/Vue/Index.cshtml](https://github.com/NetCoreTemplates/razor-press/blob/main/PropertyBitPackDocs/Pages/Vue/Index.cshtml) Razor Page.
 
 <div class="not-prose mt-8 grid grid-cols-2 gap-4">
-    <a class="block group border dark:border-gray-800 hover:border-indigo-700 dark:hover:border-indigo-700" href="/vue/">
+    <a class="block group border dark:border-gray-800 hover:border-indigo-700 dark:hover:border-indigo-700" href="vue/">
         <img class="p-2" src="https://docs.servicestack.net/img/pages/ssg/razor-pages-vue.png">
         <div class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-semibold group-hover:bg-indigo-700 group-hover:text-white text-center py-2">docs.servicestack.net</div>
     </a>

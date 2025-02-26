@@ -295,7 +295,7 @@ The `<markdown />` tag helper renders plain HTML, which you can apply [Tailwind'
 styles by including **typography.css** and annotating it with your preferred `prose` variant, e.g:
 
 ```html
-<link rel="stylesheet" href="/css/typography.css">
+<link rel="stylesheet" href="css/typography.css">
 <markdown class="prose">
   Markdown content...
 </markdown>

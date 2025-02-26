@@ -45,14 +45,14 @@ defineProps<{
 Breadcrumb example:
 
 ```html
-<Breadcrumbs home-href="/vue/">
-  <Breadcrumb href="/vue/gallery">gallery</Breadcrumb>
+<Breadcrumbs home-href="vue/">
+  <Breadcrumb href="vue/gallery">gallery</Breadcrumb>
   <Breadcrumb>Navigation Examples</Breadcrumb>
 </Breadcrumbs>
 ```
 
-<Breadcrumbs class="not-prose my-8" home-href="/vue/">
-  <Breadcrumb href="/vue#gallery">gallery</Breadcrumb>
+<Breadcrumbs class="not-prose my-8" home-href="vue/">
+  <Breadcrumb href="vue#gallery">gallery</Breadcrumb>
   <Breadcrumb>Navigation Examples</Breadcrumb>
 </Breadcrumbs>
 
@@ -63,10 +63,10 @@ Use `NavList` for rendering a vertical navigation list with Icons:
 
 ```html
 <NavList title="Explore Vue Tailwind Components">
-    <NavListItem title="DataGrid" href="/vue/gallery/datagrid" :iconSvg="Icons.DataGrid">
+    <NavListItem title="DataGrid" href="vue/gallery/datagrid" :iconSvg="Icons.DataGrid">
         DataGrid Component Examples for rendering tabular data
     </NavListItem>
-    <NavListItem title="AutoQuery Grid" href="/vue/gallery/autoquerygrid" :iconSvg="Icons.AutoQueryGrid">
+    <NavListItem title="AutoQuery Grid" href="vue/gallery/autoquerygrid" :iconSvg="Icons.AutoQueryGrid">
         Instant customizable UIs for calling AutoQuery CRUD APIs
     </NavListItem>
 </NavList>
@@ -86,14 +86,14 @@ Using `href` with Button components will style hyper links to behave like button
     Vue.mjs Template
 </PrimaryButton>
 
-<SecondaryButton href="/vue/">
+<SecondaryButton href="vue/">
     Vue Component Docs
 </SecondaryButton>
 ```
 
 <div class="my-8 not-prose">
     <primary-button href="https://vue-mjs.web-templates.io/" class="mr-2">Vue.mjs Template</primary-button>
-    <secondary-button href="/vue/">Vue Component Docs</secondary-button>
+    <secondary-button href="vue/">Vue Component Docs</secondary-button>
 </div>
 
 <api-reference component="PrimaryButton"></api-reference>
@@ -129,13 +129,13 @@ That can use **color** to render it in different colors:
 Tailwind `<a>` hyper links, e.g:
 
 ```html
-<TextLink href="/vue/" class="text-xl">
+<TextLink href="vue/" class="text-xl">
     docs.servicestack.net/vue
 </TextLink>
 ```
 
 <div class="not-prose">
-<text-link href="/vue/" class="text-xl">docs.servicestack.net/vue</text-link>
+<text-link href="vue/" class="text-xl">docs.servicestack.net/vue</text-link>
 </div>
 
 That can also use **color** to render it in different colors:
