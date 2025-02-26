@@ -29,7 +29,7 @@ Pages with static routes can be marked to be prerendered by annotating it with t
 [About.cshtml](https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/About.cshtml):
 
 ```csharp
-@page "about"
+@page "/about"
 @attribute [RenderStatic]
 ```
 
@@ -37,7 +37,7 @@ Which saves the pre-rendered page using the pages route with a **.html** suffix,
 routes with a trailing `/` are saved to `/{@page route}/index.html`:
 
 ```csharp
-@page "vue/"
+@page "/vue/"
 @attribute [RenderStatic]
 ```
 
@@ -47,7 +47,7 @@ To keep the generated pages in-sync with using the same routes as your Razor Pag
 rendered paths, but if preferred you can specify which path the page should render to instead with:
 
 ```csharp
-@page "vue/"
+@page "/vue/"
 @attribute [RenderStatic("vue/index.html")]
 ```
 
@@ -59,7 +59,7 @@ as done in [Vue/Page.cshtml](https://github.com/NetCoreTemplates/razor-press/blo
 [Page.cshtml](https://github.com/NetCoreTemplates/razor-press/blob/main/PropertyBitPackDocs/Pages/Page.cshtml):
 
 ```csharp
-@page "{slug}"
+@page "/{slug}"
 @model PropertyBitPackDocs.Page
 
 @implements IRenderStatic<PropertyBitPackDocs.Page>
@@ -98,7 +98,7 @@ and instead capture all required parameters for a page in its **@page route** as
 [Posts/Author.cshtml](https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/Posts/Author.cshtml)
 
 ```csharp
-@page "posts/author/{slug}"
+@page "/posts/author/{slug}"
 @model AuthorModel
 @inject MarkdownBlog Blog
 
@@ -116,7 +116,7 @@ likewise required for:
 [Posts/Tagged.cshtml](https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/Posts/Tagged.cshtml)
 
 ```csharp
-@page "posts/tagged/{slug}"
+@page "/posts/tagged/{slug}"
 @model TaggedModel
 @inject MarkdownBlog Blog
 
@@ -134,7 +134,7 @@ Which lists all related posts with a specific tag, e.g:
 [Posts/Year.cshtml](https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/Posts/Year.cshtml)
 
 ```csharp
-@page "posts/year/{year}"
+@page "/posts/year/{year}"
 @model YearModel
 @inject MarkdownBlog Blog
 
