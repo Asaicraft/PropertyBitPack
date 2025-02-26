@@ -6,8 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - 'master'
-      - 'docs/gh-pages'
+      - 'main'
 
 jobs:
   build:
@@ -27,7 +26,7 @@ jobs:
 
       - name: Assign default GitHub URL base path
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           custom_domain=$(gh api "/repos/${{ github.repository }}/pages" | jq -r '.cname // empty')
           echo "CNAME config detected: $custom_domain"
@@ -47,12 +46,12 @@ jobs:
           fi
 
       - name: Build tailwind
-        working-directory: ./PropertyBitPackDocs/PropertyBitPackDocs
+        working-directory: ./PropertyBitPackDocs
         run: |
           npm run build
 
       - name: prerender
-        working-directory: ./PropertyBitPackDocs/PropertyBitPackDocs
+        working-directory: ./PropertyBitPackDocs
         run: |
           site_base_href=${{ env.ssg_base_href }}
           site_base_url="https://${{ env.custom_domain }}"
@@ -69,7 +68,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.PAT }}
-          publish_dir: ./PropertyBitPackDocs/PropertyBitPackDocs/dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./PropertyBitPackDocs/dist
           user_name: 'GitHub Action'
           user_email: 'action@github.com'
