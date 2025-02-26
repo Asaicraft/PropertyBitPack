@@ -15,6 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.Tests", "Pr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D43C3C62-DDC7-423A-83FE-73E67D1C12B0}"
 	ProjectSection(SolutionItems) = preProject
+		PropertyBitPack\icon.png = PropertyBitPack\icon.png
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -24,6 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\publish.yml = .github\workflows\publish.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{7AF0F974-59ED-43D3-9CB1-E3D4E97BAED2}"
+	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug-report.yml = .github\ISSUE_TEMPLATE\bug-report.yml
 	EndProjectSection
 EndProject
 Global
@@ -55,6 +61,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{31FF0F0E-12E4-430F-9EC7-376E096B1A3F} = {D43C3C62-DDC7-423A-83FE-73E67D1C12B0}
 		{B23960AC-DEE7-433F-BB49-D56553BABCB5} = {31FF0F0E-12E4-430F-9EC7-376E096B1A3F}
+		{7AF0F974-59ED-43D3-9CB1-E3D4E97BAED2} = {31FF0F0E-12E4-430F-9EC7-376E096B1A3F}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		PropertyBitPack.Shared\PropertyBitPack.Shared.projitems*{62e39ee1-a6df-4531-ac9f-d748558ca4f8}*SharedItemsImports = 5

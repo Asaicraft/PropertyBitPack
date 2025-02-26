@@ -1,0 +1,128 @@
+﻿name: Bug Report
+description: Create a report to help us improve PropertyBitPack.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🛠️ Bug Report
+        Thank you for taking the time to report a bug!  
+        Although we can't commit to any timeline, priority will be given to **active contributors**.  
+        If possible, please provide a **minimal reproduction repository** to help us debug faster.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug 🐞
+      description: A clear and concise description of the bug.
+      placeholder: "A bug happened!"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: Steps to reproduce
+      description: "List the steps to reproduce the behavior."
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. See error
+    validations:
+      required: true
+
+  - type: input
+    id: reproduce-repository
+    attributes:
+      label: Reproduction repository
+      description: "A minimal repository that demonstrates the bug (if applicable)."
+      placeholder: "https://github.com/your-repo/example"
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior ✅
+      description: Describe what you expected to happen.
+      placeholder: "This should happen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior ❌
+      description: Describe what actually happened.
+      placeholder: "But this happened..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots 🖼️
+      description: If applicable, add screenshots or logs to help explain your problem.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: ide
+    attributes:
+      label: IDE
+      description: Which IDE are you using?
+      multiple: true
+      options:
+        - Visual Studio 2022
+        - Visual Studio 2019
+        - Visual Studio for Mac
+        - Rider (Windows)
+        - Rider (macOS)
+        - Visual Studio Code
+    validations:
+      required: false
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system 🖥️
+      description: Windows, Linux, macOS, etc.
+      placeholder: "Windows 11"
+    validations:
+      required: false
+
+  - type: input
+    id: system-version
+    attributes:
+      label: System Version
+      description: OS version or distribution (if applicable).
+      placeholder: "Ubuntu 22.04"
+    validations:
+      required: false
+
+  - type: input
+    id: dotnet-version
+    attributes:
+      label: .NET Version
+      description: Version of .NET you are using.
+      placeholder: "e.g. .NET 8.0"
+    validations:
+      required: false
+
+  - type: input
+    id: propertybitpack-version
+    attributes:
+      label: PropertyBitPack Version
+      description: Which version of PropertyBitPack are you using?
+      placeholder: "e.g. 1.2.3"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information ℹ️
+      description: Any other information you think might be relevant.
+    validations:
+      required: false
