@@ -5,19 +5,19 @@
     "children": [
       {
         "text": "What is Razor Press?",
-        "link": "/what-is-razor-press"
+        "link": "what-is-razor-press"
       },
       {
         "text": "Structure",
-        "link": "/structure"
+        "link": "structure"
       },
       {
         "text": "Static Site Generation",
-        "link": "/ssg"
+        "link": "ssg"
       },
       {
         "text": "Deployments",
-        "link": "/deployments"
+        "link": "deployments"
       }
     ]
   },
@@ -26,15 +26,15 @@
     "children": [
       {
         "text": "Markdown Syntax",
-        "link": "/syntax"
+        "link": "syntax"
       },
       {
         "text": "Markdown Containers",
-        "link": "/containers"
+        "link": "containers"
       },
       {
         "text": "Using Vue in Markdown",
-        "link": "/vue-in-markdown"
+        "link": "vue-in-markdown"
       }
     ]
   },
@@ -43,15 +43,15 @@
     "children": [
       {
         "text": "Sidebars",
-        "link": "/sidebars"
+        "link": "sidebars"
       },
       {
         "text": "Redirects",
-        "link": "/redirects"
+        "link": "redirects"
       },
       {
         "text": "Typesense Real-Time Search",
-        "link": "/typesense"
+        "link": "typesense"
       }
     ]
   }

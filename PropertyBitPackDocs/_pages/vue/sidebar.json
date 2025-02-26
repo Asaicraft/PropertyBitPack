@@ -1,11 +1,11 @@
 [
   {
     "text": "Vue",
-    "link": "/vue",
+    "link": "vue",
     "children": [
       {
         "text": "Install",
-        "link": "/vue/install"
+        "link": "vue/install"
       }
     ]
   },
@@ -14,51 +14,51 @@
     "children": [
       {
         "text": "AutoQueryGrid",
-        "link": "/vue/autoquerygrid"
+        "link": "vue/autoquerygrid"
       },
       {
         "text": "DataGrid",
-        "link": "/vue/datagrid"
+        "link": "vue/datagrid"
       },
       {
         "text": "Auto Forms",
-        "link": "/vue/autoform"
+        "link": "vue/autoform"
       },
       {
         "text": "Form Inputs",
-        "link": "/vue/form-inputs"
+        "link": "vue/form-inputs"
       },
       {
         "text": "FileInput",
-        "link": "/vue/fileinput"
+        "link": "vue/fileinput"
       },
       {
         "text": "TagInput",
-        "link": "/vue/taginput"
+        "link": "vue/taginput"
       },
       {
         "text": "Combobox",
-        "link": "/vue/combobox"
+        "link": "vue/combobox"
       },
       {
         "text": "Autocomplete",
-        "link": "/vue/autocomplete"
+        "link": "vue/autocomplete"
       },
       {
         "text": "Modals",
-        "link": "/vue/modals"
+        "link": "vue/modals"
       },
       {
         "text": "Navigation",
-        "link": "/vue/navigation"
+        "link": "vue/navigation"
       },
       {
         "text": "Alerts",
-        "link": "/vue/alerts"
+        "link": "vue/alerts"
       },
       {
         "text": "Formats",
-        "link": "/vue/formats"
+        "link": "vue/formats"
       }
     ]
   },
@@ -67,31 +67,31 @@
     "children": [
       {
         "text": "useMetadata",
-        "link": "/vue/use-metadata"
+        "link": "vue/use-metadata"
       },
       {
         "text": "useClient",
-        "link": "/vue/use-client"
+        "link": "vue/use-client"
       },
       {
         "text": "useAuth",
-        "link": "/vue/use-auth"
+        "link": "vue/use-auth"
       },
       {
         "text": "useFormatters",
-        "link": "/vue/use-formatters"
+        "link": "vue/use-formatters"
       },
       {
         "text": "useFiles",
-        "link": "/vue/use-files"
+        "link": "vue/use-files"
       },
       {
         "text": "useConfig",
-        "link": "/vue/use-config"
+        "link": "vue/use-config"
       },
       {
         "text": "useUtils",
-        "link": "/vue/use-utils"
+        "link": "vue/use-utils"
       }
     ]
   }
