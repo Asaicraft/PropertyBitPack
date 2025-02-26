@@ -3,7 +3,7 @@
 ## Docs
 
 Introduction
- - [What is Razor Press?](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/PropertyBitPack/what-is-razor-press.md)
+ - [What is Razor Press?](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/what-is-razor-press.md)
  - [Structure](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/structure.md)
  - [Static Site Generation](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/ssg.md)
  - [Deployments](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/deployments.md)
