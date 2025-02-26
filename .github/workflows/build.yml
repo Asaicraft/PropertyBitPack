@@ -70,6 +70,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.PAT }}
-          publish_dir: ./PropertyBitPackDocs/dist
+          publish_dir: ./PropertyBitPackDocs/PropertyBitPackDocs/dist
           user_name: 'GitHub Action'
           user_email: 'action@github.com'
