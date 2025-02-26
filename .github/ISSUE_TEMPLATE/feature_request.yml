@@ -1,0 +1,46 @@
+﻿name: Feature Request
+description: Suggest an idea to improve PropertyBitPack
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚀 Feature Request
+        Thank you for taking the time to suggest a new feature!  
+        Before submitting, please follow these steps:
+
+        1️⃣ **Check existing feature requests** in the [GitHub Issues](https://github.com/Asaicraft/PropertyBitPack/issues).  
+        2️⃣ **Discuss your idea first** in [GitHub Discussions (Ideas Category)](https://github.com/Asaicraft/PropertyBitPack/discussions/categories/ideas) or in our [Discord Community](YOUR_DISCORD_INVITE_LINK).  
+        3️⃣ **If the idea is supported**, submit it here as a formal request!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem? Please describe.
+      description: A clear and concise description of what the problem is.  
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.  
+      placeholder: "I would like PropertyBitPack to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.  
+      placeholder: "An alternative way to solve this problem is..."
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, examples, or screenshots related to your request.
+      placeholder: "Additional information, related issues, references, etc."
