@@ -15,11 +15,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyBitPack.Tests", "Pr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D43C3C62-DDC7-423A-83FE-73E67D1C12B0}"
 	ProjectSection(SolutionItems) = preProject
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		CONTRIBUTING.md = CONTRIBUTING.md
 		PropertyBitPack\icon.png = PropertyBitPack\icon.png
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{31FF0F0E-12E4-430F-9EC7-376E096B1A3F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\pr_labels.yml = .github\pr_labels.yml
+		.github\PULL_REQUEST_TEMPLATE.md = .github\PULL_REQUEST_TEMPLATE.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{B23960AC-DEE7-433F-BB49-D56553BABCB5}"
 	ProjectSection(SolutionItems) = preProject
