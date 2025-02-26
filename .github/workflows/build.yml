@@ -47,7 +47,7 @@ jobs:
           fi
 
       - name: Build tailwind
-        working-directory: ./PropertyBitPackDocs
+        working-directory: ./PropertyBitPackDocs/PropertyBitPackDocs
         run: |
           npm run build
 
