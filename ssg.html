@@ -150,7 +150,7 @@ Introduction                                    </span>
                                     </a>
                                 </li>
                                 <li class="relative">
-                                    <a href="/ssg" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full active font-semibold text-sky-500 before:bg-sky-500">
+                                    <a href="/ssg" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
                                         Static Site Generation
                                     </a>
                                 </li>
@@ -254,18 +254,18 @@ site as it would be when hosted on a CDN.</p>
 <h3 id="pages-with-static-routes">Pages with Static Routes<a class="header-anchor" href="javascript:;" onclick="location.hash='#pages-with-static-routes'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
 <p>Pages with static routes can be marked to be prerendered by annotating it with the <code>[RenderStatic]</code> attribute as done in
 <a href="https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/About.cshtml">About.cshtml</a>:</p>
-<pre><code class="language-csharp">@page &quot;/about&quot;
+<pre><code class="language-csharp">@page &quot;./about&quot;
 @attribute [RenderStatic]
 </code></pre>
 <p>Which saves the pre-rendered page using the pages route with a <strong>.html</strong> suffix, e.g: <code>/{@page route}.html</code> whilst pages with static
 routes with a trailing <code>/</code> are saved to <code>/{@page route}/index.html</code>:</p>
-<pre><code class="language-csharp">@page &quot;/vue/&quot;
+<pre><code class="language-csharp">@page &quot;./vue/&quot;
 @attribute [RenderStatic]
 </code></pre>
 <h4 id="explicit-generated-paths">Explicit generated paths<a class="header-anchor" href="javascript:;" onclick="location.hash='#explicit-generated-paths'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
 <p>To keep the generated pages in-sync with using the same routes as your Razor Pages in development it's recommended to use the implied
 rendered paths, but if preferred you can specify which path the page should render to instead with:</p>
-<pre><code class="language-csharp">@page &quot;/vue/&quot;
+<pre><code class="language-csharp">@page &quot;./vue/&quot;
 @attribute [RenderStatic(&quot;vue/index.html&quot;)]
 </code></pre>
 <h3 id="pages-with-dynamic-routes">Pages with Dynamic Routes<a class="header-anchor" href="javascript:;" onclick="location.hash='#pages-with-dynamic-routes'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
@@ -273,7 +273,7 @@ rendered paths, but if preferred you can specify which path the page should rend
 convention which you can implement using <code>IRenderStatic&lt;PageModel&gt;</code> by returning a Page Model for each page that should be generated
 as done in <a href="https://github.com/NetCoreTemplates/razor-press/blob/main/PropertyBitPackDocs/Pages/Vue/Page.cshtml">Vue/Page.cshtml</a> and
 <a href="https://github.com/NetCoreTemplates/razor-press/blob/main/PropertyBitPackDocs/Pages/Page.cshtml">Page.cshtml</a>:</p>
-<pre><code class="language-csharp">@page &quot;/{slug}&quot;
+<pre><code class="language-csharp">@page &quot;./{slug}&quot;
 @model PropertyBitPackDocs.Page
 
 @implements IRenderStatic&lt;PropertyBitPackDocs.Page&gt;
@@ -304,7 +304,7 @@ from Pages being executed in a static context which prohibits pages from returni
 <p>As the generated pages should adopt the same routes as your Razor Pages you'll need to avoid relying on <strong>?QueryString</strong> params
 and instead capture all required parameters for a page in its <strong>@page route</strong> as done for:</p>
 <p><a href="https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/Posts/Author.cshtml">Posts/Author.cshtml</a></p>
-<pre><code class="language-csharp">@page &quot;/posts/author/{slug}&quot;
+<pre><code class="language-csharp">@page &quot;./posts/author/{slug}&quot;
 @model AuthorModel
 @inject MarkdownBlog Blog
 
@@ -318,7 +318,7 @@ and instead capture all required parameters for a page in its <strong>@page rout
 <p>Which lists all posts by an Author, e.g: <a href="https://razor-ssg.web-templates.io/posts/author/lucy-bates">/posts/author/lucy-bates</a>,
 likewise required for:</p>
 <p><a href="https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/Posts/Tagged.cshtml">Posts/Tagged.cshtml</a></p>
-<pre><code class="language-csharp">@page &quot;/posts/tagged/{slug}&quot;
+<pre><code class="language-csharp">@page &quot;./posts/tagged/{slug}&quot;
 @model TaggedModel
 @inject MarkdownBlog Blog
 
@@ -332,7 +332,7 @@ likewise required for:</p>
 <p>Which lists all related posts with a specific tag, e.g:
 <a href="https://razor-ssg.web-templates.io/posts/tagged/markdown">/posts/tagged/markdown</a>, and for:</p>
 <p><a href="https://github.com/NetCoreTemplates/razor-ssg/blob/main/PropertyBitPackDocs/Pages/Posts/Year.cshtml">Posts/Year.cshtml</a></p>
-<pre><code class="language-csharp">@page &quot;/posts/year/{year}&quot;
+<pre><code class="language-csharp">@page &quot;./posts/year/{year}&quot;
 @model YearModel
 @inject MarkdownBlog Blog
 
@@ -431,27 +431,6 @@ specified <code>/dist</code> folder.</p>
                     </div>
 
                     <div class="not-prose my-20">
-                                <nav class="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 px-4 sm:px-0">
-                                    <div class="-mt-px flex w-0 flex-1">
-                                            <a href="/structure" class="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-gray-500 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200">
-                                                <!-- Heroicon name: mini/arrow-long-left -->
-                                                <svg class="mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M18 10a.75.75 0 01-.75.75H4.66l2.1 1.95a.75.75 0 11-1.02 1.1l-3.5-3.25a.75.75 0 010-1.1l3.5-3.25a.75.75 0 111.02 1.1l-2.1 1.95h12.59A.75.75 0 0118 10z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                Structure
-                                            </a>
-                                    </div>
-                                    <div class="hidden md:-mt-px md:flex"></div>
-                                    <div class="-mt-px flex w-0 flex-1 justify-end">
-                                            <a href="/deployments" class="inline-flex items-center border-t-2 border-transparent pt-4 pl-1 text-sm font-medium text-gray-500 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200">
-                                                Deployments
-                                                <!-- Heroicon name: mini/arrow-long-right -->
-                                                <svg class="ml-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z" clip-rule="evenodd"></path>
-                                                </svg>
-                                            </a>
-                                    </div>
-                                </nav>
                     </div>
             </div>
                 
