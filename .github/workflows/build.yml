@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - 'gh-pages'
+      - 'docs/gh-pages'
 
 jobs:
   build:
