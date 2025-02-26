@@ -95,6 +95,24 @@ Once your PR is ready:
 
 ---
 
+## 🔐 Licensing & Code Authenticity
+
+### 🔹 **Code Must Be Your Own**
+By contributing to PropertyBitPack, you agree that:
+- All code you submit is **written by you** or **properly licensed**.
+- You **do not** submit code copied from other projects **without explicit permission** and proper attribution.
+- If your code is based on someone else's work, you must **clearly state this in the PR description**.
+
+### 🔹 **License Compliance**
+PropertyBitPack follows the **MIT License**, which means:
+- Your contributions will be licensed under the same terms.
+- You agree that your code **can be used, modified, and redistributed** under the MIT License.
+- You **must not submit proprietary or confidential code**.
+
+If you are unsure whether your contribution complies with these rules, **please ask in [Discussions](https://github.com/Asaicraft/PropertyBitPack/discussions) before submitting a PR.**
+
+---
+
 ## 📜 Code of Conduct
 This project follows the **Contributor Covenant Code of Conduct**.  
 Please read it [here](https://github.com/Asaicraft/PropertyBitPack/blob/master/CODE_OF_CONDUCT.md).
