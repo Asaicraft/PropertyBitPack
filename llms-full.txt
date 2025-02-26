@@ -492,7 +492,7 @@ rendered paths, but if preferred you can specify which path the page should rend
 
 ```csharp
 @page "/vue/"
-@attribute [RenderStatic("/vue/index.html")]
+@attribute [RenderStatic("vue/index.html")]
 ```
 
 ### Pages with Dynamic Routes
@@ -1324,7 +1324,7 @@ which adopts the same structure as [VitePress Sidebars](https://vitepress.dev/re
 [
   {
     "text": "Introduction",
-    "link": "/",
+    "link": "",
     "children": [
       {
         "text": "What is Razor Press?",
@@ -1845,9 +1845,9 @@ Razor Pages or MVC Apps can use the `Html.ImportMaps()` to use local debug build
 ```csharp
 @Html.ImportMap(new()
 {
-    ["vue"]                  = ("/lib/mjs/vue.mjs",                 "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"),
-    ["@servicestack/client"] = ("/lib/mjs/servicestack-client.mjs", "https://unpkg.com/@servicestack/client@2/dist/servicestack-client.min.mjs"),
-    ["@servicestack/vue"]    = ("/lib/mjs/servicestack-vue.mjs",    "https://unpkg.com/@servicestack/vue@3/dist/servicestack-vue.min.mjs")
+    ["vue"]                  = ("lib/mjs/vue.mjs",                 "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"),
+    ["@servicestack/client"] = ("lib/mjs/servicestack-client.mjs", "https://unpkg.com/@servicestack/client@2/dist/servicestack-client.min.mjs"),
+    ["@servicestack/vue"]    = ("lib/mjs/servicestack-vue.mjs",    "https://unpkg.com/@servicestack/vue@3/dist/servicestack-vue.min.mjs")
 })
 ```
 
@@ -2782,7 +2782,7 @@ and the custom [Field and Input](/locode/declarative#custom-fields-and-inputs) a
 ```csharp
 [Description("Update an existing Booking")]
 [Notes("Find out how to create a <a href='https://youtu.be/rSFiikDjGos'>C# Bookings App from Scratch</a>")]
-[Route("/booking/{Id}", "PATCH")]
+[Route("booking/{Id}", "PATCH")]
 [ValidateHasRole("Employee")]
 [AutoApply(Behavior.AuditModify)]
 public class UpdateBooking : IPatchDb<Booking>, IReturn<IdResponse>
