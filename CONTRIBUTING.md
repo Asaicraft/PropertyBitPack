@@ -113,6 +113,12 @@ If you are unsure whether your contribution complies with these rules, **please 
 
 ---
 
+## 🔎 Additional Developer Documentation
+To learn more about how PropertyBitPack is architected and how to extend it, please see the
+[Documentation for Developers](https://asaicraft.github.io/PropertyBitPack/to_developers/).
+
+---
+
 ## 📜 Code of Conduct
 This project follows the **Contributor Covenant Code of Conduct**.  
 Please read it [here](https://github.com/Asaicraft/PropertyBitPack/blob/master/CODE_OF_CONDUCT.md).
