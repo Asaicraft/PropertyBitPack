@@ -203,6 +203,11 @@ To developers                                    </span>
 </ol>
 <hr />
 <h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<div class="Mermaid"><pre class="mermaid"></pre>
+<details><summary>source</summary>
+<pre><code class="language-mermaid"></code></pre>
+</details>
+</div>
 <pre class="mermaid">
 flowchart LR
     A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
@@ -215,6 +220,19 @@ flowchart LR
     C --> E
     E --> F
     F --> G
+</pre>
+<pre class="mermaid">flowchart LR
+    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
+    B -->|BindToSelf| D[IContextBindable?]
+    B -->|AttributeParsers| C[PropertyDeclaration]
+    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
+
+    C --> E
+    E --> F
+    F --> G
+&lt;/pre>
 </pre>
 <p><strong>Diagram Explanation</strong>:</p>
 <ol>
@@ -390,10 +408,10 @@ mount('#sidebar', Sidebar)
 <script type="module">
 import { init } from "app.mjs"
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js";
 
 mermaid.initialize({ startOnLoad: true });
 init()
-
 
 </script>
 
