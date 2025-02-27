@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="https://asaicraft.github.io/PropertyBitPack/" />
     <link rel="icon" type="image/svg" href="img/logo.svg">
-    <title>Architecture</title>
+    <title>throw-helper.md</title>
     <script>
     if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
     if (location.search === "?light") localStorage.removeItem('color-scheme') 
@@ -192,181 +192,116 @@ Architecture                                    </span>
                 
                     <section class="not-prose mb-16 md:mb-12">
                         <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
-                            Architecture
+                            throw-helper.md
                         </h1>
                     </section>
 
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <p>Below is an overview of the internal architecture of <strong>PropertyBitPack</strong>, focusing on how it processes attributes, aggregates bit-packed properties, and generates source code. This documentation is intended for contributors who want to understand or extend the source generator logic.</p>
+                    <h1 id="throwhelper-efficient-exception-throwing-in.net">🚀 ThrowHelper: Efficient Exception Throwing in .NET<a class="header-anchor" href="javascript:;" onclick="location.hash='#throwhelper-efficient-exception-throwing-in.net'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
+<h2 id="overview">Overview<a class="header-anchor" href="javascript:;" onclick="location.hash='#overview'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p><code>ThrowHelper</code> is a <strong>high-performance exception throwing utility</strong> that helps improve <strong>code clarity</strong> and <strong>runtime performance</strong> by reducing exception-related overhead. It is adapted from the <a href="https://learn.microsoft.com/en-us/dotnet/communitytoolkit/diagnostics/throwhelper">CommunityToolkit.Diagnostics</a> package.</p>
+<p>Instead of <strong>directly throwing exceptions</strong>, <code>ThrowHelper</code> provides <strong>dedicated methods</strong> to throw them efficiently, reducing the impact on <strong>JIT optimizations</strong> and <strong>inlining behavior</strong>.</p>
 <hr />
-<h2 id="high-level-architecture">High-Level Architecture<a class="header-anchor" href="javascript:;" onclick="location.hash='#high-level-architecture'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<ol>
-<li><p><strong><code>PropertyBitPackGeneratorContext</code></strong> (abstract class)</p>
+<h2 id="why-use-throwhelper">⚡ Why Use ThrowHelper?<a class="header-anchor" href="javascript:;" onclick="location.hash='#why-use-throwhelper'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="performance-benefits">✅ Performance Benefits<a class="header-anchor" href="javascript:;" onclick="location.hash='#performance-benefits'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
 <ul>
-<li>Defines arrays of <strong>parsers</strong> and <strong>generators</strong>:
-<ul>
-<li><code>AttributeParsers</code> (implementations of <code>IAttributeParser</code>)</li>
-<li><code>BitFieldPropertyParsers</code> (implementations of <code>IBitFieldPropertyParser</code>)</li>
-<li><code>BitFieldPropertyAggregators</code> (implementations of <code>IBitFieldPropertyAggregator</code>)</li>
-<li><code>PropertySyntaxGenerators</code> (implementations of <code>IPropertiesSyntaxGenerator</code>)</li>
+<li><strong>Reduces JIT overhead</strong> → Helps the .NET Just-In-Time (JIT) compiler optimize the code better.</li>
+<li><strong>Minimizes exception metadata impact</strong> → Avoids unnecessary exception construction in inline paths.</li>
+<li><strong>Improves maintainability</strong> → Centralizes exception handling logic.</li>
 </ul>
-</li>
-<li>Provides methods to:
-<ul>
-<li>Identify candidate attributes</li>
-<li>Parse them into internal <code>BaseBitFieldPropertyInfo</code> representations</li>
-<li>Aggregate property info into requests (<code>IGenerateSourceRequest</code>)</li>
-<li>Generate final C# source code (<code>FileGeneratorRequest</code>)</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong><code>PropertyBitPackGeneratorContextImplementation</code></strong></p>
-<ul>
-<li>A sealed nested class that constructs these arrays <strong>without constructor injection</strong> in the typical DI sense.</li>
-<li>Instead, after constructing arrays of parsers/generators, the method <code>BindToSelf()</code> iterates over each component.
-<ul>
-<li>If the component implements <code>IContextBindable</code>, it calls <code>BindContext(this)</code>, providing a direct link to the current context instance.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong><code>PropertyBitPackSourceGenerator : IIncrementalGenerator</code></strong></p>
-<ul>
-<li>Holds a static instance of <code>PropertyBitPackGeneratorContext</code>.</li>
-<li>Uses <strong>incremental generation</strong>:
-<ul>
-<li>Filters candidate properties via <code>IsCandidateProperty(...)</code>.</li>
-<li>For each property, attempts to parse attached attributes.</li>
-<li>Aggregates bit-packed properties.</li>
-<li>Calls context methods to generate final source code.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>Parsing Workflow</strong></p>
-<ol>
-<li><strong>Identify</strong> partial properties with certain attributes.</li>
-<li><strong>Check</strong> if any of the known attribute parsers (<code>IAttributeParser</code>) match.</li>
-<li><strong>Parse</strong> them into <code>BaseBitFieldPropertyInfo</code>.</li>
-<li><strong>Aggregate</strong> all recognized properties into <code>IGenerateSourceRequest</code> objects.</li>
-<li><strong>Generate</strong> the final <code>.cs</code> source files (property implementations) via <code>IPropertiesSyntaxGenerator</code>.</li>
-</ol>
-</li>
-</ol>
-<hr />
-<h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<div class="Mermaid"><pre class="mermaid">flowchart LR
-    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
-    B --&gt;|BindToSelf| D[IContextBindable?]
-    B --&gt;|AttributeParsers| C[PropertyDeclaration]
-    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]
-
-    C --&gt; E
-    E --&gt; F
-    F --&gt; G</pre>
-<details><summary>source</summary>
-<pre>flowchart LR
-    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
-    B --&gt;|BindToSelf| D[IContextBindable?]
-    B --&gt;|AttributeParsers| C[PropertyDeclaration]
-    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]
-
-    C --&gt; E
-    E --&gt; F
-    F --&gt; G</pre>
-</details>
-</div>
-<p><strong>Diagram Explanation</strong>:</p>
-<ol>
-<li><strong>IncrementalGenerator</strong> filters candidate properties.</li>
-<li><strong>PropertyBitPackGeneratorContextImplementation</strong>:
-<ul>
-<li>Holds arrays of parsers/generators.</li>
-<li>Calls <code>BindToSelf()</code>, so each component that implements <code>IContextBindable</code> can access the <strong>context</strong>.</li>
-</ul>
-</li>
-<li>The parsers/generators then handle attribute parsing, property analysis, and source code generation.</li>
-</ol>
-<hr />
-<h2 id="notable-classes-interfaces">Notable Classes &amp; Interfaces<a class="header-anchor" href="javascript:;" onclick="location.hash='#notable-classes-interfaces'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<h3 id="propertybitpackgeneratorcontextimplementation"><code>PropertyBitPackGeneratorContextImplementation</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpackgeneratorcontextimplementation'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<pre><code class="language-csharp">internal sealed class PropertyBitPackGeneratorContextImplementation : PropertyBitPackGeneratorContext
+<h3 id="example-direct-exception-vs.throwhelper">📌 Example: Direct Exception vs. ThrowHelper<a class="header-anchor" href="javascript:;" onclick="location.hash='#example-direct-exception-vs.throwhelper'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<p>❌ <strong>Traditional Exception Throwing:</strong></p>
+<pre><code class="language-csharp">if (value == null)
 {
-    public PropertyBitPackGeneratorContextImplementation(
-        ImmutableArray&lt;IAttributeParser&gt; attributeParsers,
-        ImmutableArray&lt;IBitFieldPropertyParser&gt; bitFieldPropertyParsers,
-        ImmutableArray&lt;IBitFieldPropertyAggregator&gt; bitFieldPropertyAggregators,
-        ImmutableArray&lt;IPropertiesSyntaxGenerator&gt; bitFieldPropertyGenerators
-    ) {
-        AttributeParsers = attributeParsers;
-        BitFieldPropertyParsers = bitFieldPropertyParsers;
-        BitFieldPropertyAggregators = bitFieldPropertyAggregators;
-        PropertySyntaxGenerators = bitFieldPropertyGenerators;
-
-        // Binds the context to all parsers/generators that require it
-        BindToSelf();
-    }
-    
-    internal void BindToSelf()
+    throw new ArgumentNullException(nameof(value));
+}
+</code></pre>
+<p>✅ <strong>Using ThrowHelper:</strong></p>
+<pre><code class="language-csharp">if (value == null)
+{
+    ThrowHelper.ThrowArgumentNullException(nameof(value));
+}
+</code></pre>
+<p>💡 <strong>Key Benefit</strong>: The exception is constructed <strong>only when needed</strong>, reducing the performance impact on methods that normally execute without errors.</p>
+<hr />
+<h2 id="how-it-works">🔹 How It Works<a class="header-anchor" href="javascript:;" onclick="location.hash='#how-it-works'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="common-exception-helpers">🚀 Common Exception Helpers<a class="header-anchor" href="javascript:;" onclick="location.hash='#common-exception-helpers'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<p>ThrowHelper provides a <strong>dedicated method for each exception type</strong>:</p>
+<h4 id="argument-related-exceptions">Argument-Related Exceptions<a class="header-anchor" href="javascript:;" onclick="location.hash='#argument-related-exceptions'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
+<pre><code class="language-csharp">ThrowHelper.ThrowArgumentNullException(&quot;parameterName&quot;);
+ThrowHelper.ThrowArgumentException(&quot;parameterName&quot;, &quot;Invalid parameter.&quot;);
+ThrowHelper.ThrowArgumentOutOfRangeException(&quot;parameterName&quot;);
+</code></pre>
+<h4 id="invalid-state-exceptions">Invalid State Exceptions<a class="header-anchor" href="javascript:;" onclick="location.hash='#invalid-state-exceptions'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
+<pre><code class="language-csharp">ThrowHelper.ThrowInvalidOperationException(&quot;Operation is not valid.&quot;);
+ThrowHelper.ThrowNotSupportedException(&quot;This feature is not supported.&quot;);
+ThrowHelper.ThrowObjectDisposedException(&quot;objectName&quot;);
+</code></pre>
+<h4 id="type-format-errors">Type &amp; Format Errors<a class="header-anchor" href="javascript:;" onclick="location.hash='#type-format-errors'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
+<pre><code class="language-csharp">ThrowHelper.ThrowFormatException(&quot;Invalid format detected.&quot;);
+ThrowHelper.ThrowArrayTypeMismatchException();
+</code></pre>
+<h4 id="custom-messages-inner-exceptions">Custom Messages &amp; Inner Exceptions<a class="header-anchor" href="javascript:;" onclick="location.hash='#custom-messages-inner-exceptions'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
+<p>Each method has <strong>overloads</strong> that allow for detailed exception messages and inner exceptions:</p>
+<pre><code class="language-csharp">ThrowHelper.ThrowArgumentException(&quot;parameterName&quot;, &quot;Invalid parameter.&quot;, new Exception(&quot;Inner exception details&quot;));
+</code></pre>
+<hr />
+<h2 id="advanced-use-cases">🏗️ Advanced Use Cases<a class="header-anchor" href="javascript:;" onclick="location.hash='#advanced-use-cases'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="using-generics-for-inline-return">✅ Using Generics for Inline Return<a class="header-anchor" href="javascript:;" onclick="location.hash='#using-generics-for-inline-return'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<p>For some exceptions, you may want to <strong>throw and return a generic type</strong>:</p>
+<pre><code class="language-csharp">public static T ThrowUnreachableException&lt;T&gt;(string message)
+{
+    throw new UnreachableException($&quot;This code should never be reached. {message}&quot;);
+}
+</code></pre>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="language-csharp">var result = someCondition ? validValue : ThrowHelper.ThrowUnreachableException&lt;int&gt;(&quot;Unexpected case.&quot;);
+</code></pre>
+<p>🚀 <strong>Benefit:</strong> This allows exception-throwing methods to be <strong>used inside expressions</strong>.</p>
+<hr />
+<h2 id="implementation-details">🛠️ Implementation Details<a class="header-anchor" href="javascript:;" onclick="location.hash='#implementation-details'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="throwhelper-class-structure">📌 <code>ThrowHelper</code> Class Structure<a class="header-anchor" href="javascript:;" onclick="location.hash='#throwhelper-class-structure'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<p>The <code>ThrowHelper</code> class is a <strong>static utility</strong> that centralizes exception throwing:</p>
+<pre><code class="language-csharp">internal static partial class ThrowHelper
+{
+    [DoesNotReturn]
+    public static void ThrowArgumentNullException(string? name)
     {
-        // If any component implements IContextBindable, pass it this context
+        throw new ArgumentNullException(name);
+    }
+
+    [DoesNotReturn]
+    public static void ThrowInvalidOperationException(string? message)
+    {
+        throw new InvalidOperationException(message);
+    }
+
+    [DoesNotReturn]
+    public static void ThrowUnreachableException(string message)
+    {
+        throw new UnreachableException($&quot;{UnreachableException.DefaultMessage} {message}&quot;);
     }
 }
 </code></pre>
-<ul>
-<li><strong>No typical DI constructor injection</strong>. The arrays of components are assigned directly, then <code>BindToSelf()</code> ensures each component can hold a reference to the context if needed.</li>
-</ul>
-<h3 id="icontextbindable"><code>IContextBindable</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#icontextbindable'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<pre><code class="language-csharp">internal interface IContextBindable
-{
-    void BindContext(PropertyBitPackGeneratorContext context);
-}
-</code></pre>
-<ul>
-<li>Components (e.g., parsers, aggregators, syntax generators) implement <code>IContextBindable</code> to gain access to shared context data or services.</li>
-</ul>
-<h3 id="propertybitpacksourcegenerator"><code>PropertyBitPackSourceGenerator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpacksourcegenerator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<ul>
-<li><strong>Entry point</strong> for incremental generation. Creates a static <code>_context</code> using a <code>PropertyBitPackGeneratorContextBuilder</code>.</li>
-<li>Scans the syntax for candidate partial properties, matches attributes, and produces generated <code>.cs</code> files.</li>
-</ul>
+<h3 id="doesnotreturn-attribute">📌 <code>DoesNotReturn</code> Attribute<a class="header-anchor" href="javascript:;" onclick="location.hash='#doesnotreturn-attribute'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<p>🔹 Methods are annotated with <code>[DoesNotReturn]</code> to help <strong>static analysis tools</strong> understand that these methods <strong>always throw exceptions</strong>, improving <strong>code flow analysis</strong>.</p>
 <hr />
-<h2 id="customizing-parsers-generators">Customizing Parsers &amp; Generators<a class="header-anchor" href="javascript:;" onclick="location.hash='#customizing-parsers-generators'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>To add or override behavior:</p>
-<ol>
-<li><strong>Implement</strong> a new <code>IAttributeParser</code>, <code>IBitFieldPropertyParser</code>, <code>IBitFieldPropertyAggregator</code>, or <code>IPropertiesSyntaxGenerator</code>.</li>
-<li><strong>Attach</strong> it to the context builder:
-<pre><code class="language-csharp">var builder = PropertyBitPackGeneratorContextBuilder.Create();
-builder.AttributeParsers.Add(new MyCustomAttributeParser());
-builder.BitFieldPropertyParsers.Add(new MyCustomBitFieldParser());
-// ...
-var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImplementation
-</code></pre>
-</li>
-<li><strong>Use</strong> <code>BindToSelf()</code> to allow each component to <code>BindContext(...)</code> if it implements <code>IContextBindable</code>.</li>
-</ol>
+<h2 id="summary">🔥 Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>🚀 <code>ThrowHelper</code> is a <strong>performance-friendly way</strong> to throw exceptions while improving <strong>code maintainability and JIT optimizations</strong>.</p>
+<p>✔ <strong>Use it to reduce metadata overhead in exception paths.</strong><br />
+✔ <strong>Encapsulate exception logic for better maintainability.</strong><br />
+✔ <strong>Ensure better inline optimizations and runtime performance.</strong></p>
 <hr />
-<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<ul>
-<li><strong>PropertyBitPack</strong> uses a modular approach, allowing you to plug in new attribute parsers, property parsers, aggregators, and syntax generators.</li>
-<li><strong>Context binding</strong> is not done through traditional DI constructor injection; instead, <strong><code>BindToSelf()</code></strong> iterates over all registered components and calls <code>BindContext(this)</code> if they implement <code>IContextBindable</code>.</li>
-<li>This design keeps the architecture flexible and straightforward, enabling easy extension for advanced bit-packing scenarios.</li>
-</ul>
-<p>For questions or deeper discussion, feel free to join our <a href="https://discord.gg/RpxD2BeNsZ">Discord</a>!</p>
+<p>📖 <strong>Reference:</strong> <a href="https://learn.microsoft.com/en-us/dotnet/communitytoolkit/diagnostics/throwhelper">CommunityToolkit.Diagnostics ThrowHelper</a></p>
 
                 </div>
 
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/to_developers/index.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/to_developers/throw-helper.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>
@@ -383,28 +318,77 @@ var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImpleme
                             </h5>
                             <ul class="text-slate-700 text-sm leading-6">
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#high-level-architecture'" data-id="high-level-architecture" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            High-Level Architecture
+                                        <span v-hash="'#overview'" data-id="overview" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Overview
                                         </span>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#mermaid-diagram'" data-id="mermaid-diagram" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Mermaid Diagram
+                                        <span v-hash="'#why-use-throwhelper'" data-id="why-use-throwhelper" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            &#x26A1; Why Use ThrowHelper?
                                         </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="performance-benefits" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#performance-benefits'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            &#x2705; Performance Benefits
+                                                        </span>
+                                                    </li>
+                                                    <li data-id="example-direct-exception-vs.throwhelper" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#example-direct-exception-vs.throwhelper'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            &#x1F4CC; Example: Direct Exception vs. ThrowHelper
+                                                        </span>
+                                                    </li>
+                                            </ul>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#notable-classes-interfaces'" data-id="notable-classes-interfaces" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Notable Classes &amp; Interfaces
+                                        <span v-hash="'#how-it-works'" data-id="how-it-works" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            &#x1F539; How It Works
                                         </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="common-exception-helpers" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#common-exception-helpers'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            &#x1F680; Common Exception Helpers
+                                                        </span>
+                                                    </li>
+                                            </ul>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#customizing-parsers-generators'" data-id="customizing-parsers-generators" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Customizing Parsers &amp; Generators
+                                        <span v-hash="'#advanced-use-cases'" data-id="advanced-use-cases" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            &#x1F3D7;&#xFE0F; Advanced Use Cases
                                         </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="using-generics-for-inline-return" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#using-generics-for-inline-return'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            &#x2705; Using Generics for Inline Return
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#implementation-details'" data-id="implementation-details" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            &#x1F6E0;&#xFE0F; Implementation Details
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="throwhelper-class-structure" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#throwhelper-class-structure'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            &#x1F4CC; 
+                                                        </span>
+                                                    </li>
+                                                    <li data-id="doesnotreturn-attribute" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#doesnotreturn-attribute'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            &#x1F4CC; 
+                                                        </span>
+                                                    </li>
+                                            </ul>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
                                         <span v-hash="'#summary'" data-id="summary" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Summary
+                                            &#x1F525; Summary
                                         </span>
                                     </li>
                             </ul>

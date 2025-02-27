@@ -27,6 +27,7 @@ Architecture
  - [Properties Syntax Generator](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/properties-syntax-generator.md)
 
 Helper utilities
- - [Markdown Syntax](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/syntax.md)
- - [Markdown Containers](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/containers.md)
- - [Using Vue in Markdown](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/vue-in-markdown.md)
+ - [Objects Pool](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/objects-pool.md)
+ - [ImmutableArrayBuilder](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/immutable-array-builder.md)
+ - [ThrowHelper](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/throw-helper.md)
+ - [BitwiseSyntaxHelpers](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/bitwise-syntax-helpers.md)

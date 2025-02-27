@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="https://asaicraft.github.io/PropertyBitPack/" />
     <link rel="icon" type="image/svg" href="img/logo.svg">
-    <title>Architecture</title>
+    <title>Objects Pool</title>
     <script>
     if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
     if (location.search === "?light") localStorage.removeItem('color-scheme') 
@@ -192,181 +192,185 @@ Architecture                                    </span>
                 
                     <section class="not-prose mb-16 md:mb-12">
                         <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
-                            Architecture
+                            Objects Pool
                         </h1>
                     </section>
 
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <p>Below is an overview of the internal architecture of <strong>PropertyBitPack</strong>, focusing on how it processes attributes, aggregates bit-packed properties, and generates source code. This documentation is intended for contributors who want to understand or extend the source generator logic.</p>
+                    <h2 id="overview">Overview<a class="header-anchor" href="javascript:;" onclick="location.hash='#overview'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p><code>PropertyBitPack</code> uses <strong>object pooling</strong> to avoid <strong>excessive memory allocations</strong> for frequently reused data structures. These <strong>pools</strong> hold onto lists, dictionaries, string builders, etc., returning them to a shared pool once they’re no longer needed. In high-volume or repetitive code paths, this significantly cuts down on <strong>GC pressure</strong>.</p>
+<h3 id="why-object-pooling">Why Object Pooling?<a class="header-anchor" href="javascript:;" onclick="location.hash='#why-object-pooling'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong>Performance</strong>: Reduces GC (Garbage Collection) overhead by reusing objects.</li>
+<li><strong>Memory Efficiency</strong>: Cuts down on new allocations for short-lived or medium-lived objects.</li>
+<li><strong>Thread-Safety</strong>: Pools often rely on <strong>thread-safe</strong> collections (e.g., <code>ConcurrentStack</code>).</li>
+</ul>
 <hr />
-<h2 id="high-level-architecture">High-Level Architecture<a class="header-anchor" href="javascript:;" onclick="location.hash='#high-level-architecture'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h2 id="key-pool-classes">Key Pool Classes<a class="header-anchor" href="javascript:;" onclick="location.hash='#key-pool-classes'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <ol>
-<li><p><strong><code>PropertyBitPackGeneratorContext</code></strong> (abstract class)</p>
+<li><p><strong><code>StringBuildersPool</code></strong></p>
 <ul>
-<li>Defines arrays of <strong>parsers</strong> and <strong>generators</strong>:
-<ul>
-<li><code>AttributeParsers</code> (implementations of <code>IAttributeParser</code>)</li>
-<li><code>BitFieldPropertyParsers</code> (implementations of <code>IBitFieldPropertyParser</code>)</li>
-<li><code>BitFieldPropertyAggregators</code> (implementations of <code>IBitFieldPropertyAggregator</code>)</li>
-<li><code>PropertySyntaxGenerators</code> (implementations of <code>IPropertiesSyntaxGenerator</code>)</li>
-</ul>
-</li>
-<li>Provides methods to:
-<ul>
-<li>Identify candidate attributes</li>
-<li>Parse them into internal <code>BaseBitFieldPropertyInfo</code> representations</li>
-<li>Aggregate property info into requests (<code>IGenerateSourceRequest</code>)</li>
-<li>Generate final C# source code (<code>FileGeneratorRequest</code>)</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong><code>PropertyBitPackGeneratorContextImplementation</code></strong></p>
-<ul>
-<li>A sealed nested class that constructs these arrays <strong>without constructor injection</strong> in the typical DI sense.</li>
-<li>Instead, after constructing arrays of parsers/generators, the method <code>BindToSelf()</code> iterates over each component.
-<ul>
-<li>If the component implements <code>IContextBindable</code>, it calls <code>BindContext(this)</code>, providing a direct link to the current context instance.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong><code>PropertyBitPackSourceGenerator : IIncrementalGenerator</code></strong></p>
-<ul>
-<li>Holds a static instance of <code>PropertyBitPackGeneratorContext</code>.</li>
-<li>Uses <strong>incremental generation</strong>:
-<ul>
-<li>Filters candidate properties via <code>IsCandidateProperty(...)</code>.</li>
-<li>For each property, attempts to parse attached attributes.</li>
-<li>Aggregates bit-packed properties.</li>
-<li>Calls context methods to generate final source code.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>Parsing Workflow</strong></p>
-<ol>
-<li><strong>Identify</strong> partial properties with certain attributes.</li>
-<li><strong>Check</strong> if any of the known attribute parsers (<code>IAttributeParser</code>) match.</li>
-<li><strong>Parse</strong> them into <code>BaseBitFieldPropertyInfo</code>.</li>
-<li><strong>Aggregate</strong> all recognized properties into <code>IGenerateSourceRequest</code> objects.</li>
-<li><strong>Generate</strong> the final <code>.cs</code> source files (property implementations) via <code>IPropertiesSyntaxGenerator</code>.</li>
-</ol>
-</li>
-</ol>
-<hr />
-<h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<div class="Mermaid"><pre class="mermaid">flowchart LR
-    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
-    B --&gt;|BindToSelf| D[IContextBindable?]
-    B --&gt;|AttributeParsers| C[PropertyDeclaration]
-    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]
+<li>Reuses <code>StringBuilder</code> instances.</li>
+<li>Useful for <strong>string concatenation</strong> or generating dynamic names in a tight loop.</li>
+<li><strong>Example</strong> usage:
+<pre><code class="language-csharp">using var sbRent = StringBuildersPool.Rent();
+var sb = sbRent.StringBuilder;
+sb.Append(&quot;Hello, world!&quot;);
 
-    C --&gt; E
-    E --&gt; F
-    F --&gt; G</pre>
-<details><summary>source</summary>
-<pre>flowchart LR
-    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
-    B --&gt;|BindToSelf| D[IContextBindable?]
-    B --&gt;|AttributeParsers| C[PropertyDeclaration]
-    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]
-
-    C --&gt; E
-    E --&gt; F
-    F --&gt; G</pre>
-</details>
-</div>
-<p><strong>Diagram Explanation</strong>:</p>
-<ol>
-<li><strong>IncrementalGenerator</strong> filters candidate properties.</li>
-<li><strong>PropertyBitPackGeneratorContextImplementation</strong>:
-<ul>
-<li>Holds arrays of parsers/generators.</li>
-<li>Calls <code>BindToSelf()</code>, so each component that implements <code>IContextBindable</code> can access the <strong>context</strong>.</li>
+// Once out of scope, the 'sbRent' automatically returns the StringBuilder to the pool.
+</code></pre>
+</li>
 </ul>
 </li>
-<li>The parsers/generators then handle attribute parsing, property analysis, and source code generation.</li>
+<li><p><strong><code>OwnerFieldNameGroupDictionaryPool</code></strong></p>
+<ul>
+<li>Provides dictionaries of type <code>Dictionary&lt;(INamedTypeSymbol, IFieldName?), List&lt;BaseBitFieldPropertyInfo&gt;&gt;</code>.</li>
+<li>Groups properties by <code>(Owner, FieldName?)</code> in aggregator logic.</li>
+</ul>
+</li>
+<li><p><strong><code>ListsPool&lt;T&gt;</code></strong></p>
+<ul>
+<li>Returns and reuses <code>List&lt;T&gt;</code> objects.</li>
+<li><strong>Clears</strong> the list when returning it to ensure no leftover items.</li>
+<li>Example usage:
+<pre><code class="language-csharp">var list = ListsPool&lt;MyType&gt;.Rent();
+// ... work with list ...
+ListsPool&lt;MyType&gt;.Return(list); // Clears and reuses next time
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p><strong><code>DictionariesSymbolPool&lt;TValue&gt;</code></strong></p>
+<ul>
+<li>Provides dictionaries keyed by <strong><code>ISymbol</code></strong> (<code>SymbolEqualityComparer.Default</code>).</li>
+<li>For quick lookups in Roslyn-based logic (where symbols must be equal by reference or actual symbol identity).</li>
+</ul>
+</li>
+<li><p><strong><code>DictionariesPool&lt;TKey, TValue&gt;</code></strong></p>
+<ul>
+<li>Generic pool for <code>Dictionary&lt;TKey, TValue&gt;</code>.</li>
+<li>Similar to <code>ListsPool&lt;T&gt;</code>, but for dictionaries.</li>
+</ul>
+</li>
+<li><p><strong><code>SymbolAccessPairDictionaryPool</code></strong></p>
+<ul>
+<li>Specialized pool for <code>Dictionary&lt;SymbolAccessPair, FieldsPropertiesPair&gt;</code> with <code>SymbolAccessPairComparer.Default</code>.</li>
+</ul>
+</li>
+<li><p><strong><code>SimpleLinkedListsPool</code></strong></p>
+<ul>
+<li>Returns <code>SimpleLinkedList&lt;T&gt;</code> objects (a custom linked list implementation).</li>
+<li>Often used for chaining property or aggregator data in a memory-efficient way.</li>
+</ul>
+</li>
 </ol>
 <hr />
-<h2 id="notable-classes-interfaces">Notable Classes &amp; Interfaces<a class="header-anchor" href="javascript:;" onclick="location.hash='#notable-classes-interfaces'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<h3 id="propertybitpackgeneratorcontextimplementation"><code>PropertyBitPackGeneratorContextImplementation</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpackgeneratorcontextimplementation'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<pre><code class="language-csharp">internal sealed class PropertyBitPackGeneratorContextImplementation : PropertyBitPackGeneratorContext
+<h2 id="how-it-works">How It Works<a class="header-anchor" href="javascript:;" onclick="location.hash='#how-it-works'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ol>
+<li><strong>Initialization</strong>: Each pool typically <strong>pushes</strong> a few pre-allocated objects onto a <code>ConcurrentStack</code> in a static constructor.</li>
+<li><strong>Rent</strong>:
+<ul>
+<li><strong>Pop</strong> an instance from the stack if available, or create a new one if the stack is empty.</li>
+</ul>
+</li>
+<li><strong>Use</strong>:
+<ul>
+<li>Perform operations on the rented object (e.g., append, add items).</li>
+</ul>
+</li>
+<li><strong>Return</strong>:
+<ul>
+<li>Clear or reset the object’s state.</li>
+<li><strong>Push</strong> it back onto the stack for future reuse.</li>
+<li><strong>Guard</strong>: Some pools limit the total items to avoid hoarding (e.g., “if <code>(pool.Count &gt; 4) return;</code>”).</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="example-stringbuilderspool">Example: <code>StringBuildersPool</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#example-stringbuilderspool'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<pre><code class="language-csharp">public static class StringBuildersPool
 {
-    public PropertyBitPackGeneratorContextImplementation(
-        ImmutableArray&lt;IAttributeParser&gt; attributeParsers,
-        ImmutableArray&lt;IBitFieldPropertyParser&gt; bitFieldPropertyParsers,
-        ImmutableArray&lt;IBitFieldPropertyAggregator&gt; bitFieldPropertyAggregators,
-        ImmutableArray&lt;IPropertiesSyntaxGenerator&gt; bitFieldPropertyGenerators
-    ) {
-        AttributeParsers = attributeParsers;
-        BitFieldPropertyParsers = bitFieldPropertyParsers;
-        BitFieldPropertyAggregators = bitFieldPropertyAggregators;
-        PropertySyntaxGenerators = bitFieldPropertyGenerators;
+    private static readonly ConcurrentStack&lt;StringBuilder&gt; _stringBuilders = new();
 
-        // Binds the context to all parsers/generators that require it
-        BindToSelf();
-    }
-    
-    internal void BindToSelf()
+    static StringBuildersPool()
     {
-        // If any component implements IContextBindable, pass it this context
+        // Pre-allocate 3 StringBuilders
+        for (var i = 0; i &lt; 3; i++)
+        {
+            _stringBuilders.Push(new());
+        }
+    }
+
+    public static RentedStringBuilderPool Rent()
+    {
+        return new RentedStringBuilderPool(RentInternal());
+    }
+
+    private static StringBuilder RentInternal()
+    {
+        return _stringBuilders.TryPop(out var stringBuilder) ? stringBuilder : new();
+    }
+
+    public static void Return(StringBuilder stringBuilder)
+    {
+        if (stringBuilder == null) return;
+        // Limit to 4 stored builders
+        if (_stringBuilders.Count &gt; 4) return;
+
+        stringBuilder.Clear();
+        _stringBuilders.Push(stringBuilder);
+    }
+
+    public readonly ref struct RentedStringBuilderPool(StringBuilder stringBuilder)
+    {
+        private readonly StringBuilder _stringBuilder = stringBuilder;
+        public StringBuilder StringBuilder =&gt; _stringBuilder;
+
+        public void Dispose()
+        {
+            Return(_stringBuilder);
+        }
+
+        public override string ToString()
+        {
+            return _stringBuilder.ToString();
+        }
     }
 }
 </code></pre>
-<ul>
-<li><strong>No typical DI constructor injection</strong>. The arrays of components are assigned directly, then <code>BindToSelf()</code> ensures each component can hold a reference to the context if needed.</li>
-</ul>
-<h3 id="icontextbindable"><code>IContextBindable</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#icontextbindable'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<pre><code class="language-csharp">internal interface IContextBindable
-{
-    void BindContext(PropertyBitPackGeneratorContext context);
-}
+<h3 id="usage-pattern">Usage Pattern<a class="header-anchor" href="javascript:;" onclick="location.hash='#usage-pattern'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">using var sbRent = StringBuildersPool.Rent();
+var sb = sbRent.StringBuilder;
+sb.AppendLine(&quot;hello world!&quot;);
+// automatically returned to the pool on dispose
 </code></pre>
-<ul>
-<li>Components (e.g., parsers, aggregators, syntax generators) implement <code>IContextBindable</code> to gain access to shared context data or services.</li>
-</ul>
-<h3 id="propertybitpacksourcegenerator"><code>PropertyBitPackSourceGenerator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpacksourcegenerator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<ul>
-<li><strong>Entry point</strong> for incremental generation. Creates a static <code>_context</code> using a <code>PropertyBitPackGeneratorContextBuilder</code>.</li>
-<li>Scans the syntax for candidate partial properties, matches attributes, and produces generated <code>.cs</code> files.</li>
-</ul>
+<p><strong>Note</strong>: The pool stores up to <strong>4</strong> <code>StringBuilder</code> instances at once. If the pool is “full,” extra objects aren’t returned.</p>
 <hr />
-<h2 id="customizing-parsers-generators">Customizing Parsers &amp; Generators<a class="header-anchor" href="javascript:;" onclick="location.hash='#customizing-parsers-generators'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>To add or override behavior:</p>
+<h2 id="guidelines">Guidelines<a class="header-anchor" href="javascript:;" onclick="location.hash='#guidelines'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <ol>
-<li><strong>Implement</strong> a new <code>IAttributeParser</code>, <code>IBitFieldPropertyParser</code>, <code>IBitFieldPropertyAggregator</code>, or <code>IPropertiesSyntaxGenerator</code>.</li>
-<li><strong>Attach</strong> it to the context builder:
-<pre><code class="language-csharp">var builder = PropertyBitPackGeneratorContextBuilder.Create();
-builder.AttributeParsers.Add(new MyCustomAttributeParser());
-builder.BitFieldPropertyParsers.Add(new MyCustomBitFieldParser());
-// ...
-var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImplementation
-</code></pre>
-</li>
-<li><strong>Use</strong> <code>BindToSelf()</code> to allow each component to <code>BindContext(...)</code> if it implements <code>IContextBindable</code>.</li>
+<li><strong>Reset State</strong> Before returning, always <strong>clear</strong> or <strong>reset</strong> the container (lists, dictionaries, string builders).</li>
+<li><strong>Thread-Safe</strong> Each pool uses a <code>ConcurrentStack</code> (or some concurrency-safe approach).</li>
+<li><strong>Limit the Pool Size</strong> to prevent hoarding large numbers of unused objects. Typically 3–5 is enough for small to medium usage.</li>
+<li><strong>Use in Short Scopes</strong>. The pattern usually involves using <code>using var ...</code> or manually disposing to ensure timely return.</li>
 </ol>
 <hr />
 <h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p><strong>Object pools</strong> in <code>PropertyBitPack</code> significantly <strong>optimize</strong> performance by reusing data structures in the Roslyn source generation pipeline. This design pattern helps:</p>
 <ul>
-<li><strong>PropertyBitPack</strong> uses a modular approach, allowing you to plug in new attribute parsers, property parsers, aggregators, and syntax generators.</li>
-<li><strong>Context binding</strong> is not done through traditional DI constructor injection; instead, <strong><code>BindToSelf()</code></strong> iterates over all registered components and calls <code>BindContext(this)</code> if they implement <code>IContextBindable</code>.</li>
-<li>This design keeps the architecture flexible and straightforward, enabling easy extension for advanced bit-packing scenarios.</li>
+<li><strong>Minimize GC overhead</strong>,</li>
+<li><strong>Prevent frequent allocations</strong>,</li>
+<li>Keep the generation logic <strong>fast</strong> and <strong>efficient</strong>.</li>
 </ul>
-<p>For questions or deeper discussion, feel free to join our <a href="https://discord.gg/RpxD2BeNsZ">Discord</a>!</p>
+<p>By following the <strong>rent/return</strong> protocol and clearing objects before returning them, the code ensures safe, repeatable usage. Adhering to pool size limits avoids unbounded memory growth, keeping memory usage balanced.</p>
 
                 </div>
 
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/to_developers/index.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/to_developers/objects-pool.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>
@@ -383,23 +387,44 @@ var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImpleme
                             </h5>
                             <ul class="text-slate-700 text-sm leading-6">
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#high-level-architecture'" data-id="high-level-architecture" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            High-Level Architecture
+                                        <span v-hash="'#overview'" data-id="overview" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Overview
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="why-object-pooling" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#why-object-pooling'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Why Object Pooling?
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#key-pool-classes'" data-id="key-pool-classes" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Key Pool Classes
                                         </span>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#mermaid-diagram'" data-id="mermaid-diagram" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Mermaid Diagram
+                                        <span v-hash="'#how-it-works'" data-id="how-it-works" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            How It Works
                                         </span>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#notable-classes-interfaces'" data-id="notable-classes-interfaces" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Notable Classes &amp; Interfaces
+                                        <span v-hash="'#example-stringbuilderspool'" data-id="example-stringbuilderspool" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Example: 
                                         </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="usage-pattern" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#usage-pattern'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Usage Pattern
+                                                        </span>
+                                                    </li>
+                                            </ul>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#customizing-parsers-generators'" data-id="customizing-parsers-generators" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Customizing Parsers &amp; Generators
+                                        <span v-hash="'#guidelines'" data-id="guidelines" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Guidelines
                                         </span>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
