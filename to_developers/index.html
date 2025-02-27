@@ -254,28 +254,28 @@ Architecture                                    </span>
 <hr />
 <h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <div class="Mermaid"><pre class="mermaid">flowchart LR
-    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-    B -->|BindToSelf| D[IContextBindable?]
-    B -->|AttributeParsers| C[PropertyDeclaration]
-    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
+    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
+    B --&gt;|BindToSelf| D[IContextBindable?]
+    B --&gt;|AttributeParsers| C[PropertyDeclaration]
+    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+    B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]
 
-    C --> E
-    E --> F
-    F --> G</pre>
+    C --&gt; E
+    E --&gt; F
+    F --&gt; G</pre>
 <details><summary>source</summary>
 <pre>flowchart LR
-    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-    B -->|BindToSelf| D[IContextBindable?]
-    B -->|AttributeParsers| C[PropertyDeclaration]
-    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
+    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
+    B --&gt;|BindToSelf| D[IContextBindable?]
+    B --&gt;|AttributeParsers| C[PropertyDeclaration]
+    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+    B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]
 
-    C --> E
-    E --> F
-    F --> G</pre>
+    C --&gt; E
+    E --&gt; F
+    F --&gt; G</pre>
 </details>
 </div>
 <p><strong>Diagram Explanation</strong>:</p>
@@ -361,7 +361,7 @@ var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImpleme
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/index.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/to_developers/index.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>

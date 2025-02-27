@@ -351,150 +351,150 @@ For each request, <code>GenerateSourceText(...)</code>:</p>
 <h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <div class="Mermaid"><pre class="mermaid">classDiagram
     class IPropertiesSyntaxGenerator {
-      <<interface>>
-      +Generate(requests: ILinkedList<IGenerateSourceRequest>) : ImmutableArray<FileGeneratorRequest>
+      &lt;&lt;interface&gt;&gt;
+      +Generate(requests: ILinkedList&lt;IGenerateSourceRequest&gt;) : ImmutableArray&lt;FileGeneratorRequest&gt;
     }
     class IPropertySyntaxGenerator {
-      <<interface>>
-      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray<MemberDeclarationSyntax>) : PropertyDeclarationSyntax?
+      &lt;&lt;interface&gt;&gt;
+      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray&lt;MemberDeclarationSyntax&gt;) : PropertyDeclarationSyntax?
     }
     class IFileNameModifier {
-      <<interface>>
+      &lt;&lt;interface&gt;&gt;
       +ModifyFileName(stringBuilder: StringBuilder) : void
     }
     class IContextBindable {
-      <<interface>>
+      &lt;&lt;interface&gt;&gt;
       +BindContext(context: PropertyBitPackGeneratorContext) : void
     }
     
     class FileGeneratorRequest {
-      <<record>>
+      &lt;&lt;record&gt;&gt;
       +SourceText : SourceText
       +FileName : string
     }
     
     class BasePropertiesSyntaxGenerator {
-      <<abstract>>
-      - _propertySyntaxGenerators : ImmutableArray<IPropertySyntaxGenerator>
+      &lt;&lt;abstract&gt;&gt;
+      - _propertySyntaxGenerators : ImmutableArray&lt;IPropertySyntaxGenerator&gt;
       +PropertyBitPackGeneratorContext : PropertyBitPackGeneratorContext
       +BindContext(context: PropertyBitPackGeneratorContext) : void
-      +Generate(requests: ILinkedList<IGenerateSourceRequest>) : ImmutableArray<FileGeneratorRequest>
-      #GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +Generate(requests: ILinkedList&lt;IGenerateSourceRequest&gt;) : ImmutableArray&lt;FileGeneratorRequest&gt;
+      #GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
       +GetFileName(request: IGenerateSourceRequest) : string
     }
-    IPropertiesSyntaxGenerator <|.. BasePropertiesSyntaxGenerator
-    IContextBindable <|.. BasePropertiesSyntaxGenerator
+    IPropertiesSyntaxGenerator &lt;|.. BasePropertiesSyntaxGenerator
+    IContextBindable &lt;|.. BasePropertiesSyntaxGenerator
 
     class BasePropertySyntaxGenerator {
-      <<abstract>>
+      &lt;&lt;abstract&gt;&gt;
       +PropertyBitPackGeneratorContext : PropertyBitPackGeneratorContext
-      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray<MemberDeclarationSyntax>) : PropertyDeclarationSyntax?
+      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray&lt;MemberDeclarationSyntax&gt;) : PropertyDeclarationSyntax?
       #GeneratePropertyCore(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest) : PropertyDeclarationSyntax?
-      #GeneratePropertyCore(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray<MemberDeclarationSyntax>) : PropertyDeclarationSyntax?
+      #GeneratePropertyCore(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray&lt;MemberDeclarationSyntax&gt;) : PropertyDeclarationSyntax?
       +GetterBlockSyntax(bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest) : BlockSyntax
       +SetterBlockSyntax(bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, valueVariableName: string, maxValueVariableName: string, clampedValueVariableName: string) : BlockSyntax
     }
-    IPropertySyntaxGenerator <|.. BasePropertySyntaxGenerator
+    IPropertySyntaxGenerator &lt;|.. BasePropertySyntaxGenerator
 
     class ExtendedPropertySyntaxGenerator {
       +GetterBlockSyntax(bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest) : BlockSyntax
       // �������������� ������ ��� ������ � ExtendedBitFieldAttribute
     }
-    ExtendedPropertySyntaxGenerator --|> BasePropertySyntaxGenerator
+    ExtendedPropertySyntaxGenerator --|&gt; BasePropertySyntaxGenerator
 
     class PropertySyntaxGenerator {
       // ������� ���������, ������ ������������ ��������������� ��������
     }
-    PropertySyntaxGenerator --|> BasePropertySyntaxGenerator
+    PropertySyntaxGenerator --|&gt; BasePropertySyntaxGenerator
 
     class ConstructorGenerator {
-      +GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileGeneratorRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileGeneratorRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
     }
-    ConstructorGenerator --|> BasePropertiesSyntaxGenerator
+    ConstructorGenerator --|&gt; BasePropertiesSyntaxGenerator
 
     class ExistingFieldPropertiesGenerator {
-      +GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileGeneratorRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileGeneratorRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
     }
-    ExistingFieldPropertiesGenerator --|> BasePropertiesSyntaxGenerator
+    ExistingFieldPropertiesGenerator --|&gt; BasePropertiesSyntaxGenerator
 
     class NonExistingFieldPropertiesSyntaxGenerator {
-      +GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileGeneratorRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileGeneratorRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
     }
-    NonExistingFieldPropertiesSyntaxGenerator --|> BasePropertiesSyntaxGenerator
+    NonExistingFieldPropertiesSyntaxGenerator --|&gt; BasePropertiesSyntaxGenerator
 </pre>
 <details><summary></summary>
 <pre>classDiagram
     class IPropertiesSyntaxGenerator {
-      <<interface>>
-      +Generate(requests: ILinkedList<IGenerateSourceRequest>) : ImmutableArray<FileGeneratorRequest>
+      &lt;&lt;interface&gt;&gt;
+      +Generate(requests: ILinkedList&lt;IGenerateSourceRequest&gt;) : ImmutableArray&lt;FileGeneratorRequest&gt;
     }
     class IPropertySyntaxGenerator {
-      <<interface>>
-      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray<MemberDeclarationSyntax>) : PropertyDeclarationSyntax?
+      &lt;&lt;interface&gt;&gt;
+      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray&lt;MemberDeclarationSyntax&gt;) : PropertyDeclarationSyntax?
     }
     class IFileNameModifier {
-      <<interface>>
+      &lt;&lt;interface&gt;&gt;
       +ModifyFileName(stringBuilder: StringBuilder) : void
     }
     class IContextBindable {
-      <<interface>>
+      &lt;&lt;interface&gt;&gt;
       +BindContext(context: PropertyBitPackGeneratorContext) : void
     }
     
     class FileGeneratorRequest {
-      <<record>>
+      &lt;&lt;record&gt;&gt;
       +SourceText : SourceText
       +FileName : string
     }
     
     class BasePropertiesSyntaxGenerator {
-      <<abstract>>
-      - _propertySyntaxGenerators : ImmutableArray<IPropertySyntaxGenerator>
+      &lt;&lt;abstract&gt;&gt;
+      - _propertySyntaxGenerators : ImmutableArray&lt;IPropertySyntaxGenerator&gt;
       +PropertyBitPackGeneratorContext : PropertyBitPackGeneratorContext
       +BindContext(context: PropertyBitPackGeneratorContext) : void
-      +Generate(requests: ILinkedList<IGenerateSourceRequest>) : ImmutableArray<FileGeneratorRequest>
-      #GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +Generate(requests: ILinkedList&lt;IGenerateSourceRequest&gt;) : ImmutableArray&lt;FileGeneratorRequest&gt;
+      #GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
       +GetFileName(request: IGenerateSourceRequest) : string
     }
-    IPropertiesSyntaxGenerator <|.. BasePropertiesSyntaxGenerator
-    IContextBindable <|.. BasePropertiesSyntaxGenerator
+    IPropertiesSyntaxGenerator &lt;|.. BasePropertiesSyntaxGenerator
+    IContextBindable &lt;|.. BasePropertiesSyntaxGenerator
 
     class BasePropertySyntaxGenerator {
-      <<abstract>>
+      &lt;&lt;abstract&gt;&gt;
       +PropertyBitPackGeneratorContext : PropertyBitPackGeneratorContext
-      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray<MemberDeclarationSyntax>) : PropertyDeclarationSyntax?
+      +GenerateProperty(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray&lt;MemberDeclarationSyntax&gt;) : PropertyDeclarationSyntax?
       #GeneratePropertyCore(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest) : PropertyDeclarationSyntax?
-      #GeneratePropertyCore(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray<MemberDeclarationSyntax>) : PropertyDeclarationSyntax?
+      #GeneratePropertyCore(sourceRequest: IGenerateSourceRequest, bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, out additionalMember: ImmutableArray&lt;MemberDeclarationSyntax&gt;) : PropertyDeclarationSyntax?
       +GetterBlockSyntax(bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest) : BlockSyntax
       +SetterBlockSyntax(bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest, valueVariableName: string, maxValueVariableName: string, clampedValueVariableName: string) : BlockSyntax
     }
-    IPropertySyntaxGenerator <|.. BasePropertySyntaxGenerator
+    IPropertySyntaxGenerator &lt;|.. BasePropertySyntaxGenerator
 
     class ExtendedPropertySyntaxGenerator {
       +GetterBlockSyntax(bitFieldPropertyInfoRequest: BitFieldPropertyInfoRequest) : BlockSyntax
       // �������������� ������ ��� ������ � ExtendedBitFieldAttribute
     }
-    ExtendedPropertySyntaxGenerator --|> BasePropertySyntaxGenerator
+    ExtendedPropertySyntaxGenerator --|&gt; BasePropertySyntaxGenerator
 
     class PropertySyntaxGenerator {
       // ������� ���������, ������ ������������ ��������������� ��������
     }
-    PropertySyntaxGenerator --|> BasePropertySyntaxGenerator
+    PropertySyntaxGenerator --|&gt; BasePropertySyntaxGenerator
 
     class ConstructorGenerator {
-      +GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileGeneratorRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileGeneratorRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
     }
-    ConstructorGenerator --|> BasePropertiesSyntaxGenerator
+    ConstructorGenerator --|&gt; BasePropertiesSyntaxGenerator
 
     class ExistingFieldPropertiesGenerator {
-      +GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileGeneratorRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileGeneratorRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
     }
-    ExistingFieldPropertiesGenerator --|> BasePropertiesSyntaxGenerator
+    ExistingFieldPropertiesGenerator --|&gt; BasePropertiesSyntaxGenerator
 
     class NonExistingFieldPropertiesSyntaxGenerator {
-      +GenerateCore(requests: ILinkedList<IGenerateSourceRequest>, fileGeneratorRequestsBuilder: ImmutableArrayBuilder<FileGeneratorRequest>) : void
+      +GenerateCore(requests: ILinkedList&lt;IGenerateSourceRequest&gt;, fileGeneratorRequestsBuilder: ImmutableArrayBuilder&lt;FileGeneratorRequest&gt;) : void
     }
-    NonExistingFieldPropertiesSyntaxGenerator --|> BasePropertiesSyntaxGenerator
+    NonExistingFieldPropertiesSyntaxGenerator --|&gt; BasePropertiesSyntaxGenerator
 </pre>
 </details>
 </div>
@@ -539,7 +539,7 @@ For each request, <code>GenerateSourceText(...)</code>:</p>
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/properties-syntax-generator.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/to_developers/properties-syntax-generator.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>
