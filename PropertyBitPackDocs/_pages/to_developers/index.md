@@ -45,6 +45,7 @@ Below is an overview of the internal architecture of **PropertyBitPack**, focusi
 ## Mermaid Diagram
 
 :::Mermaid source
+```
 flowchart LR
     A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
     B -->|BindToSelf| D[IContextBindable?]
@@ -56,6 +57,7 @@ flowchart LR
     C --> E
     E --> F
     F --> G
+```
 :::
 
 

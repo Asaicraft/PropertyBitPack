@@ -8,49 +8,6 @@ namespace PropertyBitPackDocs;
 
 public class MermaidContainer : HtmlObjectRenderer<CustomContainer>
 {
-    public static string GetRawText(Block block)
-    {
-        // Если это листовой блок, то собираем строки
-        if (block is LeafBlock leafBlock)
-        {
-            // Если у блока нет строк, вернём пустую строку
-            if (leafBlock.Lines.Lines == null)
-            {
-                return string.Empty;
-            }
-
-            // Превращаем коллекцию StringLine в обычный текст
-            var lines = leafBlock.Lines.Lines;
-            var lineStrings = new string[lines.Length];
-            for (var i = 0; i < lines.Length; i++)
-            {
-                lineStrings[i] = lines[i].ToString();
-            }
-            return string.Join("\n", lineStrings);
-        }
-        // Если это контейнерный блок, обходим всех детей рекурсивно
-        else if (block is ContainerBlock container)
-        {
-            var sb = new StringBuilder();
-            foreach (var child in container)
-            {
-                var childRaw = GetRawText(child);
-                if (!string.IsNullOrEmpty(childRaw))
-                {
-                    // Чтобы между блоками была хотя бы новая строка
-                    if (sb.Length > 0)
-                    {
-                        sb.AppendLine();
-                    }
-
-                    sb.Append(childRaw);
-                }
-            }
-            return sb.ToString();
-        }
-        // На всякий случай, если это какой-то неизвестный тип блока
-        return string.Empty;
-    }
 
     protected override void Write(HtmlRenderer renderer, CustomContainer obj)
     {
@@ -60,7 +17,9 @@ public class MermaidContainer : HtmlObjectRenderer<CustomContainer>
 
         var summary = obj.Arguments ?? "source";
 
-        var rawContent = GetRawText(obj);
+        var rawContent = obj[0] is CodeBlock codeBlock
+            ? codeBlock.Lines.ToString()
+            : string.Empty;
 
         renderer.Write("<div").WriteAttributes(obj).Write('>');
         {

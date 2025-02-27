@@ -53,8 +53,6 @@ public class ConfigureSsg : IHostingStartup
                 
                 includes.LoadFrom("_includes");
                 pages.LoadFrom("_pages");
-                whatsNew.LoadFrom("_whatsnew");
-                videos.LoadFrom("_videos");
                 AppConfig.Instance.Init(appHost.ContentRootDirectory);
             },
             afterAppHostInit: appHost =>
