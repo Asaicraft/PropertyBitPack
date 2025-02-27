@@ -12,6 +12,10 @@
         "link": "PropertyBitPack/to_developers/attribute-parser"
       },
       {
+        "text": "Attribute Parsing Results",
+        "link": "PropertyBitPack/to_developers/attribute-parsing-result"
+      },
+      {
         "text": "BitFieldProperty Parser",
         "link": "PropertyBitPack/to_developers/bitfieldproperty-parser"
       },
