@@ -46,24 +46,19 @@ Below is an overview of the internal architecture of **PropertyBitPack**, focusi
 
 ## Mermaid Diagram
 
-![PropertyBitPack Diagram](docs/diagrams/propertybitpack-diagram.svg)
-<details>
-  <summary>Diagram source</summary>
+<pre class="mermaid">
+flowchart LR
+    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
+    B -->|BindToSelf| D[IContextBindable?]
+    B -->|AttributeParsers| C[PropertyDeclaration]
+    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
 
-    ```mermaid
-    flowchart LR
-        A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-        B -->|BindToSelf| D[IContextBindable?]
-        B -->|AttributeParsers| C[PropertyDeclaration]
-        B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-        B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-        B -->|PropertySyntaxGenerators| G[FileGeneratorRequest (CS)]
-    
-        C --> E
-        E --> F
-        F --> G
-    ```
-<details>
+    C --> E
+    E --> F
+    F --> G
+</pre>
 
 **Diagram Explanation**:  
 1. **IncrementalGenerator** filters candidate properties.  
