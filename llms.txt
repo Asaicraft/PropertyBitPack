@@ -3,20 +3,12 @@
 ## Docs
 
 Introduction
- - [What is Razor Press?](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/what-is-razor-press.md)
- - [Structure](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/structure.md)
- - [Static Site Generation](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/ssg.md)
- - [Deployments](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/deployments.md)
+ - [BitFieldAttribute](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/bit-field-attribute.md)
+ - [ExtendedBitFieldAttribute](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/extended-bit-field-attribute.md)
+ - [ReadOnlyBitFieldAttribute](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/read-only-bit-field-attribute.md)
+ - [ReadOnlyExtendedBitField](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/read-only-extended-bit-field-attribute.md)
 
-Markdown
- - [Markdown Syntax](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/syntax.md)
- - [Markdown Containers](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/containers.md)
- - [Using Vue in Markdown](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/vue-in-markdown.md)
-
-Features
- - [Sidebars](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/sidebars.md)
- - [Redirects](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/redirects.md)
- - [Typesense Real-Time Search](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/typesense.md)
+Diagnostic
 
 Architecture
  - [Introduction](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/.md)

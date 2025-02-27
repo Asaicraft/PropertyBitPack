@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="https://asaicraft.github.io/PropertyBitPack/" />
     <link rel="icon" type="image/svg" href="img/logo.svg">
-    <title>PropertyBitPack</title>
+    <title>BitFieldAttribute</title>
     <script>
     if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
     if (location.search === "?light") localStorage.removeItem('color-scheme') 
@@ -160,30 +160,19 @@ Diagnostic                                    </span>
         <div id="doc" class="mx-auto flex">
             <div class="mt-8 mx-auto prose lg:prose-lg">
                 
+                    <section class="not-prose mb-16 md:mb-12">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
+                            BitFieldAttribute
+                        </h1>
+                    </section>
 
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <p><img src="https://github.com/Asaicraft/PropertyBitPack/actions/workflows/dotnet.yml/badge.svg?" alt="Build" />
-<a href="https://www.nuget.org/packages/PropertyBitPack?"><img src="https://img.shields.io/nuget/v/PropertyBitPack.svg" alt="NuGet Stats" /></a>
-<a href="https://discord.gg/RpxD2BeNsZ"><img src="https://img.shields.io/badge/chat-discord-purple.svg" alt="Discord" /></a></p>
-<h1 id="propertybitpack">PropertyBitPack<a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpack'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
-<p><strong>PropertyBitPack</strong> is a C# library that allows you to efficiently store multiple properties in a <strong>single integer or byte field</strong>. This reduces memory usage and improves performance for applications requiring compact data storage.</p>
-<hr />
-<h2 id="features">Features<a class="header-anchor" href="javascript:;" onclick="location.hash='#features'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>✔ <strong>Bit-Packed Properties</strong> – Store multiple <code>bool</code>, <code>byte</code>, or <code>int</code> properties in a single field.<br />
-✔ <strong>Memory Optimization</strong> – Reduce struct/class memory consumption.<br />
-✔ <strong>Automatic Code Generation</strong> – Define bit-packed properties using simple attributes.</p>
-<hr />
-<h2 id="installation">Installation<a class="header-anchor" href="javascript:;" onclick="location.hash='#installation'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>Install via NuGet:</p>
-<pre><code class="language-bash">dotnet add package PropertyBitPack
-</code></pre>
-<hr />
-<h2 id="usage">Usage<a class="header-anchor" href="javascript:;" onclick="location.hash='#usage'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<h3 id="define-bit-packed-boolean-properties">Define Bit-Packed Boolean Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#define-bit-packed-boolean-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<p>A <code>bool</code> in C# typically takes <strong>at least 1 byte</strong> of memory.<br />
-With <strong>PropertyBitPack</strong>, multiple <code>bool</code> values can be packed into a <strong>single field</strong>.</p>
+                    <h1 id="bitfieldattribute">BitFieldAttribute<a class="header-anchor" href="javascript:;" onclick="location.hash='#bitfieldattribute'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
+<p><code>BitFieldAttribute</code> allows multiple properties to be <strong>packed into a single numeric field</strong>, significantly reducing memory usage. It is useful in <strong>game development, serialization, networking, and embedded systems</strong>.</p>
+<h2 id="basic-usage">Basic Usage<a class="header-anchor" href="javascript:;" onclick="location.hash='#basic-usage'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>To define a <strong>bit-packed</strong> property, apply <code>[BitField]</code> to a property inside a <code>partial</code> class:</p>
 <pre><code class="language-csharp">using PropertyBitPack;
 
 public partial class Example
@@ -198,53 +187,179 @@ public partial class Example
     public partial bool IsEnabled { get; set; }
 }
 </code></pre>
-<h4 id="what-happens-internally">What Happens Internally?<a class="header-anchor" href="javascript:;" onclick="location.hash='#what-happens-internally'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
+<h3 id="what-happens-internally">What Happens Internally?<a class="header-anchor" href="javascript:;" onclick="location.hash='#what-happens-internally'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
 <ul>
-<li>Instead of <strong>three separate booleans (3 bytes)</strong>, these values are stored inside <strong>one byte</strong>.</li>
-<li>This optimization is especially useful in <strong>games, networking, and embedded systems</strong>.</li>
+<li>Instead of <strong>three separate booleans (3 bytes)</strong>, these values are <strong>packed into a single byte</strong>.</li>
+<li>The bit layout is automatically determined based on the <strong>declaration order</strong>.</li>
 </ul>
 <hr />
-<h3 id="define-bit-packed-numeric-properties">Define Bit-Packed Numeric Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#define-bit-packed-numeric-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<p>Store <strong>small integer values</strong> inside a <strong>bit-packed field</strong> to optimize memory.</p>
-<pre><code class="language-csharp">public partial class Character
+<h2 id="example-defining-bit-packed-boolean-properties">Example: Defining Bit-Packed Boolean Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#example-defining-bit-packed-boolean-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>When multiple boolean properties are defined, they <strong>share a single byte field</strong>.</p>
+<pre><code class="language-csharp">public partial class BitPackedBools
 {
-    [BitField(BitsCount = 4)]
-    public partial int Health { get; set; }
+    [BitField]
+    public partial bool Bool1 { get; set; }
 
-    [BitField(BitsCount = 3)]
-    public partial int Armor { get; set; }
+    [BitField]
+    public partial bool Bool2 { get; set; }
+
+    [BitField]
+    public partial bool Bool3 { get; set; }
+
+    [BitField]
+    public partial bool Bool4 { get; set; }
 }
 </code></pre>
-<h4 id="example">Example:<a class="header-anchor" href="javascript:;" onclick="location.hash='#example'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
-<ul>
-<li><code>Health</code> can store values <strong>0–15</strong> (4 bits).</li>
-<li><code>Armor</code> can store values <strong>0–7</strong> (3 bits).</li>
-<li>Instead of <strong>two separate integers (8 bytes)</strong>, they are packed into <strong>one byte</strong>.</li>
-</ul>
-<hr />
-<h3 id="read-only-bit-packed-properties">Read-Only Bit-Packed Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#read-only-bit-packed-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<p>Use <code>ReadOnlyBitField</code> for <strong>immutable</strong> bit-packed properties.</p>
-<pre><code class="language-csharp">public partial class Config
+<h3 id="generated-code"><strong>Generated Code:</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#generated-code'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">partial class BitPackedBools
 {
-    [ReadOnlyBitField(BitsCount = 5)]
-    public partial int MaxLimit { get; }
+    private byte _Bool1__Bool2__Bool3__Bool4__;
+
+    public partial bool Bool1
+    {
+        get { return ((this._Bool1__Bool2__Bool3__Bool4__ &gt;&gt; 0) &amp; 1) == 1; }
+        set { this._Bool1__Bool2__Bool3__Bool4__ = (byte)(value 
+            ? (this._Bool1__Bool2__Bool3__Bool4__ | (1 &lt;&lt; 0)) 
+            : (this._Bool1__Bool2__Bool3__Bool4__ &amp; ~(1 &lt;&lt; 0)));
+        }
+    }
+
+    public partial bool Bool2
+    {
+        get { return ((this._Bool1__Bool2__Bool3__Bool4__ &gt;&gt; 1) &amp; 1) == 1; }
+        set { this._Bool1__Bool2__Bool3__Bool4__ = (byte)(value 
+            ? (this._Bool1__Bool2__Bool3__Bool4__ | (1 &lt;&lt; 1)) 
+            : (this._Bool1__Bool2__Bool3__Bool4__ &amp; ~(1 &lt;&lt; 1)));
+        }
+    }
+
+    public partial bool Bool3
+    {
+        get { return ((this._Bool1__Bool2__Bool3__Bool4__ &gt;&gt; 2) &amp; 1) == 1; }
+        set { this._Bool1__Bool2__Bool3__Bool4__ = (byte)(value 
+            ? (this._Bool1__Bool2__Bool3__Bool4__ | (1 &lt;&lt; 2)) 
+            : (this._Bool1__Bool2__Bool3__Bool4__ &amp; ~(1 &lt;&lt; 2)));
+        }
+    }
+
+    public partial bool Bool4
+    {
+        get { return ((this._Bool1__Bool2__Bool3__Bool4__ &gt;&gt; 3) &amp; 1) == 1; }
+        set { this._Bool1__Bool2__Bool3__Bool4__ = (byte)(value 
+            ? (this._Bool1__Bool2__Bool3__Bool4__ | (1 &lt;&lt; 3)) 
+            : (this._Bool1__Bool2__Bool3__Bool4__ &amp; ~(1 &lt;&lt; 3)));
+        }
+    }
+}
+</code></pre>
+<h3 id="how-does-it-work"><strong>How Does It Work?</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#how-does-it-work'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li>A <strong>single private byte field</strong> <code>_Bool1__Bool2__Bool3__Bool4__</code> stores all four boolean values.</li>
+<li>Each boolean <strong>occupies a specific bit</strong> in the byte:
+<ul>
+<li><code>Bool1</code> → <strong>Bit 0</strong></li>
+<li><code>Bool2</code> → <strong>Bit 1</strong></li>
+<li><code>Bool3</code> → <strong>Bit 2</strong></li>
+<li><code>Bool4</code> → <strong>Bit 3</strong></li>
+</ul>
+</li>
+<li>The <strong>getter</strong> extracts the correct bit using:
+<ul>
+<li><code>&gt;&gt;</code> (bitwise right shift)</li>
+<li><code>&amp; 1</code> (bit mask)</li>
+</ul>
+</li>
+<li>The <strong>setter</strong> modifies the bit using:
+<ul>
+<li><code>|</code> (bitwise OR) to set the bit to <code>1</code></li>
+<li><code>&amp; ~</code> (bitwise AND with NOT) to set the bit to <code>0</code></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="bit-packing-across-multiple-fields"><strong>Bit Packing Across Multiple Fields</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#bit-packing-across-multiple-fields'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>If the total size of bit-packed properties <strong>exceeds 64 bits</strong>, additional fields will be created automatically.</p>
+<h3 id="example"><strong>Example:</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#example'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">public partial class Data
+{
+    [BitField] public partial bool Flag1 { get; set; }  // 1 bit
+    [BitField] public partial bool Flag2 { get; set; }  // 1 bit
+    [BitField] public partial int Value { get; set; }   // 32 bits
+    [BitField] public partial short Small { get; set; } // 16 bits
+    [BitField] public partial byte Byte1 { get; set; }  // 8 bits
+    [BitField] public partial byte Byte2 { get; set; }  // 8 bits
+    [BitField] public partial byte Byte3 { get; set; }  // 8 bits
+    [BitField] public partial bool Flag3 { get; set; }  // 1 bit
+}
+</code></pre>
+<h3 id="result"><strong>Result:</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#result'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong>First field (64 bits):</strong> <code>_Flag1__Flag2__Value__Small__Byte1__Byte2__Byte3_</code></li>
+<li><strong>Second field (16 bits):</strong> <code>_Flag3_</code></li>
+</ul>
+<p>Each field will store <strong>as many properties as possible</strong> before a new field is generated.</p>
+<hr />
+<h2 id="field-naming-rules"><strong>Field Naming Rules</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#field-naming-rules'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>The generated field name is a <strong>combination of all packed properties</strong>.</p>
+<h3 id="example-1"><strong>Example:</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#example-1'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">public partial class Example
+{
+    [BitField] public partial bool A { get; set; }
+    [BitField] public partial bool B { get; set; }
+    [BitField] public partial int C { get; set; }
+}
+</code></pre>
+<h4 id="generated-field-name"><strong>Generated Field Name:</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#generated-field-name'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
+<pre><code class="language-csharp">private int _A__B__C__;
+</code></pre>
+<ul>
+<li><strong>Properties sharing a field</strong> will be included in the name.</li>
+<li>If multiple fields are needed, additional fields will be created with <strong>new names</strong>.</li>
+</ul>
+<hr />
+<h2 id="read-only-init-and-no-setter"><strong>Read-Only (<code>init</code>) and No Setter</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#read-only-init-and-no-setter'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>By default, <code>BitFieldAttribute</code> generates both <code>get</code> and <code>set</code>.<br />
+However, you can <strong>remove the setter</strong> or use <code>init</code> instead:</p>
+<pre><code class="language-csharp">public partial class Example
+{
+    [BitField]
+    public partial byte Hi { get; } // No setter (read-only)
+
+    [BitField]
+    public partial byte Lo { get; init; } // Can only be set in constructors
+}
+</code></pre>
+<hr />
+<h2 id="custom-setter-modifiers"><strong>Custom Setter Modifiers</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#custom-setter-modifiers'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>You can specify additional <strong>modifiers</strong> for the setter:</p>
+<pre><code class="language-csharp">public partial class Example
+{
+    [BitField]
+    public partial int Value { get; private set; } // Private setter
+
+    [BitField]
+    public partial int AnotherValue { get; internal set; } // Internal setter
 }
 </code></pre>
 <ul>
-<li><code>MaxLimit</code> remains <strong>read-only</strong> but is still efficiently packed.</li>
-<li>Useful for configurations, settings, and constants.</li>
+<li><code>private set;</code> – Can only be modified inside the class.</li>
+<li><code>internal set;</code> – Can be modified within the same assembly.</li>
 </ul>
 <hr />
-<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p><strong>PropertyBitPack</strong> makes <strong>bit-packing easy</strong>, reducing memory usage for boolean and integer properties.<br />
-Ideal for <strong>high-performance applications</strong>, <strong>game development</strong>, <strong>networking</strong>, and <strong>low-level optimizations</strong>.</p>
+<h2 id="advantages-of-bit-packing"><strong>Advantages of Bit Packing</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#advantages-of-bit-packing'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>✔ <strong>Memory Efficiency</strong> – Multiple properties are stored in a <strong>single field</strong>, reducing memory usage.<br />
+✔ <strong>Better Performance</strong> – Less memory usage leads to better <strong>cache efficiency</strong>.<br />
+✔ <strong>Automatic Packing</strong> – Properties are <strong>automatically grouped</strong> into 64-bit fields.<br />
+✔ <strong>Flexible Accessors</strong> – Use <code>set</code>, <code>init</code>, or remove the setter entirely.<br />
+✔ <strong>Supports Modifiers</strong> – Customize setters with <code>private</code>, <code>internal</code>, etc.</p>
+<p>📖 <strong><a href="PropertyBitPack/bit-field-attribute-custom-field-name">Next: Custom Field Name →</a></strong></p>
 
                 </div>
 
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/index.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/bit-field-attribute.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>
@@ -253,6 +368,35 @@ Ideal for <strong>high-performance applications</strong>, <strong>game developme
                     </div>
             </div>
                 
+                <div class="docmap hidden 2xl:block flex-none w-64 pl-8 mr-8">
+                    <div class="fixed bg-white dark:bg-black flex flex-col overflow-y-auto pt-10 px-8 pb-6" style="height:calc(100vh - 50px);">
+                        <div>
+                            <h5 class="text-slate-900 font-semibold mb-4 text-sm leading-6 dark:text-slate-100">
+                                On This Page
+                            </h5>
+                            <ul class="text-slate-700 text-sm leading-6">
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#basic-usage'" data-id="basic-usage" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Basic Usage
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="what-happens-internally" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#what-happens-internally'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            What Happens Internally?
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#example-defining-bit-packed-boolean-properties'" data-id="example-defining-bit-packed-boolean-properties" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Example: Defining Bit-Packed Boolean Properties
+                                        </span>
+                                    </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 
         </div>
     </div>    
@@ -297,12 +441,6 @@ mount('#sidebar', Sidebar)
 <script src="mjs/docs.mjs" type="module"></script>
 
 
-<script type="module">
-import { mount } from "app.mjs"
-import GettingStarted from "./mjs/components/GettingStarted.mjs" 
-
-mount('#getting-started', GettingStarted, { template:'razor-press' })
-</script>
     </main>
 </div>
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="https://asaicraft.github.io/PropertyBitPack/" />
     <link rel="icon" type="image/svg" href="img/logo.svg">
-    <title>PropertyBitPack</title>
+    <title>Custom Bit&#x27;s Size</title>
     <script>
     if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
     if (location.search === "?light") localStorage.removeItem('color-scheme') 
@@ -160,91 +160,158 @@ Diagnostic                                    </span>
         <div id="doc" class="mx-auto flex">
             <div class="mt-8 mx-auto prose lg:prose-lg">
                 
+                    <section class="not-prose mb-16 md:mb-12">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
+                            Custom Bit&#x27;s Size
+                        </h1>
+                    </section>
 
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <p><img src="https://github.com/Asaicraft/PropertyBitPack/actions/workflows/dotnet.yml/badge.svg?" alt="Build" />
-<a href="https://www.nuget.org/packages/PropertyBitPack?"><img src="https://img.shields.io/nuget/v/PropertyBitPack.svg" alt="NuGet Stats" /></a>
-<a href="https://discord.gg/RpxD2BeNsZ"><img src="https://img.shields.io/badge/chat-discord-purple.svg" alt="Discord" /></a></p>
-<h1 id="propertybitpack">PropertyBitPack<a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpack'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
-<p><strong>PropertyBitPack</strong> is a C# library that allows you to efficiently store multiple properties in a <strong>single integer or byte field</strong>. This reduces memory usage and improves performance for applications requiring compact data storage.</p>
-<hr />
-<h2 id="features">Features<a class="header-anchor" href="javascript:;" onclick="location.hash='#features'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>✔ <strong>Bit-Packed Properties</strong> – Store multiple <code>bool</code>, <code>byte</code>, or <code>int</code> properties in a single field.<br />
-✔ <strong>Memory Optimization</strong> – Reduce struct/class memory consumption.<br />
-✔ <strong>Automatic Code Generation</strong> – Define bit-packed properties using simple attributes.</p>
-<hr />
-<h2 id="installation">Installation<a class="header-anchor" href="javascript:;" onclick="location.hash='#installation'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>Install via NuGet:</p>
-<pre><code class="language-bash">dotnet add package PropertyBitPack
-</code></pre>
-<hr />
-<h2 id="usage">Usage<a class="header-anchor" href="javascript:;" onclick="location.hash='#usage'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<h3 id="define-bit-packed-boolean-properties">Define Bit-Packed Boolean Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#define-bit-packed-boolean-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<p>A <code>bool</code> in C# typically takes <strong>at least 1 byte</strong> of memory.<br />
-With <strong>PropertyBitPack</strong>, multiple <code>bool</code> values can be packed into a <strong>single field</strong>.</p>
-<pre><code class="language-csharp">using PropertyBitPack;
-
-public partial class Example
-{
-    [BitField]
-    public partial bool IsActive { get; set; }
-
-    [BitField]
-    public partial bool IsVisible { get; set; }
-
-    [BitField]
-    public partial bool IsEnabled { get; set; }
-}
-</code></pre>
-<h4 id="what-happens-internally">What Happens Internally?<a class="header-anchor" href="javascript:;" onclick="location.hash='#what-happens-internally'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
-<ul>
-<li>Instead of <strong>three separate booleans (3 bytes)</strong>, these values are stored inside <strong>one byte</strong>.</li>
-<li>This optimization is especially useful in <strong>games, networking, and embedded systems</strong>.</li>
-</ul>
-<hr />
-<h3 id="define-bit-packed-numeric-properties">Define Bit-Packed Numeric Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#define-bit-packed-numeric-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<p>Store <strong>small integer values</strong> inside a <strong>bit-packed field</strong> to optimize memory.</p>
-<pre><code class="language-csharp">public partial class Character
+                    <h1 id="custom-bits-size">Custom Bit's Size<a class="header-anchor" href="javascript:;" onclick="location.hash='#custom-bits-size'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
+<p>By default, <strong>BitFieldAttribute</strong> automatically determines the number of bits based on the property type. However, you can <strong>explicitly specify the number of bits</strong> using the <code>BitsCount</code> parameter.</p>
+<h2 id="defining-custom-bit-sizes"><strong>Defining Custom Bit Sizes</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#defining-custom-bit-sizes'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="example-using-custom-bit-sizes"><strong>Example: Using Custom Bit Sizes</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#example-using-custom-bit-sizes'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">public partial class CustomBitSizeExample
 {
     [BitField(BitsCount = 4)]
-    public partial int Health { get; set; }
+    public partial byte SmallNumber { get; set; }
 
-    [BitField(BitsCount = 3)]
-    public partial int Armor { get; set; }
+    [BitField(BitsCount = 11)]
+    public partial int LargerValue { get; set; }
 }
 </code></pre>
-<h4 id="example">Example:<a class="header-anchor" href="javascript:;" onclick="location.hash='#example'" aria-label="Permalink">&ZeroWidthSpace;</a></h4>
-<ul>
-<li><code>Health</code> can store values <strong>0–15</strong> (4 bits).</li>
-<li><code>Armor</code> can store values <strong>0–7</strong> (3 bits).</li>
-<li>Instead of <strong>two separate integers (8 bytes)</strong>, they are packed into <strong>one byte</strong>.</li>
-</ul>
-<hr />
-<h3 id="read-only-bit-packed-properties">Read-Only Bit-Packed Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#read-only-bit-packed-properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<p>Use <code>ReadOnlyBitField</code> for <strong>immutable</strong> bit-packed properties.</p>
-<pre><code class="language-csharp">public partial class Config
+<h3 id="generated-code"><strong>Generated Code</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#generated-code'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">partial class CustomBitSizeExample
 {
-    [ReadOnlyBitField(BitsCount = 5)]
-    public partial int MaxLimit { get; }
+    private ushort _SmallNumber__LargerValue__; // 4 + 11 = 15 bits (fits in ushort)
+
+    public partial byte SmallNumber
+    {
+        get =&gt; (byte)((this._SmallNumber__LargerValue__ &gt;&gt; 0) &amp; ((1 &lt;&lt; 4) - 1));
+        set
+        {
+            const ushort maxValue_ = (1 &lt;&lt; 4) - 1;
+            var clamped_ = global::System.Math.Min((ushort)value, maxValue_);
+            this._SmallNumber__LargerValue__ = (ushort)((this._SmallNumber__LargerValue__ &amp; ~(((1 &lt;&lt; 4) - 1) &lt;&lt; 0)) | ((clamped_ &amp; ((1 &lt;&lt; 4) - 1)) &lt;&lt; 0));
+        }
+    }
+
+    public partial int LargerValue
+    {
+        get =&gt; (int)((this._SmallNumber__LargerValue__ &gt;&gt; 4) &amp; ((1 &lt;&lt; 11) - 1));
+        set
+        {
+            const ushort maxValue_ = (1 &lt;&lt; 11) - 1;
+            var clamped_ = global::System.Math.Min((ushort)value, maxValue_);
+            this._SmallNumber__LargerValue__ = (ushort)((this._SmallNumber__LargerValue__ &amp; ~(((1 &lt;&lt; 11) - 1) &lt;&lt; 4)) | ((clamped_ &amp; ((1 &lt;&lt; 11) - 1)) &lt;&lt; 4));
+        }
+    }
 }
 </code></pre>
-<ul>
-<li><code>MaxLimit</code> remains <strong>read-only</strong> but is still efficiently packed.</li>
-<li>Useful for configurations, settings, and constants.</li>
-</ul>
 <hr />
-<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p><strong>PropertyBitPack</strong> makes <strong>bit-packing easy</strong>, reducing memory usage for boolean and integer properties.<br />
-Ideal for <strong>high-performance applications</strong>, <strong>game development</strong>, <strong>networking</strong>, and <strong>low-level optimizations</strong>.</p>
+<h2 id="handling-large-bit-sizes"><strong>Handling Large Bit Sizes</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#handling-large-bit-sizes'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>If the total <strong>bit size exceeds 64 bits</strong>, the generator will <strong>split the properties into multiple fields</strong>.</p>
+<h3 id="example-when-fields-exceed-64-bits"><strong>Example: When Fields Exceed 64 Bits</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#example-when-fields-exceed-64-bits'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">public partial class MultiFieldExample
+{
+    [BitField] public partial bool Flag1 { get; set; }
+    [BitField] public partial bool Flag2 { get; set; }
+    [BitField(BitsCount = 47)] public partial long LargeInt { get; set; }
+    [BitField(BitsCount = 14)] public partial short SmallValue { get; set; }
+    [BitField(BitsCount = 6)] public partial byte Byte1 { get; set; }
+    [BitField(BitsCount = 4)] public partial byte Byte2 { get; set; }
+    [BitField(BitsCount = 7)] public partial byte Byte3 { get; set; }
+    [BitField] public partial bool Flag3 { get; set; }
+}
+</code></pre>
+<h3 id="total-bit-calculation"><strong>Total Bit Calculation</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#total-bit-calculation'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code>1 + 1 + 47 + 14 + 6 + 4 + 7 + 1 = 81 bits
+</code></pre>
+<p>Since <strong>64 bits is the max per field</strong>, the generator <strong>splits it into two fields</strong>:</p>
+<ul>
+<li><strong>First field (58 bits)</strong>: <code>_Flag1__Flag2__LargeInt__SmallValue__</code></li>
+<li><strong>Second field (17 bits)</strong>: <code>_Byte1__Byte2__Byte3__Flag3__</code></li>
+</ul>
+<h3 id="generated-code-1"><strong>Generated Code</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#generated-code-1'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">partial class MultiFieldExample
+{
+    private ulong _Flag1__Flag2__LargeInt__SmallValue__; // First 58 bits, max capacity 64
+
+    public partial bool Flag1
+    {
+        get =&gt; ((this._Flag1__Flag2__LargeInt__SmallValue__ &gt;&gt; 0) &amp; 1UL) == 1UL;
+        set =&gt; this._Flag1__Flag2__LargeInt__SmallValue__ = value 
+            ? (this._Flag1__Flag2__LargeInt__SmallValue__ | (1UL &lt;&lt; 0)) 
+            : (this._Flag1__Flag2__LargeInt__SmallValue__ &amp; ~(1UL &lt;&lt; 0));
+    }
+
+    public partial long LargeInt
+    {
+        get =&gt; (long)((this._Flag1__Flag2__LargeInt__SmallValue__ &gt;&gt; 2) &amp; ((1UL &lt;&lt; 47) - 1));
+        set
+        {
+            const ulong maxValue_ = (1UL &lt;&lt; 47) - 1;
+            var clamped_ = global::System.Math.Min((ulong)value, maxValue_);
+            this._Flag1__Flag2__LargeInt__SmallValue__ = (this._Flag1__Flag2__LargeInt__SmallValue__ &amp; ~(((1UL &lt;&lt; 47) - 1) &lt;&lt; 2)) 
+                | ((clamped_ &amp; ((1UL &lt;&lt; 47) - 1)) &lt;&lt; 2);
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-csharp">partial class MultiFieldExample
+{
+    private uint _Byte1__Byte2__Byte3__Flag3__; // Second field with 17 bits, max capacity 32
+
+    public partial byte Byte1
+    {
+        get =&gt; (byte)((this._Byte1__Byte2__Byte3__Flag3__ &gt;&gt; 0) &amp; ((1U &lt;&lt; 6) - 1));
+        set
+        {
+            const uint maxValue_ = (1U &lt;&lt; 6) - 1;
+            var clamped_ = global::System.Math.Min((uint)value, maxValue_);
+            this._Byte1__Byte2__Byte3__Flag3__ = (this._Byte1__Byte2__Byte3__Flag3__ &amp; ~(((1U &lt;&lt; 6) - 1) &lt;&lt; 0)) | ((clamped_ &amp; ((1U &lt;&lt; 6) - 1)) &lt;&lt; 0);
+        }
+    }
+
+    public partial bool Flag3
+    {
+        get =&gt; ((this._Byte1__Byte2__Byte3__Flag3__ &gt;&gt; 17) &amp; (1U)) == 1U;
+        set =&gt; this._Byte1__Byte2__Byte3__Flag3__ = value 
+            ? (this._Byte1__Byte2__Byte3__Flag3__ | (1U &lt;&lt; 17)) 
+            : (this._Byte1__Byte2__Byte3__Flag3__ &amp; ~(1U &lt;&lt; 17));
+    }
+}
+</code></pre>
+<hr />
+<h2 id="handling-overflow-errors"><strong>Handling Overflow Errors</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#handling-overflow-errors'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>🚨 <strong>If the total bits exceed 64 bits</strong> and the generator <strong>cannot create a second field</strong>, <strong>a compilation error will occur</strong>.</p>
+<h3 id="example-of-an-error"><strong>Example of an Error</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#example-of-an-error'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">public partial class OverflowExample
+{
+    [BitField(BitsCount = 65)]
+    public partial ulong LargeData { get; set; }
+}
+</code></pre>
+<h3 id="compiler-error"><strong>Compiler Error</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#compiler-error'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code>Error PRBITS001: The BitsCount for property 'LargeData' must be a positive integer and cannot exceed 64.
+</code></pre>
+<p>✅ <strong>To fix this, reduce the bit count or split properties manually.</strong></p>
+<hr />
+<h2 id="key-features"><strong>Key Features</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#key-features'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>✔ <strong>Specify custom bit sizes</strong> for properties.<br />
+✔ <strong>Automatic field allocation</strong> based on total bits.<br />
+✔ <strong>Splits properties across multiple fields</strong> if needed.<br />
+✔ <strong>Compilation error (<code>PRBITS001</code>)</strong> if exceeding 64 bits without splitting.</p>
+<p>📖 <strong><a href="PropertyBitPack/extended-bit-field-attribute">Next: ReadOnly BitFields →</a></strong></p>
 
                 </div>
 
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/index.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/master/PropertyBitPackDocs/_pages/bit-field-attribute-custom-bits-size.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>
@@ -297,12 +364,6 @@ mount('#sidebar', Sidebar)
 <script src="mjs/docs.mjs" type="module"></script>
 
 
-<script type="module">
-import { mount } from "app.mjs"
-import GettingStarted from "./mjs/components/GettingStarted.mjs" 
-
-mount('#getting-started', GettingStarted, { template:'razor-press' })
-</script>
     </main>
 </div>
 
