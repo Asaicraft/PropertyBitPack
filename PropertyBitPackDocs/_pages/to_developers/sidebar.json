@@ -33,16 +33,20 @@
     "text": "Helper utilities",
     "children": [
       {
-        "text": "Markdown Syntax",
-        "link": "PropertyBitPack/syntax"
+        "text": "Objects Pool",
+        "link": "PropertyBitPack/to_developers/objects-pool"
       },
       {
-        "text": "Markdown Containers",
-        "link": "PropertyBitPack/containers"
+        "text": "ImmutableArrayBuilder",
+        "link": "PropertyBitPack/to_developers/immutable-array-builder"
       },
       {
-        "text": "Using Vue in Markdown",
-        "link": "PropertyBitPack/vue-in-markdown"
+        "text": "ThrowHelper",
+        "link": "PropertyBitPack/to_developers/throw-helper"
+      },
+      {
+        "text": "BitwiseSyntaxHelpers",
+        "link": "PropertyBitPack/to_developers/bitwise-syntax-helpers"
       }
     ]
   }
