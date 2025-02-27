@@ -34,6 +34,11 @@
     background-color: rgb(30 58 138); /*text-blue-900*/
     color: rgb(243 244 246); /*text-gray-100*/
 }
+
+.dark .prose :where(.label-container):not(:where([class~="not-prose"] *)) {
+    background-color: rgb(30 58 138) !important;
+}
+
 .prose :where(pre):not(:where([class~="not-prose"] *)) > code {
     background-color: transparent;
 }
@@ -231,3 +236,4 @@
 h1:hover .header-anchor, h1 .header-anchor:focus, h2:hover .header-anchor, h2 .header-anchor:focus, h3:hover .header-anchor, h3 .header-anchor:focus, h4:hover .header-anchor, h4 .header-anchor:focus {
     opacity: 1;
 }
+
