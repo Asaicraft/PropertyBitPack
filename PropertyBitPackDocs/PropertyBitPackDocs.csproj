@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="_pages\to_developers\bitfieldproperty-aggregator.md" />
+  </ItemGroup>
   <ItemGroup>
     <Using Include="PropertyBitPackDocs" />
     <Using Include="ServiceStack" />

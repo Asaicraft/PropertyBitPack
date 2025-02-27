@@ -1,0 +1,45 @@
+[
+  {
+    "text": "Architecture",
+    "link": "PropertyBitPack/to_developers/",
+    "children": [
+      {
+        "text": "Introduction",
+        "link": "PropertyBitPack/to_developers/"
+      },
+      {
+        "text": "Attribute Parser",
+        "link": "PropertyBitPack/to_developers/attribute-parser"
+      },
+      {
+        "text": "BitFieldProperty Parser",
+        "link": "PropertyBitPack/to_developers/bitfieldproperty-parser"
+      },
+      {
+        "text": "BitFieldProperty Aggregator",
+        "link": "PropertyBitPack/to_developers/bitfieldproperty-aggregator"
+      },
+      {
+        "text": "Properties Syntax Generator",
+        "link": "PropertyBitPack/to_developers/properties-syntax-generator"
+      }
+    ]
+  },
+  {
+    "text": "Helper utilities",
+    "children": [
+      {
+        "text": "Markdown Syntax",
+        "link": "PropertyBitPack/syntax"
+      },
+      {
+        "text": "Markdown Containers",
+        "link": "PropertyBitPack/containers"
+      },
+      {
+        "text": "Using Vue in Markdown",
+        "link": "PropertyBitPack/vue-in-markdown"
+      }
+    ]
+  }
+]
