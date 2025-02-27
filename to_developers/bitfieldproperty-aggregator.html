@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="https://asaicraft.github.io/PropertyBitPack/" />
+    <link rel="icon" type="image/svg" href="img/logo.svg">
+    <title>BitFieldProperty Aggregator</title>
+    <script>
+    if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
+    if (location.search === "?light") localStorage.removeItem('color-scheme') 
+    const cls = document.querySelector('html').classList
+    if (localStorage.getItem('color-scheme') === 'dark')
+        cls.add('dark')
+    else
+        cls.remove('dark')
+    </script>
+    <link rel="stylesheet" href="css/app.css">
+    <script type="importmap">
+{
+    "imports": {
+        "app.mjs": "/PropertyBitPack/mjs/app.mjs",
+        "vue": "/PropertyBitPack/lib/mjs/vue.min.mjs",
+        "@servicestack/client": "/PropertyBitPack/lib/mjs/servicestack-client.min.mjs",
+        "@servicestack/vue": "/PropertyBitPack/lib/mjs/servicestack-vue.min.mjs"
+    }
+}
+</script>
+</head>
+<body class="bg-white dark:bg-black dark:text-white">
+<header id="header" class="top-0 fixed z-50 h-14 bg-white dark:bg-black opacity-90 w-full shadow">
+  <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black">
+    <div class="mx-auto max-w-[100rem] pr-4 sm:pr-6 lg:pr-8">
+      <div class="flex h-16 justify-between">
+        <div class="flex">
+          <div class="flex flex-shrink-0 items-center">
+            <a class="mr-2 lg:mr-8 flex items-center" href="">
+                <svg class="w-8 h-8 mr-1 ml-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6v13m9-13v13m9-13v13"/></svg>
+                <span class="hidden sm:block text-2xl font-semibold">PropertyBitPack Docs</span>
+            </a>
+          </div>
+            <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-4 lg:space-x-8">
+                <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+                        <a href="to_developers/" class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200">
+                            To developers
+                        </a>
+                        <a href="tode/" class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200">
+                            Vue
+                        </a>
+            </div>
+        </div>
+        <div class="hidden sm:ml-6 sm:flex sm:items-center">
+            <dark-mode-toggle class="ml-2 w-10"></dark-mode-toggle>
+        </div>
+        <div class="-mr-2 flex items-center sm:hidden">
+          <!-- Mobile menu button -->
+          <button type="button" v-on:click="open=!open" class="inline-flex items-center justify-center rounded-md bg-white dark:bg-black p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:ring-offset-black" aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <!-- Menu open: "hidden", Menu closed: "block" -->
+            <svg :class="['h-6 w-6', open ? 'hidden' : 'block']" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <!-- Menu open: "block", Menu closed: "hidden" -->
+            <svg :class="['h-6 w-6', open ? 'block' : 'hidden']" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div v-cloak v-if="open" class="sm:hidden">
+        <div class="space-y-1 pb-3 pt-2">
+            <!-- Current: "border-indigo-500 bg-indigo-50 text-indigo-700", Default: "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" -->
+                    <a href="to_developers/" class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium border-transparent text-gray-600 dark:text-gray-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-gray-800 dark:hover:text-gray-100">
+                        To developers
+                    </a>
+                    <a href="tode/" class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium border-transparent text-gray-600 dark:text-gray-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-gray-800 dark:hover:text-gray-100">
+                        Vue
+                    </a>
+        </div>
+    </div>
+  </nav>
+</header>
+
+<script type="module">
+import { ref } from "vue"
+import { mount } from "app.mjs"
+
+const Header = {
+    setup() {
+        const open = ref(false)
+        return { open }
+    }
+}
+mount('#header', Header)
+</script>
+
+
+<div class="min-h-screen">
+    <main role="main" class="pt-16 pb-3">
+        
+
+
+
+
+<style>
+.active {
+    color: #0ea5e9 !important;
+}
+</style>
+<link rel="stylesheet" href="css/highlight.css">
+<link rel="stylesheet" href="css/typography.css">
+<link rel="stylesheet" href="css/lite-yt-embed.css">
+
+<div class="w-full max-w-[100rem] mx-auto">
+    <div class="flex flex-wrap">
+        <div id="sidebar" class="z-40 inset-0 flex-none bg-white dark:bg-black lg:w-64 xl:w-80">
+            <button v-cloak v-on:click="open=true" :class="['text-gray-400 hover:text-gray-500 pt-4 pl-2 absolute transform transition-all duration-200', open ? 'opacity-0 translate-x-56' : 'opacity-100']" title="Open Sidebar">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H10m10 0l-4 4m4-4l-4-4M4 4v16"/></svg>
+            </button>
+            <div :class="['fixed bg-white dark:bg-black h-screen overflow-y-auto scrolling-touch overflow-hidden shadow lg:shadow-none transform transition-transform duration-200', open ? '' : 'translate-x-[-100%]']">
+                <nav class="sidebar lg:w-64 xl:w-80 px-1 pt-6 pb-16 overflow-y-auto font-medium text-sm lg:text-base sm:px-3 xl:px-5" aria-label="Sidebar">
+                    <close-button title="Close Sidebar" class="lg:hidden -mr-2" v-on:close="open=false"></close-button>
+                                <a href="/PropertyBitPack/to_developers/" class="block flex items-center whitespace-nowrap">
+                                    <span class="p-2 pl-3 font-display font-medium text-slate-900 dark:text-white">
+Architecture                                    </span>
+                                </a>
+                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Introduction
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/attribute-parser" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Attribute Parser
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/attribute-parsing-result" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Attribute Parsing Results
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/bitfieldproperty-parser" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        BitFieldProperty Parser
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/bitfieldproperty-aggregator" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        BitFieldProperty Aggregator
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/properties-syntax-generator" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Properties Syntax Generator
+                                    </a>
+                                </li>
+                        </ul>
+                                <h2 class="font-display font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                                    Helper utilities
+                                </h2>
+                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/syntax" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Markdown Syntax
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/containers" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Markdown Containers
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/vue-in-markdown" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Using Vue in Markdown
+                                    </a>
+                                </li>
+                        </ul>
+                </nav>
+            </div>
+        </div>
+        <div id="doc" class="mx-auto flex">
+            <div class="mt-8 mx-auto prose lg:prose-lg">
+                
+                    <section class="not-prose mb-16 md:mb-12">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
+                            BitFieldProperty Aggregator
+                        </h1>
+                    </section>
+
+                <div class="not-prose"></div>
+
+                <div class="content">
+                    <h2 id="overview">Overview<a class="header-anchor" href="javascript:;" onclick="location.hash='#overview'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>After <strong>attribute parsing</strong> and <strong>property parsing</strong>, <strong>bit-field aggregators</strong> organize the parsed property data, grouping them into fields and producing <strong>source generation requests</strong>. Each aggregator implements <code>IBitFieldPropertyAggregator</code>—it inspects a collection of <code>BaseBitFieldPropertyInfo</code>, then decides how to:</p>
+<ol>
+<li><strong>Group</strong> or <strong>filter</strong> those properties.</li>
+<li><strong>Distribute</strong> their bits into suitable fields (1–64 bits).</li>
+<li><strong>Generate</strong> one or more <code>IGenerateSourceRequest</code> objects describing the final layout.</li>
+</ol>
+<p>This step ensures that partially processed properties (e.g., existing-field references, unnamed fields) are <strong>removed</strong> from further processing, so subsequent aggregators do not re-handle them.</p>
+<hr />
+<h2 id="the-ibitfieldpropertyaggregator-interface">The <code>IBitFieldPropertyAggregator</code> Interface<a class="header-anchor" href="javascript:;" onclick="location.hash='#the-ibitfieldpropertyaggregator-interface'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<pre><code class="language-csharp">internal interface IBitFieldPropertyAggregator
+{
+    /// &lt;summary&gt;
+    /// Remove properties in &lt;paramref name=&quot;properties&quot;/&gt; which aggregated 
+    /// &lt;/summary&gt;
+    ImmutableArray&lt;IGenerateSourceRequest&gt; Aggregate(
+        ILinkedList&lt;BaseBitFieldPropertyInfo&gt; properties, 
+        in ImmutableArrayBuilder&lt;IGenerateSourceRequest&gt; readyRequests, 
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics
+    );
+}
+</code></pre>
+<p><strong>Key Points</strong>:</p>
+<ul>
+<li>The aggregator <strong>mutates</strong> the <code>properties</code> list by removing properties it has successfully aggregated.</li>
+<li>Returns <strong>new</strong> <code>IGenerateSourceRequest</code> instances describing how the grouped properties should be generated (e.g., fields, bits, offsets).</li>
+</ul>
+<hr />
+<h2 id="basebitfieldpropertyaggregator-abstract-class"><code>BaseBitFieldPropertyAggregator</code> Abstract Class<a class="header-anchor" href="javascript:;" onclick="location.hash='#basebitfieldpropertyaggregator-abstract-class'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>Many aggregators inherit from <code>BaseBitFieldPropertyAggregator</code>, which:</p>
+<pre><code class="language-csharp">internal abstract class BaseBitFieldPropertyAggregator : IBitFieldPropertyAggregator, IContextBindable
+{
+    public virtual ImmutableArray&lt;IGenerateSourceRequest&gt; Aggregate(
+        ILinkedList&lt;BaseBitFieldPropertyInfo&gt; properties, 
+        in ImmutableArrayBuilder&lt;IGenerateSourceRequest&gt; readyRequests, 
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics
+    ) {
+        if (properties.Count == 0)
+        {
+            return [];
+        }
+
+        using var requestsBuilder = ImmutableArrayBuilder&lt;IGenerateSourceRequest&gt;.Rent();
+        AggregateCore(properties, requestsBuilder, in diagnostics);
+        return requestsBuilder.ToImmutable();
+    }
+
+    protected virtual void AggregateCore(
+        ILinkedList&lt;BaseBitFieldPropertyInfo&gt; properties,
+        in ImmutableArrayBuilder&lt;IGenerateSourceRequest&gt; requestsBuilder,
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics
+    ) { }
+
+    // Additional helpers for:
+    //   - Grouping properties by owner + field name
+    //   - Distributing bits into 8/16/32/64-bit fields
+    //   - Validating bit sizes
+    //   - Creating requests
+}
+</code></pre>
+<h3 id="shared-responsibilities">Shared Responsibilities<a class="header-anchor" href="javascript:;" onclick="location.hash='#shared-responsibilities'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong><code>SelectCandiadates(...)</code></strong>: Identifies aggregator-specific property sets (e.g., unnamed fields, existing fields, or named fields).</li>
+<li><strong><code>GroupPropertiesByFieldNameAndOwner(...)</code></strong>: Gathers properties into groups ( <code>(INamedTypeSymbol Owner, IFieldName? fieldName)</code> ), allowing subsequent distribution.</li>
+<li><strong><code>DistributeBitsIntoFields(...)</code></strong>: Splits a sequence of bit counts into the smallest number of typed fields. For example, if total is 12 bits, aggregator might choose a <code>ushort</code> (16 bits).</li>
+</ul>
+<hr />
+<h2 id="aggregator-workflow">Aggregator Workflow<a class="header-anchor" href="javascript:;" onclick="location.hash='#aggregator-workflow'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ol>
+<li><p><strong>Aggregate</strong>:</p>
+<ol>
+<li>The aggregator calls <code>SelectCandiadates(...)</code> to filter matching properties.</li>
+<li>Groups them by <strong>owner</strong> (the containing type) and (optionally) <strong>field name</strong>.</li>
+<li>Validates that total bits do not exceed 64.</li>
+<li>Builds <strong>requests</strong> describing each field + set of properties.</li>
+</ol>
+</li>
+<li><p><strong>Remove Aggregated</strong>:</p>
+<ul>
+<li>Once the aggregator has processed a group, it removes those properties from the <code>ILinkedList</code>, so subsequent aggregators don’t reprocess them.</li>
+</ul>
+</li>
+<li><p><strong>Return Requests</strong>:</p>
+<ul>
+<li>New <code>IGenerateSourceRequest</code> objects are appended to the aggregator’s local builder.</li>
+<li>The aggregator returns these to the <strong>PropertyBitPackGeneratorContext</strong>, which collects them for final code generation.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="built-in-aggregators">Built-in Aggregators<a class="header-anchor" href="javascript:;" onclick="location.hash='#built-in-aggregators'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="existingfieldaggregator"><code>ExistingFieldAggregator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#existingfieldaggregator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal sealed class ExistingFieldAggregator : BaseBitFieldPropertyAggregator
+{
+    protected override void AggregateCore(
+        ILinkedList&lt;BaseBitFieldPropertyInfo&gt; properties,
+        in ImmutableArrayBuilder&lt;IGenerateSourceRequest&gt; requestsBuilder,
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics)
+    {
+        // Finds properties that reference an existing field (IFieldName.IsSymbolExist == true).
+        // Groups them by (Owner, Existing Field), checks if all bits fit into that field's size.
+        // Generates an &quot;ExistingFieldRequest&quot; and an &quot;ExistingFieldGsr&quot; for each group.
+    }
+}
+</code></pre>
+<p><strong>Usage</strong>:</p>
+<ul>
+<li><strong>Existing</strong> fields (e.g., <code>uint _myField;</code>).</li>
+<li>Aggregator ensures all requested bits fit in the underlying field type (8, 16, 32, or 64 bits).</li>
+</ul>
+<h3 id="unnamedfieldaggregator"><code>UnnamedFieldAggregator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#unnamedfieldaggregator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal sealed class UnnamedFieldAggregator : BaseUnnamedFieldAggregator
+{
+    // Processes properties that do NOT specify a field name, distributing them into
+    // newly allocated fields. It merges them if possible (for efficiency),
+    // then produces &quot;UnnamedFieldGsr&quot; requests.
+}
+</code></pre>
+<p><strong>Usage</strong>:</p>
+<ul>
+<li><strong>No field name</strong> (e.g., <code>[BitField(8)] partial int Age { get; set; }</code>).</li>
+<li>Generates a <strong>new</strong> unnamed field for these properties, grouping them if collectively &lt; 64 bits.</li>
+</ul>
+<h3 id="namedfieldpropertyaggregator"><code>NamedFieldPropertyAggregator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#namedfieldpropertyaggregator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal sealed class NamedFieldPropertyAggregator : BaseBitFieldPropertyAggregator
+{
+    // Collects properties that have a custom field name but do not reference an existing symbol.
+    // Groups them by that name + owner, ensures bits &lt;= 64, and produces &quot;NamedFieldGsr&quot;.
+}
+</code></pre>
+<p><strong>Usage</strong>:</p>
+<ul>
+<li><strong>Named</strong> but <strong>non-existent</strong> fields. For instance, <code>[BitField(BitsCount=16, FieldName=&quot;MyField&quot;)]</code>.</li>
+</ul>
+<h3 id="readonlybitfieldaggregator"><code>ReadOnlyBitFieldAggregator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#readonlybitfieldaggregator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal sealed class ReadOnlyBitFieldAggregator : BaseBitFieldPropertyAggregator
+{
+    // Delegates to a &quot;ReadOnlyAggregatorComponent&quot; to handle read-only attributes.
+    // It ultimately yields &quot;IReadOnlyFieldGsr&quot; requests.
+}
+</code></pre>
+<p><strong>Usage</strong>:</p>
+<ul>
+<li><strong>Read-only</strong> attributes that require special constructor logic or different generation patterns.</li>
+</ul>
+<hr />
+<h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<div class="Mermaid"><pre class="mermaid">classDiagram
+    %% Интерфейсы
+    class IBitFieldPropertyAggregator {
+      <<interface>>
+      +Aggregate(properties: ILinkedList, readyRequests: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : ImmutableArray
+    }
+    class IGenerateSourceRequest {
+      +Fields : ImmutableArray
+      +Properties : BitFieldPropertyInfoRequest[]
+    }
+    class IFieldRequest {
+      +FieldType : SpecialType
+      +IsExist : bool
+      +Name : string
+    }
+    
+    %% Абстрактный класс-агрегатор
+    class BaseBitFieldPropertyAggregator {
+      <<abstract>>
+      - _context : PropertyBitPackGeneratorContext?
+      +Context : PropertyBitPackGeneratorContext
+      +BindContext(context: PropertyBitPackGeneratorContext) : void
+      +Aggregate(properties: ILinkedList, readyRequests: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : ImmutableArray
+      +AggregateCore(properties: ILinkedList, reqBuilder: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : void
+      +SelectCandidatesCore(props: IReadOnlyCollection, diagnostics: ImmutableArrayBuilder, candidates: ImmutableArrayBuilder) : void
+      +SelectCandidates(props: ILinkedList, diagnostics: ImmutableArrayBuilder) : ImmutableArray
+      +GroupPropertiesByFieldNameAndOwner(props: ImmutableArray) : ImmutableArray
+      +DistributeBitsIntoFields(info: ImmutableArray) : ImmutableArray
+      +ToRequests(req: IFieldRequest, infos: ImmutableArray) : ImmutableArray
+    }
+    
+    %% Производные агрегаторы
+    class BaseUnnamedFieldAggregator {
+      <<abstract>>
+      +SelectCandidatesCore() : void
+      +AggregateCore() : void
+      +AddUnnamedFieldRequests(group: OwnerFieldNameGroup, bits: ImmutableArray, reqBuilder: ImmutableArrayBuilder) : void
+      +GetFieldName(candidateProps: RentedListPool) : string
+    }
+    class ExistingFieldAggregator {
+      +AggregateCore(props, reqBuilder, diagnostics) : void
+    }
+    class NamedFieldPropertyAggregator {
+      +SelectCandidatesCore() : void
+      +AggregateCore(props, reqBuilder, diagnostics) : void
+      +CreateGsr(group: OwnerFieldNameGroup, bitSize: BitSize) : NamedFieldGsr
+    }
+    class ReadOnlyBitFieldAggregator {
+      +Aggregate(props, readyRequests, diagnostics) : ImmutableArray
+      - ReadOnlyAggregatorComponent : ReadOnlyAggregatorComponent
+    }
+    class UnnamedFieldAggregator {
+      <<final>>
+    }
+    
+    %% Запросы на поле и связанные классы
+    class FieldRequest {
+      <<class>>
+      - _name : string
+      - _fieldType : SpecialType
+      - _isExist : bool
+      +FieldRequest(name: string, fieldType: SpecialType, isExist: bool)
+      +Name : string
+      +FieldType : SpecialType
+      +IsExist : bool
+      +ToString() : string
+    }
+    class ExistingFieldRequest {
+      <<final>>
+      +FieldSymbol : IFieldSymbol
+    }
+    class NonExistingFieldRequest {
+      <<class>>
+    }
+    class NamedFieldRequest {
+      <<class>>
+    }
+    FieldRequest <|-- ExistingFieldRequest
+    FieldRequest <|-- NonExistingFieldRequest
+    NonExistingFieldRequest <|-- NamedFieldRequest
+    
+    class BitFieldPropertyInfoRequest {
+      - _bitsSpan : BitsSpan
+      - _info : BaseBitFieldPropertyInfo
+      +BitsSpan : BitsSpan
+      +BitFieldPropertyInfo : BaseBitFieldPropertyInfo
+      +ToString() : string
+    }
+    class BitsSpan {
+      - _req : IFieldRequest
+      - _start : byte
+      - _length : byte
+      +FieldRequest : IFieldRequest
+      +Start : byte
+      +Length : byte
+      +ToString() : string
+    }
+    
+    %% Отношения
+    IBitFieldPropertyAggregator <|.. BaseBitFieldPropertyAggregator
+    BaseBitFieldPropertyAggregator <|-- BaseUnnamedFieldAggregator
+    BaseBitFieldPropertyAggregator <|-- ExistingFieldAggregator
+    BaseBitFieldPropertyAggregator <|-- NamedFieldPropertyAggregator
+    BaseBitFieldPropertyAggregator <|-- ReadOnlyBitFieldAggregator
+    BaseUnnamedFieldAggregator <|-- UnnamedFieldAggregator
+</pre>
+<details><summary></summary>
+<pre>classDiagram
+    %% Интерфейсы
+    class IBitFieldPropertyAggregator {
+      <<interface>>
+      +Aggregate(properties: ILinkedList, readyRequests: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : ImmutableArray
+    }
+    class IGenerateSourceRequest {
+      +Fields : ImmutableArray
+      +Properties : BitFieldPropertyInfoRequest[]
+    }
+    class IFieldRequest {
+      +FieldType : SpecialType
+      +IsExist : bool
+      +Name : string
+    }
+    
+    %% Абстрактный класс-агрегатор
+    class BaseBitFieldPropertyAggregator {
+      <<abstract>>
+      - _context : PropertyBitPackGeneratorContext?
+      +Context : PropertyBitPackGeneratorContext
+      +BindContext(context: PropertyBitPackGeneratorContext) : void
+      +Aggregate(properties: ILinkedList, readyRequests: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : ImmutableArray
+      +AggregateCore(properties: ILinkedList, reqBuilder: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : void
+      +SelectCandidatesCore(props: IReadOnlyCollection, diagnostics: ImmutableArrayBuilder, candidates: ImmutableArrayBuilder) : void
+      +SelectCandidates(props: ILinkedList, diagnostics: ImmutableArrayBuilder) : ImmutableArray
+      +GroupPropertiesByFieldNameAndOwner(props: ImmutableArray) : ImmutableArray
+      +DistributeBitsIntoFields(info: ImmutableArray) : ImmutableArray
+      +ToRequests(req: IFieldRequest, infos: ImmutableArray) : ImmutableArray
+    }
+    
+    %% Производные агрегаторы
+    class BaseUnnamedFieldAggregator {
+      <<abstract>>
+      +SelectCandidatesCore() : void
+      +AggregateCore() : void
+      +AddUnnamedFieldRequests(group: OwnerFieldNameGroup, bits: ImmutableArray, reqBuilder: ImmutableArrayBuilder) : void
+      +GetFieldName(candidateProps: RentedListPool) : string
+    }
+    class ExistingFieldAggregator {
+      +AggregateCore(props, reqBuilder, diagnostics) : void
+    }
+    class NamedFieldPropertyAggregator {
+      +SelectCandidatesCore() : void
+      +AggregateCore(props, reqBuilder, diagnostics) : void
+      +CreateGsr(group: OwnerFieldNameGroup, bitSize: BitSize) : NamedFieldGsr
+    }
+    class ReadOnlyBitFieldAggregator {
+      +Aggregate(props, readyRequests, diagnostics) : ImmutableArray
+      - ReadOnlyAggregatorComponent : ReadOnlyAggregatorComponent
+    }
+    class UnnamedFieldAggregator {
+      <<final>>
+    }
+    
+    %% Запросы на поле и связанные классы
+    class FieldRequest {
+      <<class>>
+      - _name : string
+      - _fieldType : SpecialType
+      - _isExist : bool
+      +FieldRequest(name: string, fieldType: SpecialType, isExist: bool)
+      +Name : string
+      +FieldType : SpecialType
+      +IsExist : bool
+      +ToString() : string
+    }
+    class ExistingFieldRequest {
+      <<final>>
+      +FieldSymbol : IFieldSymbol
+    }
+    class NonExistingFieldRequest {
+      <<class>>
+    }
+    class NamedFieldRequest {
+      <<class>>
+    }
+    FieldRequest <|-- ExistingFieldRequest
+    FieldRequest <|-- NonExistingFieldRequest
+    NonExistingFieldRequest <|-- NamedFieldRequest
+    
+    class BitFieldPropertyInfoRequest {
+      - _bitsSpan : BitsSpan
+      - _info : BaseBitFieldPropertyInfo
+      +BitsSpan : BitsSpan
+      +BitFieldPropertyInfo : BaseBitFieldPropertyInfo
+      +ToString() : string
+    }
+    class BitsSpan {
+      - _req : IFieldRequest
+      - _start : byte
+      - _length : byte
+      +FieldRequest : IFieldRequest
+      +Start : byte
+      +Length : byte
+      +ToString() : string
+    }
+    
+    %% Отношения
+    IBitFieldPropertyAggregator <|.. BaseBitFieldPropertyAggregator
+    BaseBitFieldPropertyAggregator <|-- BaseUnnamedFieldAggregator
+    BaseBitFieldPropertyAggregator <|-- ExistingFieldAggregator
+    BaseBitFieldPropertyAggregator <|-- NamedFieldPropertyAggregator
+    BaseBitFieldPropertyAggregator <|-- ReadOnlyBitFieldAggregator
+    BaseUnnamedFieldAggregator <|-- UnnamedFieldAggregator
+</pre>
+</details>
+</div>
+<ol>
+<li><strong><code>IBitFieldPropertyAggregator</code></strong> is the root interface.</li>
+<li><strong><code>BaseBitFieldPropertyAggregator</code></strong> provides common grouping/distribution logic.</li>
+<li><strong>Concrete</strong> aggregators each handle a specific scenario.</li>
+</ol>
+<hr />
+<h2 id="putting-it-all-together">Putting It All Together<a class="header-anchor" href="javascript:;" onclick="location.hash='#putting-it-all-together'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ol>
+<li><p><strong>Context Calls <code>AggregateBitFieldProperties(...)</code></strong></p>
+<ul>
+<li>Loops through all <strong>registered</strong> aggregators in the <code>PropertyBitPackGeneratorContext</code>.</li>
+<li>Each aggregator is given a chance to process + remove matching properties.</li>
+</ul>
+</li>
+<li><p><strong>Aggregators Create Requests</strong></p>
+<ul>
+<li><strong>Fields</strong>: Each aggregator decides if new fields are needed (e.g., unnamed) or if an <strong>existing</strong> field is used.</li>
+<li><strong>Property Mappings</strong>: Distributes property bits within those fields, generating offset data (<code>BitsSpan</code>).</li>
+</ul>
+</li>
+<li><p><strong>Resulting <code>IGenerateSourceRequest</code>s</strong></p>
+<ul>
+<li>Aggregators produce requests like <code>UnnamedFieldGsr</code>, <code>NamedFieldGsr</code>, <code>ExistingFieldGsr</code>, or specialized read-only ones.</li>
+<li>These requests flow into <strong>property syntax generators</strong> that emit final C# code.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ul>
+<li><strong>BitFieldProperty Aggregators</strong> are the <strong>bridge</strong> between parsed properties and final code generation.</li>
+<li>They <strong>group</strong> properties, <strong>validate</strong> bit sizes, and produce <strong>requests</strong> describing how to lay out bits in fields (8–64 bits).</li>
+<li><strong>Each aggregator</strong> focuses on a different scenario: existing fields, unnamed fields, named fields, or read-only logic.</li>
+<li>By <strong>removing</strong> processed properties, multiple aggregators can run in sequence without duplicating work.</li>
+</ul>
+<p>Together, <strong>aggregators</strong> ensure <strong>PropertyBitPack</strong> remains modular and flexible, enabling advanced scenarios like partial code reuse, custom field packing, and specialized read-only constructs.</p>
+
+                </div>
+
+                <div class="not-prose"></div>
+                
+                    <div class="not-prose py-8">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/bitfieldproperty-aggregator.md" target="_blank" rel="noopener noreferrer">
+                            Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+                        </a>
+                    </div>
+
+                    <div class="not-prose my-20">
+                    </div>
+            </div>
+                
+                <div class="docmap hidden 2xl:block flex-none w-64 pl-8 mr-8">
+                    <div class="fixed bg-white dark:bg-black flex flex-col overflow-y-auto pt-10 px-8 pb-6" style="height:calc(100vh - 50px);">
+                        <div>
+                            <h5 class="text-slate-900 font-semibold mb-4 text-sm leading-6 dark:text-slate-100">
+                                On This Page
+                            </h5>
+                            <ul class="text-slate-700 text-sm leading-6">
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#overview'" data-id="overview" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Overview
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#the-ibitfieldpropertyaggregator-interface'" data-id="the-ibitfieldpropertyaggregator-interface" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            The 
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="shared-responsibilities" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#shared-responsibilities'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Shared Responsibilities
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#aggregator-workflow'" data-id="aggregator-workflow" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Aggregator Workflow
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#built-in-aggregators'" data-id="built-in-aggregators" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Built-in Aggregators
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#mermaid-diagram'" data-id="mermaid-diagram" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Mermaid Diagram
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#putting-it-all-together'" data-id="putting-it-all-together" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Putting It All Together
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#summary'" data-id="summary" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Summary
+                                        </span>
+                                    </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+        </div>
+    </div>    
+</div>
+
+<script>
+//doc instructions
+if (document.querySelector('.hide-title')) {
+    const el = document.querySelector('#doc section h1') 
+    if (el) el.style.display='none'
+}
+</script>
+
+<script type="module">
+import { ref } from "vue"
+import { mount } from "app.mjs"
+
+
+    const App = {
+        setup() {
+            function nav(url) {
+                window.open(url)
+            }
+            return { nav }
+        }
+    }
+    
+const Sidebar = {
+    setup() {
+        const open = ref(true)
+        return { open }
+    }
+}
+
+mount('#doc', App)
+mount('#sidebar', Sidebar)
+</script>
+
+<script src="lib/js/highlight.js"></script>
+<script>hljs.highlightAll()</script>
+<script src="lib/js/lite-yt-embed.js"></script>
+<script src="mjs/docs.mjs" type="module"></script>
+
+    </main>
+</div>
+
+
+
+<script type="module">
+import { init } from "app.mjs"
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js";
+
+mermaid.initialize({ startOnLoad: true });
+init()
+
+</script>
+
+
+
+</body>
+</html>

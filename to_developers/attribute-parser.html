@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="https://asaicraft.github.io/PropertyBitPack/" />
     <link rel="icon" type="image/svg" href="img/logo.svg">
-    <title>Architecture</title>
+    <title>Attribute Parser</title>
     <script>
     if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
     if (location.search === "?light") localStorage.removeItem('color-scheme') 
@@ -187,181 +187,205 @@ Architecture                                    </span>
                 
                     <section class="not-prose mb-16 md:mb-12">
                         <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
-                            Architecture
+                            Attribute Parser
                         </h1>
                     </section>
 
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <p>Below is an overview of the internal architecture of <strong>PropertyBitPack</strong>, focusing on how it processes attributes, aggregates bit-packed properties, and generates source code. This documentation is intended for contributors who want to understand or extend the source generator logic.</p>
-<hr />
-<h2 id="high-level-architecture">High-Level Architecture<a class="header-anchor" href="javascript:;" onclick="location.hash='#high-level-architecture'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+                    <h2 id="overview">Overview<a class="header-anchor" href="javascript:;" onclick="location.hash='#overview'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>This section covers how <strong>PropertyBitPack</strong> identifies and processes attributes on properties using <strong>Attribute Parsers</strong>. Each parser implements <code>IAttributeParser</code>, and optionally extends <code>BaseAttributeParser</code>, to handle common logic like retrieving field names, bit counts, or diagnosing invalid usage.</p>
+<h3 id="how-it-works">How It Works<a class="header-anchor" href="javascript:;" onclick="location.hash='#how-it-works'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
 <ol>
-<li><p><strong><code>PropertyBitPackGeneratorContext</code></strong> (abstract class)</p>
-<ul>
-<li>Defines arrays of <strong>parsers</strong> and <strong>generators</strong>:
-<ul>
-<li><code>AttributeParsers</code> (implementations of <code>IAttributeParser</code>)</li>
-<li><code>BitFieldPropertyParsers</code> (implementations of <code>IBitFieldPropertyParser</code>)</li>
-<li><code>BitFieldPropertyAggregators</code> (implementations of <code>IBitFieldPropertyAggregator</code>)</li>
-<li><code>PropertySyntaxGenerators</code> (implementations of <code>IPropertiesSyntaxGenerator</code>)</li>
-</ul>
+<li><p><strong>Identify Candidate Attributes</strong><br />
+The source generator scans property attributes and tests each <code>IAttributeParser</code> via <code>IsCandidate(...)</code>.</p>
 </li>
-<li>Provides methods to:
-<ul>
-<li>Identify candidate attributes</li>
-<li>Parse them into internal <code>BaseBitFieldPropertyInfo</code> representations</li>
-<li>Aggregate property info into requests (<code>IGenerateSourceRequest</code>)</li>
-<li>Generate final C# source code (<code>FileGeneratorRequest</code>)</li>
-</ul>
+<li><p><strong>Attempt Parsing</strong><br />
+If a parser is a valid candidate, it calls <code>TryParse(...)</code> to extract metadata (e.g., <code>FieldName</code>, <code>BitsCount</code>) and build a result model (an <code>IAttributeParsedResult</code>).</p>
 </li>
-</ul>
+<li><p><strong>Fallback</strong><br />
+If the initial parser fails but has <code>FallbackOnCandidateFailure = true</code>, the generator tries subsequent parsers that also indicate fallback support.</p>
 </li>
-<li><p><strong><code>PropertyBitPackGeneratorContextImplementation</code></strong></p>
-<ul>
-<li>A sealed nested class that constructs these arrays <strong>without constructor injection</strong> in the typical DI sense.</li>
-<li>Instead, after constructing arrays of parsers/generators, the method <code>BindToSelf()</code> iterates over each component.
-<ul>
-<li>If the component implements <code>IContextBindable</code>, it calls <code>BindContext(this)</code>, providing a direct link to the current context instance.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong><code>PropertyBitPackSourceGenerator : IIncrementalGenerator</code></strong></p>
-<ul>
-<li>Holds a static instance of <code>PropertyBitPackGeneratorContext</code>.</li>
-<li>Uses <strong>incremental generation</strong>:
-<ul>
-<li>Filters candidate properties via <code>IsCandidateProperty(...)</code>.</li>
-<li>For each property, attempts to parse attached attributes.</li>
-<li>Aggregates bit-packed properties.</li>
-<li>Calls context methods to generate final source code.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>Parsing Workflow</strong></p>
-<ol>
-<li><strong>Identify</strong> partial properties with certain attributes.</li>
-<li><strong>Check</strong> if any of the known attribute parsers (<code>IAttributeParser</code>) match.</li>
-<li><strong>Parse</strong> them into <code>BaseBitFieldPropertyInfo</code>.</li>
-<li><strong>Aggregate</strong> all recognized properties into <code>IGenerateSourceRequest</code> objects.</li>
-<li><strong>Generate</strong> the final <code>.cs</code> source files (property implementations) via <code>IPropertiesSyntaxGenerator</code>.</li>
-</ol>
+<li><p><strong>Context Binding</strong><br />
+Parsers can implement <code>IContextBindable</code> so the source generator can pass a shared <code>PropertyBitPackGeneratorContext</code>. This allows parsers to access shared logic or diagnostics handling.</p>
 </li>
 </ol>
 <hr />
-<h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<div class="Mermaid"><pre class="mermaid">flowchart LR
-    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-    B -->|BindToSelf| D[IContextBindable?]
-    B -->|AttributeParsers| C[PropertyDeclaration]
-    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
-
-    C --> E
-    E --> F
-    F --> G</pre>
-<details><summary>source</summary>
-<pre>flowchart LR
-    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-    B -->|BindToSelf| D[IContextBindable?]
-    B -->|AttributeParsers| C[PropertyDeclaration]
-    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
-
-    C --> E
-    E --> F
-    F --> G</pre>
-</details>
-</div>
-<p><strong>Diagram Explanation</strong>:</p>
-<ol>
-<li><strong>IncrementalGenerator</strong> filters candidate properties.</li>
-<li><strong>PropertyBitPackGeneratorContextImplementation</strong>:
-<ul>
-<li>Holds arrays of parsers/generators.</li>
-<li>Calls <code>BindToSelf()</code>, so each component that implements <code>IContextBindable</code> can access the <strong>context</strong>.</li>
-</ul>
-</li>
-<li>The parsers/generators then handle attribute parsing, property analysis, and source code generation.</li>
-</ol>
-<hr />
-<h2 id="notable-classes-interfaces">Notable Classes &amp; Interfaces<a class="header-anchor" href="javascript:;" onclick="location.hash='#notable-classes-interfaces'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<h3 id="propertybitpackgeneratorcontextimplementation"><code>PropertyBitPackGeneratorContextImplementation</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpackgeneratorcontextimplementation'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<pre><code class="language-csharp">internal sealed class PropertyBitPackGeneratorContextImplementation : PropertyBitPackGeneratorContext
+<h2 id="iattributeparser-interface"><code>IAttributeParser</code> Interface<a class="header-anchor" href="javascript:;" onclick="location.hash='#iattributeparser-interface'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>Below is the core interface defining attribute parsing capabilities. It includes whether a parser can <strong>fallback</strong> if another parser fails, and how to <strong>match</strong> + <strong>parse</strong> an attribute into a model.</p>
+<pre><code class="language-csharp">internal interface IAttributeParser
 {
-    public PropertyBitPackGeneratorContextImplementation(
-        ImmutableArray&lt;IAttributeParser&gt; attributeParsers,
-        ImmutableArray&lt;IBitFieldPropertyParser&gt; bitFieldPropertyParsers,
-        ImmutableArray&lt;IBitFieldPropertyAggregator&gt; bitFieldPropertyAggregators,
-        ImmutableArray&lt;IPropertiesSyntaxGenerator&gt; bitFieldPropertyGenerators
-    ) {
-        AttributeParsers = attributeParsers;
-        BitFieldPropertyParsers = bitFieldPropertyParsers;
-        BitFieldPropertyAggregators = bitFieldPropertyAggregators;
-        PropertySyntaxGenerators = bitFieldPropertyGenerators;
+    bool FallbackOnCandidateFailure { get; }
 
-        // Binds the context to all parsers/generators that require it
-        BindToSelf();
-    }
-    
-    internal void BindToSelf()
+    bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax);
+
+    bool TryParse(
+        AttributeData attributeData, 
+        AttributeSyntax attributeSyntax, 
+        PropertyDeclarationSyntax propertyDeclarationSyntax, 
+        SemanticModel semanticModel, 
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics,
+        [NotNullWhen(true)] out IAttributeParsedResult? result
+    );
+}
+</code></pre>
+<h3 id="key-points">Key Points<a class="header-anchor" href="javascript:;" onclick="location.hash='#key-points'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><p><strong>FallbackOnCandidateFailure</strong>: Indicates if the parser should be tried again if a previous parser could not parse the attribute. Useful for scenarios where multiple parsers handle similar attributes or slightly different attribute forms.</p>
+</li>
+<li><p><strong>IsCandidate(...)</strong>: Called first to check if the attribute is relevant to that parser. If it returns true, the source generator attempts <code>TryParse(...)</code>.</p>
+</li>
+<li><p><strong>TryParse(...)</strong>: The main logic to interpret an attribute�s data (named arguments, <code>nameof()</code> usage, constants, etc.). Returns <code>true</code> if parsing succeeds and populates <code>out result</code> with a parsed model.</p>
+</li>
+</ul>
+<hr />
+<h2 id="baseattributeparser-abstract-class"><code>BaseAttributeParser</code> Abstract Class<a class="header-anchor" href="javascript:;" onclick="location.hash='#baseattributeparser-abstract-class'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p><code>BaseAttributeParser</code> provides shared logic, like reading <code>BitsCount</code>, extracting <code>FieldName</code>, and diagnosing errors. It also implements <code>IContextBindable</code>, letting it access the shared context.</p>
+<pre><code class="language-csharp">internal abstract class BaseAttributeParser : IAttributeParser, IContextBindable
+{
+    protected static readonly SymbolDisplayFormat SymbolDisplayFormatNameAndContainingTypesAndNamespaces 
+        = new(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+    private PropertyBitPackGeneratorContext? _context;
+
+    public PropertyBitPackGeneratorContext Context
     {
-        // If any component implements IContextBindable, pass it this context
+        get
+        {
+            Debug.Assert(_context is not null);
+            return _context!;
+        }
     }
+
+    public virtual bool FallbackOnCandidateFailure =&gt; false;
+
+    public void BindContext(PropertyBitPackGeneratorContext context)
+    {
+        _context = context;
+    }
+
+    public abstract bool IsCandidate(AttributeData attributeData, AttributeSyntax attributeSyntax);
+
+    public abstract bool TryParse(
+        AttributeData attributeData, 
+        AttributeSyntax attributeSyntax, 
+        PropertyDeclarationSyntax propertyDeclarationSyntax, 
+        SemanticModel semanticModel, 
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics,
+        [NotNullWhen(true)] out IAttributeParsedResult? result
+    );
+
+    // Shared helper methods for extracting FieldName, BitsCount, attribute arguments, etc.
+    // ...
 }
 </code></pre>
+<h3 id="common-utilities">Common Utilities<a class="header-anchor" href="javascript:;" onclick="location.hash='#common-utilities'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
 <ul>
-<li><strong>No typical DI constructor injection</strong>. The arrays of components are assigned directly, then <code>BindToSelf()</code> ensures each component can hold a reference to the context if needed.</li>
-</ul>
-<h3 id="icontextbindable"><code>IContextBindable</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#icontextbindable'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<pre><code class="language-csharp">internal interface IContextBindable
-{
-    void BindContext(PropertyBitPackGeneratorContext context);
-}
-</code></pre>
-<ul>
-<li>Components (e.g., parsers, aggregators, syntax generators) implement <code>IContextBindable</code> to gain access to shared context data or services.</li>
-</ul>
-<h3 id="propertybitpacksourcegenerator"><code>PropertyBitPackSourceGenerator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpacksourcegenerator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
-<ul>
-<li><strong>Entry point</strong> for incremental generation. Creates a static <code>_context</code> using a <code>PropertyBitPackGeneratorContextBuilder</code>.</li>
-<li>Scans the syntax for candidate partial properties, matches attributes, and produces generated <code>.cs</code> files.</li>
+<li><strong><code>HasInterface(...)</code></strong>: Checks if the attribute class implements a given interface.</li>
+<li><strong><code>TryGetFieldName(...)</code></strong>: Retrieves a <code>FieldName</code> from named arguments or <code>nameof()</code> usage.</li>
+<li><strong><code>TryGetBitsCount(...)</code></strong>: Ensures <code>BitsCount</code> is valid (1�63 bits).</li>
+<li><strong><code>GetConstantValue(...)</code></strong>: Retrieves named argument constants.</li>
+<li><strong><code>GetAttributeArgument(...)</code></strong>: Finds specific arguments within the attribute syntax.</li>
 </ul>
 <hr />
-<h2 id="customizing-parsers-generators">Customizing Parsers &amp; Generators<a class="header-anchor" href="javascript:;" onclick="location.hash='#customizing-parsers-generators'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p>To add or override behavior:</p>
+<h2 id="parsing-flow-example">Parsing Flow Example<a class="header-anchor" href="javascript:;" onclick="location.hash='#parsing-flow-example'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <ol>
-<li><strong>Implement</strong> a new <code>IAttributeParser</code>, <code>IBitFieldPropertyParser</code>, <code>IBitFieldPropertyAggregator</code>, or <code>IPropertiesSyntaxGenerator</code>.</li>
-<li><strong>Attach</strong> it to the context builder:
-<pre><code class="language-csharp">var builder = PropertyBitPackGeneratorContextBuilder.Create();
-builder.AttributeParsers.Add(new MyCustomAttributeParser());
-builder.BitFieldPropertyParsers.Add(new MyCustomBitFieldParser());
-// ...
-var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImplementation
-</code></pre>
+<li><p><strong>IsCandidate(...)</strong><br />
+Returns true if the attribute name matches (e.g., <code>MyBitFieldAttribute</code>).</p>
 </li>
-<li><strong>Use</strong> <code>BindToSelf()</code> to allow each component to <code>BindContext(...)</code> if it implements <code>IContextBindable</code>.</li>
+<li><p><strong>TryParse(...)</strong></p>
+<ul>
+<li>Validate attribute arguments (e.g., <code>BitsCount</code> in range, <code>FieldName</code> references a valid field).</li>
+<li>If valid, construct an <code>IAttributeParsedResult</code> containing relevant metadata for the generator.</li>
+</ul>
+</li>
+<li><p><strong>Context Usage</strong><br />
+The parser may call <code>Context.SomeHelperMethod(...)</code> if needed. This is provided via <code>BindContext(...)</code>.</p>
+</li>
 </ol>
+<hr />
+<h2 id="integration-with-propertybitpackgeneratorcontext">Integration with <code>PropertyBitPackGeneratorContext</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#integration-with-propertybitpackgeneratorcontext'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>The context iterates over its <code>ImmutableArray&lt;IAttributeParser&gt;</code> to match and parse each attribute:</p>
+<pre><code class="language-csharp">public virtual bool IsCandidateAttribute(AttributeData attributeData, AttributeSyntax attributeSyntax)
+{
+    for (var i = 0; i &lt; AttributeParsers.Length; i++)
+    {
+        var parser = AttributeParsers[i];
+        if (parser.IsCandidate(attributeData, attributeSyntax))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+public virtual bool TryParseAttribute(
+    AttributeData attributeData,
+    AttributeSyntax attributeSyntax,
+    PropertyDeclarationSyntax propertyDeclarationSyntax,
+    SemanticModel semanticModel,
+    in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics,
+    out IAttributeParsedResult? result
+)
+{
+    for (var i = 0; i &lt; AttributeParsers.Length; i++)
+    {
+        var parser = AttributeParsers[i];
+        if (parser.IsCandidate(attributeData, attributeSyntax))
+        {
+            if (parser.TryParse(attributeData, attributeSyntax, propertyDeclarationSyntax, semanticModel, diagnostics, out result))
+            {
+                return true;
+            }
+            else
+            {
+                // Attempt fallback logic if supported
+                for (var j = i + 1; i &gt; AttributeParsers.Length; j++)
+                {
+                    var nextParser = AttributeParsers[j];
+
+                    if (!nextParser.FallbackOnCandidateFailure) continue;
+                    if (!nextParser.IsCandidate(attributeData, attributeSyntax)) continue;
+
+                    if (nextParser.TryParse(attributeData, attributeSyntax, propertyDeclarationSyntax, semanticModel, diagnostics, out result))
+                    {
+                        return true;
+                    }
+                }
+
+                result = null;
+                return false;
+            }
+        }
+    }
+
+    result = null;
+    return false;
+}
+</code></pre>
+<h3 id="why-this-approach">Why This Approach?<a class="header-anchor" href="javascript:;" onclick="location.hash='#why-this-approach'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong>Flexibility</strong>: Multiple parser implementations can handle different attribute flavors or fallback scenarios.</li>
+<li><strong>Single Entry Point</strong>: The generator calls <code>TryParseAttribute(...)</code>, which loops through all registered <code>IAttributeParser</code>s in <code>PropertyBitPackGeneratorContext</code>.</li>
+<li><strong>Loose Coupling</strong>: Parsers register themselves with the context. Additional parsers can be introduced without modifying the core generator logic.</li>
+</ul>
 <hr />
 <h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <ul>
-<li><strong>PropertyBitPack</strong> uses a modular approach, allowing you to plug in new attribute parsers, property parsers, aggregators, and syntax generators.</li>
-<li><strong>Context binding</strong> is not done through traditional DI constructor injection; instead, <strong><code>BindToSelf()</code></strong> iterates over all registered components and calls <code>BindContext(this)</code> if they implement <code>IContextBindable</code>.</li>
-<li>This design keeps the architecture flexible and straightforward, enabling easy extension for advanced bit-packing scenarios.</li>
+<li><strong><code>IAttributeParser</code></strong> defines how the source generator recognizes and interprets bit-field attributes.</li>
+<li><strong><code>BaseAttributeParser</code></strong> centralizes common parsing logic (e.g., <code>nameof</code> extraction, validations).</li>
+<li><strong>Fallback</strong> logic allows a second (or subsequent) parser to handle an attribute if the primary parser fails.</li>
+<li><strong>Context binding</strong> (<code>BindToSelf()</code>) lets parsers access shared or advanced functionality through <code>PropertyBitPackGeneratorContext</code>.</li>
 </ul>
-<p>For questions or deeper discussion, feel free to join our <a href="https://discord.gg/RpxD2BeNsZ">Discord</a>!</p>
+<p>For deeper usage examples, see the actual implementations in <code>ExtendedBitFieldAttributeParser</code>, <code>ReadOnlyBitFieldAttributeParser</code>, etc. You can also explore the aggregator and syntax generator pages to see how parsed attributes eventually become generated source code.</p>
 
                 </div>
 
                 <div class="not-prose"></div>
                 
                     <div class="not-prose py-8">
-                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/index.md" target="_blank" rel="noopener noreferrer">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/attribute-parser.md" target="_blank" rel="noopener noreferrer">
                             Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
                         </a>
                     </div>
@@ -378,24 +402,47 @@ var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImpleme
                             </h5>
                             <ul class="text-slate-700 text-sm leading-6">
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#high-level-architecture'" data-id="high-level-architecture" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            High-Level Architecture
+                                        <span v-hash="'#overview'" data-id="overview" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Overview
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="how-it-works" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#how-it-works'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            How It Works
+                                                        </span>
+                                                    </li>
+                                                    <li data-id="key-points" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#key-points'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Key Points
+                                                        </span>
+                                                    </li>
+                                                    <li data-id="common-utilities" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#common-utilities'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Common Utilities
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#parsing-flow-example'" data-id="parsing-flow-example" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Parsing Flow Example
                                         </span>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#mermaid-diagram'" data-id="mermaid-diagram" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Mermaid Diagram
+                                        <span v-hash="'#integration-with-propertybitpackgeneratorcontext'" data-id="integration-with-propertybitpackgeneratorcontext" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Integration with 
                                         </span>
-                                    </li>
-                                    <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#notable-classes-interfaces'" data-id="notable-classes-interfaces" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Notable Classes &amp; Interfaces
-                                        </span>
-                                    </li>
-                                    <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#customizing-parsers-generators'" data-id="customizing-parsers-generators" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Customizing Parsers &amp; Generators
-                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="why-this-approach" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#why-this-approach'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Why This Approach?
+                                                        </span>
+                                                    </li>
+                                            </ul>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
                                         <span v-hash="'#summary'" data-id="summary" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">

@@ -17,3 +17,16 @@ Features
  - [Sidebars](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/sidebars.md)
  - [Redirects](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/redirects.md)
  - [Typesense Real-Time Search](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/typesense.md)
+
+Architecture
+ - [Introduction](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/.md)
+ - [Attribute Parser](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/attribute-parser.md)
+ - [Attribute Parsing Results](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/attribute-parsing-result.md)
+ - [BitFieldProperty Parser](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/bitfieldproperty-parser.md)
+ - [BitFieldProperty Aggregator](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/bitfieldproperty-aggregator.md)
+ - [Properties Syntax Generator](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/to_developers/properties-syntax-generator.md)
+
+Helper utilities
+ - [Markdown Syntax](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/syntax.md)
+ - [Markdown Containers](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/containers.md)
+ - [Using Vue in Markdown](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/main/PropertyBitPackDocs/_pages/PropertyBitPack/vue-in-markdown.md)

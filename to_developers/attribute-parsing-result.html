@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="https://asaicraft.github.io/PropertyBitPack/" />
+    <link rel="icon" type="image/svg" href="img/logo.svg">
+    <title>Attribute Parsing Results</title>
+    <script>
+    if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
+    if (location.search === "?light") localStorage.removeItem('color-scheme') 
+    const cls = document.querySelector('html').classList
+    if (localStorage.getItem('color-scheme') === 'dark')
+        cls.add('dark')
+    else
+        cls.remove('dark')
+    </script>
+    <link rel="stylesheet" href="css/app.css">
+    <script type="importmap">
+{
+    "imports": {
+        "app.mjs": "/PropertyBitPack/mjs/app.mjs",
+        "vue": "/PropertyBitPack/lib/mjs/vue.min.mjs",
+        "@servicestack/client": "/PropertyBitPack/lib/mjs/servicestack-client.min.mjs",
+        "@servicestack/vue": "/PropertyBitPack/lib/mjs/servicestack-vue.min.mjs"
+    }
+}
+</script>
+</head>
+<body class="bg-white dark:bg-black dark:text-white">
+<header id="header" class="top-0 fixed z-50 h-14 bg-white dark:bg-black opacity-90 w-full shadow">
+  <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black">
+    <div class="mx-auto max-w-[100rem] pr-4 sm:pr-6 lg:pr-8">
+      <div class="flex h-16 justify-between">
+        <div class="flex">
+          <div class="flex flex-shrink-0 items-center">
+            <a class="mr-2 lg:mr-8 flex items-center" href="">
+                <svg class="w-8 h-8 mr-1 ml-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6v13m9-13v13m9-13v13"/></svg>
+                <span class="hidden sm:block text-2xl font-semibold">PropertyBitPack Docs</span>
+            </a>
+          </div>
+            <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-4 lg:space-x-8">
+                <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+                        <a href="to_developers/" class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200">
+                            To developers
+                        </a>
+                        <a href="tode/" class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200">
+                            Vue
+                        </a>
+            </div>
+        </div>
+        <div class="hidden sm:ml-6 sm:flex sm:items-center">
+            <dark-mode-toggle class="ml-2 w-10"></dark-mode-toggle>
+        </div>
+        <div class="-mr-2 flex items-center sm:hidden">
+          <!-- Mobile menu button -->
+          <button type="button" v-on:click="open=!open" class="inline-flex items-center justify-center rounded-md bg-white dark:bg-black p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:ring-offset-black" aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <!-- Menu open: "hidden", Menu closed: "block" -->
+            <svg :class="['h-6 w-6', open ? 'hidden' : 'block']" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <!-- Menu open: "block", Menu closed: "hidden" -->
+            <svg :class="['h-6 w-6', open ? 'block' : 'hidden']" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div v-cloak v-if="open" class="sm:hidden">
+        <div class="space-y-1 pb-3 pt-2">
+            <!-- Current: "border-indigo-500 bg-indigo-50 text-indigo-700", Default: "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" -->
+                    <a href="to_developers/" class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium border-transparent text-gray-600 dark:text-gray-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-gray-800 dark:hover:text-gray-100">
+                        To developers
+                    </a>
+                    <a href="tode/" class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium border-transparent text-gray-600 dark:text-gray-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-gray-800 dark:hover:text-gray-100">
+                        Vue
+                    </a>
+        </div>
+    </div>
+  </nav>
+</header>
+
+<script type="module">
+import { ref } from "vue"
+import { mount } from "app.mjs"
+
+const Header = {
+    setup() {
+        const open = ref(false)
+        return { open }
+    }
+}
+mount('#header', Header)
+</script>
+
+
+<div class="min-h-screen">
+    <main role="main" class="pt-16 pb-3">
+        
+
+
+
+
+<style>
+.active {
+    color: #0ea5e9 !important;
+}
+</style>
+<link rel="stylesheet" href="css/highlight.css">
+<link rel="stylesheet" href="css/typography.css">
+<link rel="stylesheet" href="css/lite-yt-embed.css">
+
+<div class="w-full max-w-[100rem] mx-auto">
+    <div class="flex flex-wrap">
+        <div id="sidebar" class="z-40 inset-0 flex-none bg-white dark:bg-black lg:w-64 xl:w-80">
+            <button v-cloak v-on:click="open=true" :class="['text-gray-400 hover:text-gray-500 pt-4 pl-2 absolute transform transition-all duration-200', open ? 'opacity-0 translate-x-56' : 'opacity-100']" title="Open Sidebar">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H10m10 0l-4 4m4-4l-4-4M4 4v16"/></svg>
+            </button>
+            <div :class="['fixed bg-white dark:bg-black h-screen overflow-y-auto scrolling-touch overflow-hidden shadow lg:shadow-none transform transition-transform duration-200', open ? '' : 'translate-x-[-100%]']">
+                <nav class="sidebar lg:w-64 xl:w-80 px-1 pt-6 pb-16 overflow-y-auto font-medium text-sm lg:text-base sm:px-3 xl:px-5" aria-label="Sidebar">
+                    <close-button title="Close Sidebar" class="lg:hidden -mr-2" v-on:close="open=false"></close-button>
+                                <a href="/PropertyBitPack/to_developers/" class="block flex items-center whitespace-nowrap">
+                                    <span class="p-2 pl-3 font-display font-medium text-slate-900 dark:text-white">
+Architecture                                    </span>
+                                </a>
+                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Introduction
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/attribute-parser" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Attribute Parser
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/attribute-parsing-result" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Attribute Parsing Results
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/bitfieldproperty-parser" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        BitFieldProperty Parser
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/bitfieldproperty-aggregator" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        BitFieldProperty Aggregator
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/properties-syntax-generator" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Properties Syntax Generator
+                                    </a>
+                                </li>
+                        </ul>
+                                <h2 class="font-display font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                                    Helper utilities
+                                </h2>
+                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/syntax" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Markdown Syntax
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/containers" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Markdown Containers
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/vue-in-markdown" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Using Vue in Markdown
+                                    </a>
+                                </li>
+                        </ul>
+                </nav>
+            </div>
+        </div>
+        <div id="doc" class="mx-auto flex">
+            <div class="mt-8 mx-auto prose lg:prose-lg">
+                
+                    <section class="not-prose mb-16 md:mb-12">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
+                            Attribute Parsing Results
+                        </h1>
+                    </section>
+
+                <div class="not-prose"></div>
+
+                <div class="content">
+                    <h2 id="overview">Overview<a class="header-anchor" href="javascript:;" onclick="location.hash='#overview'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>In the previous <a href="#">Attribute Parser</a> article, we covered how <strong><code>IAttributeParser</code></strong> and <strong><code>BaseAttributeParser</code></strong> identify, validate, and extract metadata from bit-field attributes. This article focuses on <strong>the resulting data</strong> these parsers produce � specifically the <strong><code>IAttributeParsedResult</code></strong>, <strong><code>IFieldName</code></strong>, and their concrete implementations.</p>
+<p>These data models standardize the <strong>parsed attribute information</strong> (e.g., how many bits were requested, which field name was referenced, or whether the field symbol exists). In more advanced scenarios (like read-only or �extended� attributes), they allow the parser to attach extra metadata (e.g., constructor visibility or large-size symbols).</p>
+<hr />
+<h2 id="core-interfaces">Core Interfaces<a class="header-anchor" href="javascript:;" onclick="location.hash='#core-interfaces'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="iattributeparsedresult"><code>IAttributeParsedResult</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#iattributeparsedresult'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">/// &lt;summary&gt;
+/// Represents the result of parsing an attribute.
+/// &lt;/summary&gt;
+/// &lt;remarks&gt;
+/// This interface standardizes the properties that store data parsed from attributes, 
+/// including information about the attribute's syntax, associated data, and additional metadata.
+/// &lt;/remarks&gt;
+internal interface IAttributeParsedResult
+{
+    /// &lt;summary&gt;
+    /// Gets the &lt;see cref=&quot;AttributeData&quot;/&gt; representing the parsed attribute metadata.
+    /// &lt;/summary&gt;
+    public AttributeData AttributeData { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the &lt;see cref=&quot;AttributeSyntax&quot;/&gt; representing the syntax node of the parsed attribute.
+    /// &lt;/summary&gt;
+    public AttributeSyntax AttributeSyntax { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the number of bits specified by the parsed attribute, if applicable.
+    /// &lt;/summary&gt;
+    /// &lt;value&gt;
+    /// The number of bits as a nullable &lt;see cref=&quot;byte&quot;/&gt;, or &lt;c&gt;null&lt;/c&gt; if not specified.
+    /// &lt;/value&gt;
+    public byte? BitsCount { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the field name specified by the parsed attribute, if applicable.
+    /// &lt;/summary&gt;
+    /// &lt;value&gt;
+    /// The &lt;see cref=&quot;IFieldName&quot;/&gt; representing the field name, or &lt;c&gt;null&lt;/c&gt; if not specified.
+    /// &lt;/value&gt;
+    public IFieldName? FieldName { get; }
+}
+</code></pre>
+<p><strong>Key Points</strong>:</p>
+<ul>
+<li>Combines <strong>parsed</strong> metadata (e.g. <code>BitsCount</code>, <code>FieldName</code>) with Roslyn references (<code>AttributeData</code>, <code>AttributeSyntax</code>).</li>
+<li>Enables <strong>polymorphic</strong> handling of different attribute variants (extended vs. read-only, etc.).</li>
+</ul>
+<hr />
+<h3 id="ifieldname"><code>IFieldName</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#ifieldname'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal interface IFieldName
+{
+    /// &lt;summary&gt;
+    /// The name of the field.
+    /// Can be null if the field is unnamed.
+    /// &lt;/summary&gt;
+    public string? Name { get; }
+
+    /// &lt;summary&gt;
+    /// Indicates whether the field is linked to an existing symbol.
+    /// If true, both &lt;see cref=&quot;ExistingSymbol&quot;/&gt; and &lt;see cref=&quot;Name&quot;/&gt; are guaranteed to be non-null.
+    /// &lt;/summary&gt;
+    [MemberNotNullWhen(true, nameof(ExistingSymbol))]
+    [MemberNotNullWhen(true, nameof(Name))]
+    public bool IsSymbolExist { get; }
+
+    /// &lt;summary&gt;
+    /// The existing symbol associated with the field, if any.
+    /// Can be null if no symbol is associated.
+    /// &lt;/summary&gt;
+    public IFieldSymbol? ExistingSymbol { get; }
+}
+</code></pre>
+<p><strong>Key Points</strong>:</p>
+<ul>
+<li><strong>Field Name</strong> can be <strong>unnamed</strong> (if the attribute did not specify one).</li>
+<li>If <code>IsSymbolExist == true</code>, <code>ExistingSymbol</code> references an actual <strong>C# field</strong> declared in the user�s code.</li>
+<li>Used by the generator to determine if a property shares or references an existing bit-packed field.</li>
+</ul>
+<hr />
+<h2 id="concrete-classes">Concrete Classes<a class="header-anchor" href="javascript:;" onclick="location.hash='#concrete-classes'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="attributeparsedresult-abstract"><code>AttributeParsedResult</code> (abstract)<a class="header-anchor" href="javascript:;" onclick="location.hash='#attributeparsedresult-abstract'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal abstract class AttributeParsedResult(
+    AttributeSyntax attributeSyntax,
+    AttributeData attributeData,
+    IFieldName? fieldName,
+    byte? bitsCount
+) : IAttributeParsedResult
+{
+    public AttributeSyntax AttributeSyntax { get; } = attributeSyntax;
+    public AttributeData AttributeData { get; } = attributeData;
+    public IFieldName? FieldName { get; } = fieldName;
+    public byte? BitsCount { get; } = bitsCount;
+}
+</code></pre>
+<p><strong>Purpose</strong>: A base class capturing <strong>common</strong> parsed data (attribute syntax, bits count, optional field name). Concrete classes (like <code>ParsedBitFiledAttribute</code>) extend it with <strong>additional</strong> properties.</p>
+<hr />
+<h3 id="parsedbitfiledattribute"><code>ParsedBitFiledAttribute</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#parsedbitfiledattribute'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal sealed class ParsedBitFiledAttribute : AttributeParsedResult
+{
+    public ParsedBitFiledAttribute(
+        AttributeSyntax attributeSyntax,
+        AttributeData attributeData,
+        IFieldName? fieldName,
+        byte? bitsCount
+    )
+        : base(attributeSyntax, attributeData, fieldName, bitsCount)
+    {
+    }
+
+    public override string ToString()
+    {
+        var nameOfFieldNameOrJustName = FieldName?.IsSymbolExist ?? false
+            ? $&quot;nameof({FieldName.Name})&quot;
+            : FieldName?.Name ?? &quot;&lt;unnamed&gt;&quot;;
+
+        return $&quot;{nameof(BitFieldAttribute)}({nameof(BitsCount)}={BitsCount}, {nameof(FieldName)}={nameOfFieldNameOrJustName})&quot;;
+    }
+}
+</code></pre>
+<p><strong>Standard</strong> implementation for a typical bit-field attribute. Tracks:</p>
+<ul>
+<li><code>BitsCount</code>: Number of bits for the property.</li>
+<li><code>FieldName</code>: The name (or symbol) for the bit field.</li>
+</ul>
+<hr />
+<h3 id="parsedextendedbitfiledattribute-parsedreadonlybitfieldattribute"><code>ParsedExtendedBitFiledAttribute</code> &amp; <code>ParsedReadOnlyBitFieldAttribute</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#parsedextendedbitfiledattribute-parsedreadonlybitfieldattribute'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<p>These classes <strong>inherit</strong> <code>AttributeParsedResult</code> but add more specialized data:</p>
+<ul>
+<li><strong><code>ParsedExtendedBitFiledAttribute</code></strong> implements <code>IParsedExtendedBitFiledAttribute</code> and includes a <code>SymbolGetterLargeSizeValue</code> property for <strong>large</strong> bit-size handling.</li>
+<li><strong><code>ParsedReadOnlyBitFieldAttribute</code></strong> implements <code>IParsedReadOnlyBitFieldAttribute</code>, storing a <code>ConstructorAccessModifier</code> to control the accessibility of the generated constructor.</li>
+</ul>
+<pre><code class="language-csharp">internal sealed class ParsedExtendedBitFiledAttribute 
+    : AttributeParsedResult, IParsedExtendedBitFiledAttribute
+{
+    public ISymbol SymbolGetterLargeSizeValue { get; }
+
+    public ParsedExtendedBitFiledAttribute(
+        AttributeSyntax attributeSyntax,
+        AttributeData attributeData,
+        IFieldName? fieldName,
+        byte? bitsCount,
+        ISymbol symbolGetterLargeSizeValue
+    ) : base(attributeSyntax, attributeData, fieldName, bitsCount)
+    {
+        SymbolGetterLargeSizeValue = symbolGetterLargeSizeValue;
+    }
+}
+</code></pre>
+<pre><code class="language-csharp">internal sealed class ParsedReadOnlyBitFieldAttribute 
+    : AttributeParsedResult, IParsedReadOnlyBitFieldAttribute
+{
+    public AccessModifier ConstructorAccessModifier { get; }
+
+    public ParsedReadOnlyBitFieldAttribute(
+        AttributeSyntax attributeSyntax,
+        AttributeData attributeData,
+        IFieldName? fieldName,
+        byte? bitsCount,
+        AccessModifier accessModifier
+    ) : base(attributeSyntax, attributeData, fieldName, bitsCount)
+    {
+        ConstructorAccessModifier = accessModifier;
+    }
+}
+</code></pre>
+<hr />
+<h2 id="mermaid-hierarchy-diagram">Mermaid Hierarchy Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-hierarchy-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>Below is a <strong>Mermaid</strong> diagram illustrating how these types relate. Note that <strong>dashed</strong> arrows represent interface implementation:</p>
+<div class="Mermaid"><pre class="mermaid">classDiagram
+    class IAttributeParsedResult {
+      <<interface>>
+      +AttributeData : AttributeData
+      +AttributeSyntax : AttributeSyntax
+      +BitsCount : byte?
+      +FieldName : IFieldName?
+    }
+    
+    class IParsedExtendedBitFiledAttribute {
+      <<interface>>
+      +SymbolGetterLargeSizeValue : ISymbol
+    }
+    
+    class IParsedReadOnlyBitFieldAttribute {
+      <<interface>>
+      +ConstructorAccessModifier : AccessModifier
+    }
+    
+    class IFieldName {
+      <<interface>>
+      +Name : string
+      +IsSymbolExist : bool
+    }
+    
+    class AttributeParsedResult {
+      <<abstract>>
+      +AttributeData : AttributeData
+      +AttributeSyntax : AttributeSyntax
+      +BitsCount : byte?
+      +FieldName : IFieldName?
+      +AttributeParsedResult(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?)
+    }
+    
+    class ParsedBitFiledAttribute {
+      +ParsedBitFiledAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?)
+      +ToString() : string
+    }
+    
+    class ParsedExtendedBitFiledAttribute {
+      +ParsedExtendedBitFiledAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?, symbolGetterLargeSizeValue: ISymbol)
+      +SymbolGetterLargeSizeValue : ISymbol
+      +ToString() : string
+    }
+    
+    class ParsedReadOnlyBitFieldAttribute {
+      +ParsedReadOnlyBitFieldAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?, accessModifier: AccessModifier)
+      +ConstructorAccessModifier : AccessModifier
+      +ToString() : string
+    }
+    
+    class ParsedReadOnlyExtendedBitFieldAttribute {
+      +ParsedReadOnlyExtendedBitFieldAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?, accessModifier: AccessModifier, symbolGetterLargeSizeValue: ISymbol)
+      +ConstructorAccessModifier : AccessModifier
+      +SymbolGetterLargeSizeValue : ISymbol
+      +ToString() : string
+    }
+    
+    class FieldName {
+      +Name : string
+      +IsSymbolExist : bool
+      +FieldName(name: string, isSymbolExist: bool)
+    }
+    
+    IAttributeParsedResult <|.. AttributeParsedResult
+    AttributeParsedResult <|-- ParsedBitFiledAttribute
+    AttributeParsedResult <|-- ParsedExtendedBitFiledAttribute
+    AttributeParsedResult <|-- ParsedReadOnlyBitFieldAttribute
+    AttributeParsedResult <|-- ParsedReadOnlyExtendedBitFieldAttribute
+    
+    IParsedExtendedBitFiledAttribute <|.. ParsedExtendedBitFiledAttribute
+    IParsedExtendedBitFiledAttribute <|.. ParsedReadOnlyExtendedBitFieldAttribute
+    
+    IParsedReadOnlyBitFieldAttribute <|.. ParsedReadOnlyBitFieldAttribute
+    IParsedReadOnlyBitFieldAttribute <|.. ParsedReadOnlyExtendedBitFieldAttribute
+    
+    IFieldName <|.. FieldName</pre>
+<details><summary></summary>
+<pre>classDiagram
+    class IAttributeParsedResult {
+      <<interface>>
+      +AttributeData : AttributeData
+      +AttributeSyntax : AttributeSyntax
+      +BitsCount : byte?
+      +FieldName : IFieldName?
+    }
+    
+    class IParsedExtendedBitFiledAttribute {
+      <<interface>>
+      +SymbolGetterLargeSizeValue : ISymbol
+    }
+    
+    class IParsedReadOnlyBitFieldAttribute {
+      <<interface>>
+      +ConstructorAccessModifier : AccessModifier
+    }
+    
+    class IFieldName {
+      <<interface>>
+      +Name : string
+      +IsSymbolExist : bool
+    }
+    
+    class AttributeParsedResult {
+      <<abstract>>
+      +AttributeData : AttributeData
+      +AttributeSyntax : AttributeSyntax
+      +BitsCount : byte?
+      +FieldName : IFieldName?
+      +AttributeParsedResult(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?)
+    }
+    
+    class ParsedBitFiledAttribute {
+      +ParsedBitFiledAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?)
+      +ToString() : string
+    }
+    
+    class ParsedExtendedBitFiledAttribute {
+      +ParsedExtendedBitFiledAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?, symbolGetterLargeSizeValue: ISymbol)
+      +SymbolGetterLargeSizeValue : ISymbol
+      +ToString() : string
+    }
+    
+    class ParsedReadOnlyBitFieldAttribute {
+      +ParsedReadOnlyBitFieldAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?, accessModifier: AccessModifier)
+      +ConstructorAccessModifier : AccessModifier
+      +ToString() : string
+    }
+    
+    class ParsedReadOnlyExtendedBitFieldAttribute {
+      +ParsedReadOnlyExtendedBitFieldAttribute(attributeSyntax: AttributeSyntax, attributeData: AttributeData, fieldName: IFieldName?, bitsCount: byte?, accessModifier: AccessModifier, symbolGetterLargeSizeValue: ISymbol)
+      +ConstructorAccessModifier : AccessModifier
+      +SymbolGetterLargeSizeValue : ISymbol
+      +ToString() : string
+    }
+    
+    class FieldName {
+      +Name : string
+      +IsSymbolExist : bool
+      +FieldName(name: string, isSymbolExist: bool)
+    }
+    
+    IAttributeParsedResult <|.. AttributeParsedResult
+    AttributeParsedResult <|-- ParsedBitFiledAttribute
+    AttributeParsedResult <|-- ParsedExtendedBitFiledAttribute
+    AttributeParsedResult <|-- ParsedReadOnlyBitFieldAttribute
+    AttributeParsedResult <|-- ParsedReadOnlyExtendedBitFieldAttribute
+    
+    IParsedExtendedBitFiledAttribute <|.. ParsedExtendedBitFiledAttribute
+    IParsedExtendedBitFiledAttribute <|.. ParsedReadOnlyExtendedBitFieldAttribute
+    
+    IParsedReadOnlyBitFieldAttribute <|.. ParsedReadOnlyBitFieldAttribute
+    IParsedReadOnlyBitFieldAttribute <|.. ParsedReadOnlyExtendedBitFieldAttribute
+    
+    IFieldName <|.. FieldName</pre>
+</details>
+</div>
+<ul>
+<li><strong><code>IAttributeParsedResult</code></strong> is the <strong>root</strong> interface.</li>
+<li><strong><code>AttributeParsedResult</code></strong> is an <strong>abstract</strong> base class implementing <code>IAttributeParsedResult</code>.</li>
+<li><strong><code>ParsedBitFiledAttribute</code></strong>, <strong><code>ParsedExtendedBitFiledAttribute</code></strong>, <strong><code>ParsedReadOnlyBitFieldAttribute</code></strong>, and <strong><code>ParsedReadOnlyExtendedBitFieldAttribute</code></strong> all derive from <strong><code>AttributeParsedResult</code></strong>.</li>
+<li>Additional <strong>interfaces</strong>: <code>IParsedExtendedBitFiledAttribute</code> and <code>IParsedReadOnlyBitFieldAttribute</code> define extra properties for extended and read-only scenarios.</li>
+<li><strong><code>IFieldName</code></strong> is separate, implemented by <strong><code>FieldName</code></strong> to represent an existing or unnamed field reference.</li>
+</ul>
+<hr />
+<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ul>
+<li><strong><code>IAttributeParsedResult</code></strong> is how the generator standardizes parsed attribute data � guaranteeing consistent fields (<code>BitsCount</code>, <code>FieldName</code>, <code>AttributeData</code>, <code>AttributeSyntax</code>).</li>
+<li><strong><code>AttributeParsedResult</code></strong> is the <strong>concrete</strong> base, with specialized subclasses like <code>ParsedBitFiledAttribute</code>.</li>
+<li><strong>Optional</strong> extended or read-only attributes add further <strong>interfaces</strong> (<code>IParsedExtendedBitFiledAttribute</code>, <code>IParsedReadOnlyBitFieldAttribute</code>) and derived classes to store extra data (like constructor visibility or large-size symbol references).</li>
+<li><strong><code>IFieldName</code></strong> (and its <code>FieldName</code> implementation) helps the generator handle property fields consistently, whether referencing an existing symbol or creating a new field on demand.</li>
+</ul>
+<p>These types support the broader <strong>PropertyBitPack</strong> pipeline, ensuring that <strong>attribute parsing</strong> yields robust, type-safe data models that the <strong>BitFieldProperty Parser</strong>, <strong>Aggregators</strong>, and <strong>Syntax Generators</strong> can use to generate final source code.</p>
+
+                </div>
+
+                <div class="not-prose"></div>
+                
+                    <div class="not-prose py-8">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/attribute-parsing-result.md" target="_blank" rel="noopener noreferrer">
+                            Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+                        </a>
+                    </div>
+
+                    <div class="not-prose my-20">
+                    </div>
+            </div>
+                
+                <div class="docmap hidden 2xl:block flex-none w-64 pl-8 mr-8">
+                    <div class="fixed bg-white dark:bg-black flex flex-col overflow-y-auto pt-10 px-8 pb-6" style="height:calc(100vh - 50px);">
+                        <div>
+                            <h5 class="text-slate-900 font-semibold mb-4 text-sm leading-6 dark:text-slate-100">
+                                On This Page
+                            </h5>
+                            <ul class="text-slate-700 text-sm leading-6">
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#overview'" data-id="overview" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Overview
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#core-interfaces'" data-id="core-interfaces" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Core Interfaces
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#concrete-classes'" data-id="concrete-classes" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Concrete Classes
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#mermaid-hierarchy-diagram'" data-id="mermaid-hierarchy-diagram" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Mermaid Hierarchy Diagram
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#summary'" data-id="summary" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Summary
+                                        </span>
+                                    </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+        </div>
+    </div>    
+</div>
+
+<script>
+//doc instructions
+if (document.querySelector('.hide-title')) {
+    const el = document.querySelector('#doc section h1') 
+    if (el) el.style.display='none'
+}
+</script>
+
+<script type="module">
+import { ref } from "vue"
+import { mount } from "app.mjs"
+
+
+    const App = {
+        setup() {
+            function nav(url) {
+                window.open(url)
+            }
+            return { nav }
+        }
+    }
+    
+const Sidebar = {
+    setup() {
+        const open = ref(true)
+        return { open }
+    }
+}
+
+mount('#doc', App)
+mount('#sidebar', Sidebar)
+</script>
+
+<script src="lib/js/highlight.js"></script>
+<script>hljs.highlightAll()</script>
+<script src="lib/js/lite-yt-embed.js"></script>
+<script src="mjs/docs.mjs" type="module"></script>
+
+    </main>
+</div>
+
+
+
+<script type="module">
+import { init } from "app.mjs"
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js";
+
+mermaid.initialize({ startOnLoad: true });
+init()
+
+</script>
+
+
+
+</body>
+</html>

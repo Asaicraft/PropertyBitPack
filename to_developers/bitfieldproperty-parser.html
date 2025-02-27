@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="https://asaicraft.github.io/PropertyBitPack/" />
+    <link rel="icon" type="image/svg" href="img/logo.svg">
+    <title>BitFieldProperty Parser</title>
+    <script>
+    if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
+    if (location.search === "?light") localStorage.removeItem('color-scheme') 
+    const cls = document.querySelector('html').classList
+    if (localStorage.getItem('color-scheme') === 'dark')
+        cls.add('dark')
+    else
+        cls.remove('dark')
+    </script>
+    <link rel="stylesheet" href="css/app.css">
+    <script type="importmap">
+{
+    "imports": {
+        "app.mjs": "/PropertyBitPack/mjs/app.mjs",
+        "vue": "/PropertyBitPack/lib/mjs/vue.min.mjs",
+        "@servicestack/client": "/PropertyBitPack/lib/mjs/servicestack-client.min.mjs",
+        "@servicestack/vue": "/PropertyBitPack/lib/mjs/servicestack-vue.min.mjs"
+    }
+}
+</script>
+</head>
+<body class="bg-white dark:bg-black dark:text-white">
+<header id="header" class="top-0 fixed z-50 h-14 bg-white dark:bg-black opacity-90 w-full shadow">
+  <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black">
+    <div class="mx-auto max-w-[100rem] pr-4 sm:pr-6 lg:pr-8">
+      <div class="flex h-16 justify-between">
+        <div class="flex">
+          <div class="flex flex-shrink-0 items-center">
+            <a class="mr-2 lg:mr-8 flex items-center" href="">
+                <svg class="w-8 h-8 mr-1 ml-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6v13m9-13v13m9-13v13"/></svg>
+                <span class="hidden sm:block text-2xl font-semibold">PropertyBitPack Docs</span>
+            </a>
+          </div>
+            <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-4 lg:space-x-8">
+                <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+                        <a href="to_developers/" class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200">
+                            To developers
+                        </a>
+                        <a href="tode/" class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200">
+                            Vue
+                        </a>
+            </div>
+        </div>
+        <div class="hidden sm:ml-6 sm:flex sm:items-center">
+            <dark-mode-toggle class="ml-2 w-10"></dark-mode-toggle>
+        </div>
+        <div class="-mr-2 flex items-center sm:hidden">
+          <!-- Mobile menu button -->
+          <button type="button" v-on:click="open=!open" class="inline-flex items-center justify-center rounded-md bg-white dark:bg-black p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:ring-offset-black" aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <!-- Menu open: "hidden", Menu closed: "block" -->
+            <svg :class="['h-6 w-6', open ? 'hidden' : 'block']" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <!-- Menu open: "block", Menu closed: "hidden" -->
+            <svg :class="['h-6 w-6', open ? 'block' : 'hidden']" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div v-cloak v-if="open" class="sm:hidden">
+        <div class="space-y-1 pb-3 pt-2">
+            <!-- Current: "border-indigo-500 bg-indigo-50 text-indigo-700", Default: "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" -->
+                    <a href="to_developers/" class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium border-transparent text-gray-600 dark:text-gray-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-gray-800 dark:hover:text-gray-100">
+                        To developers
+                    </a>
+                    <a href="tode/" class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium border-transparent text-gray-600 dark:text-gray-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-gray-800 dark:hover:text-gray-100">
+                        Vue
+                    </a>
+        </div>
+    </div>
+  </nav>
+</header>
+
+<script type="module">
+import { ref } from "vue"
+import { mount } from "app.mjs"
+
+const Header = {
+    setup() {
+        const open = ref(false)
+        return { open }
+    }
+}
+mount('#header', Header)
+</script>
+
+
+<div class="min-h-screen">
+    <main role="main" class="pt-16 pb-3">
+        
+
+
+
+
+<style>
+.active {
+    color: #0ea5e9 !important;
+}
+</style>
+<link rel="stylesheet" href="css/highlight.css">
+<link rel="stylesheet" href="css/typography.css">
+<link rel="stylesheet" href="css/lite-yt-embed.css">
+
+<div class="w-full max-w-[100rem] mx-auto">
+    <div class="flex flex-wrap">
+        <div id="sidebar" class="z-40 inset-0 flex-none bg-white dark:bg-black lg:w-64 xl:w-80">
+            <button v-cloak v-on:click="open=true" :class="['text-gray-400 hover:text-gray-500 pt-4 pl-2 absolute transform transition-all duration-200', open ? 'opacity-0 translate-x-56' : 'opacity-100']" title="Open Sidebar">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H10m10 0l-4 4m4-4l-4-4M4 4v16"/></svg>
+            </button>
+            <div :class="['fixed bg-white dark:bg-black h-screen overflow-y-auto scrolling-touch overflow-hidden shadow lg:shadow-none transform transition-transform duration-200', open ? '' : 'translate-x-[-100%]']">
+                <nav class="sidebar lg:w-64 xl:w-80 px-1 pt-6 pb-16 overflow-y-auto font-medium text-sm lg:text-base sm:px-3 xl:px-5" aria-label="Sidebar">
+                    <close-button title="Close Sidebar" class="lg:hidden -mr-2" v-on:close="open=false"></close-button>
+                                <a href="/PropertyBitPack/to_developers/" class="block flex items-center whitespace-nowrap">
+                                    <span class="p-2 pl-3 font-display font-medium text-slate-900 dark:text-white">
+Architecture                                    </span>
+                                </a>
+                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Introduction
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/attribute-parser" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Attribute Parser
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/attribute-parsing-result" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Attribute Parsing Results
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/bitfieldproperty-parser" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        BitFieldProperty Parser
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/bitfieldproperty-aggregator" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        BitFieldProperty Aggregator
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/to_developers/properties-syntax-generator" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Properties Syntax Generator
+                                    </a>
+                                </li>
+                        </ul>
+                                <h2 class="font-display font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                                    Helper utilities
+                                </h2>
+                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/syntax" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Markdown Syntax
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/containers" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Markdown Containers
+                                    </a>
+                                </li>
+                                <li class="relative">
+                                    <a href="/PropertyBitPack/vue-in-markdown" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
+                                        Using Vue in Markdown
+                                    </a>
+                                </li>
+                        </ul>
+                </nav>
+            </div>
+        </div>
+        <div id="doc" class="mx-auto flex">
+            <div class="mt-8 mx-auto prose lg:prose-lg">
+                
+                    <section class="not-prose mb-16 md:mb-12">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
+                            BitFieldProperty Parser
+                        </h1>
+                    </section>
+
+                <div class="not-prose"></div>
+
+                <div class="content">
+                    <h2 id="overview">Overview<a class="header-anchor" href="javascript:;" onclick="location.hash='#overview'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>The <strong>BitFieldProperty Parser</strong> is responsible for converting a C# <strong>PropertyDeclarationSyntax</strong> node (annotated with one of the bit-field attributes) into a custom data model (<code>BaseBitFieldPropertyInfo</code>). This model contains all the metadata needed for subsequent <strong>BitFieldProperty Aggregation</strong> and <strong>Property Syntax Generation</strong> steps.</p>
+<h3 id="key-components">Key Components<a class="header-anchor" href="javascript:;" onclick="location.hash='#key-components'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ol>
+<li><p><strong><code>IBitFieldPropertyParser</code></strong></p>
+<ul>
+<li>Defines the contract for <strong>property parsers</strong>. Each parser can decide if a given property + attribute is a �candidate� and perform parsing logic.</li>
+<li>The method <code>Parse(...)</code> returns a <code>BaseBitFieldPropertyInfo</code> if it recognizes and successfully parses the property.</li>
+</ul>
+</li>
+<li><p><strong><code>BaseBitFieldPropertyInfoParser</code></strong> (abstract)</p>
+<ul>
+<li>Implements <code>IBitFieldPropertyParser</code> and provides common logic to parse a property�s attribute data, detect setter/init accessors, and build a <code>BitFieldPropertyInfo</code>.</li>
+<li>Subclasses can override <code>IsCandidate(...)</code> or <code>ParseCore(...)</code> to tailor their parsing logic.</li>
+</ul>
+</li>
+<li><p><strong><code>BitFieldPropertyInfoParser</code></strong> (concrete)</p>
+<ul>
+<li>A <strong>default</strong> implementation of <code>BaseBitFieldPropertyInfoParser</code>. It calls the base logic to parse the property�s attribute, create a <code>BitFieldPropertyInfo</code>, and store essential details like whether the property has an <code>init;</code> or <code>set;</code> accessor.</li>
+</ul>
+</li>
+<li><p><strong><code>BaseBitFieldPropertyInfo</code></strong></p>
+<ul>
+<li>An abstract data holder. The final parser returns an instance of this type�usually a subclass like <code>BitFieldPropertyInfo</code>.</li>
+<li>Stores references to the associated C# symbols (property, containing type), as well as parser results (<code>IAttributeParsedResult</code>).</li>
+</ul>
+</li>
+<li><p><strong><code>PropertyBitPackGeneratorContext.ParseBitFieldProperty(...)</code></strong></p>
+<ul>
+<li>Iterates over <strong>all</strong> registered <code>IBitFieldPropertyParser</code>s.</li>
+<li>For each parser, calls <code>Parse(...)</code>.</li>
+<li>Returns the first <strong>non-null</strong> <code>BaseBitFieldPropertyInfo</code>.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="parsing-flow">Parsing Flow<a class="header-anchor" href="javascript:;" onclick="location.hash='#parsing-flow'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ol>
+<li><p><strong>Check if Parser is a Candidate</strong></p>
+<ul>
+<li>Each <code>IBitFieldPropertyParser</code> runs <code>IsCandidate(...)</code>. It can inspect the property syntax, the attribute data, and other conditions.</li>
+</ul>
+</li>
+<li><p><strong>Call <code>Parse(...)</code></strong></p>
+<ul>
+<li>If <code>IsCandidate</code> is true, the context calls <code>Parse(...)</code>.</li>
+<li>Default logic in <code>BaseBitFieldPropertyInfoParser.Parse(...)</code>:
+<ol>
+<li><strong>Extract Attributes</strong>: Calls <code>Context.TryParseAttribute(...)</code> to retrieve an <code>IAttributeParsedResult</code>.</li>
+<li><strong>Extract Accessors</strong>: Looks for <code>set;</code> or <code>init;</code> accessor modifiers.</li>
+<li><strong>Create</strong> <code>BitFieldPropertyInfo</code>: Combines property symbol info and the parsed attribute result.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p><strong>Return</strong> <code>BaseBitFieldPropertyInfo</code></p>
+<ul>
+<li>If parsing succeeds, <code>Parse(...)</code> returns a new <code>BitFieldPropertyInfo</code>; otherwise, <code>null</code> if it�s not recognized.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="ibitfieldpropertyparser-interface"><code>IBitFieldPropertyParser</code> Interface<a class="header-anchor" href="javascript:;" onclick="location.hash='#ibitfieldpropertyparser-interface'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<pre><code class="language-csharp">internal interface IBitFieldPropertyParser
+{
+    bool IsCandidate(
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
+        SemanticModel semanticModel);
+
+    BaseBitFieldPropertyInfo? Parse(
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
+        SemanticModel semanticModel,
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics);
+}
+</code></pre>
+<h3 id="methods">Methods<a class="header-anchor" href="javascript:;" onclick="location.hash='#methods'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong><code>IsCandidate(...)</code></strong>: Quickly determines if this parser should handle the given property + attribute.</li>
+<li><strong><code>Parse(...)</code></strong>: Performs the detailed parse (e.g., calls <code>TryParseAttribute(...)</code>, reads property symbol details). Returns a <code>BaseBitFieldPropertyInfo</code> if successful.</li>
+</ul>
+<hr />
+<h2 id="basebitfieldpropertyinfoparser"><code>BaseBitFieldPropertyInfoParser</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#basebitfieldpropertyinfoparser'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p><code>BaseBitFieldPropertyInfoParser</code> implements most of <code>IBitFieldPropertyParser</code> and includes the ability to bind a <strong><code>PropertyBitPackGeneratorContext</code></strong>.</p>
+<pre><code class="language-csharp">internal abstract class BaseBitFieldPropertyInfoParser : IBitFieldPropertyParser, IContextBindable
+{
+    private PropertyBitPackGeneratorContext? _context;
+
+    public PropertyBitPackGeneratorContext Context
+    {
+        get
+        {
+            Debug.Assert(_context is not null);
+            return _context!;
+        }
+    }
+
+    void IContextBindable.BindContext(PropertyBitPackGeneratorContext context) =&gt; _context = context;
+
+    public virtual bool IsCandidate(
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
+        SemanticModel semanticModel
+    ) =&gt; true;
+
+    public BaseBitFieldPropertyInfo? Parse(
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
+        SemanticModel semanticModel,
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics
+    )
+    {
+        return ParseCore(
+            propertyDeclarationSyntax,
+            candidateAttribute,
+            attributeSyntax,
+            semanticModel,
+            diagnostics
+        );
+    }
+
+    protected virtual BaseBitFieldPropertyInfo? ParseCore(
+        PropertyDeclarationSyntax propertyDeclarationSyntax,
+        AttributeData candidateAttribute,
+        AttributeSyntax attributeSyntax,
+        SemanticModel semanticModel,
+        in ImmutableArrayBuilder&lt;Diagnostic&gt; diagnostics
+    )
+    {
+        var setterOrInitModifiers = ExtraxtSetterOrInitModifiers(
+            propertyDeclarationSyntax, 
+            out var hasInitOrSet, 
+            out var isInit
+        );
+
+        if (!Context.TryParseAttribute(candidateAttribute, attributeSyntax, propertyDeclarationSyntax, semanticModel, diagnostics, out var attributeResult))
+        {
+            return null;
+        }
+
+        if (semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax) is not IPropertySymbol propertySymbol)
+        {
+            return null;
+        }
+
+        return new BitFieldPropertyInfo(
+            propertyDeclarationSyntax,
+            attributeResult,
+            isInit,
+            hasInitOrSet,
+            setterOrInitModifiers,
+            propertySymbol
+        );
+    }
+
+    protected virtual SyntaxTokenList ExtraxtSetterOrInitModifiers(
+        PropertyDeclarationSyntax propertyDeclaration,
+        out bool hasInitOrSet,
+        out bool isInit
+    )
+    {
+        hasInitOrSet = false;
+        isInit = false;
+
+        if (propertyDeclaration.AccessorList?.Accessors is not SyntaxList&lt;AccessorDeclarationSyntax&gt; accessors)
+        {
+            return default;
+        }
+
+        isInit = accessors.Any(static accessor =&gt; accessor.IsKind(SyntaxKind.InitAccessorDeclaration));
+        hasInitOrSet = isInit || accessors.Any(static accessor =&gt; accessor.IsKind(SyntaxKind.SetAccessorDeclaration));
+
+        var setterOrInitModifiers = accessors
+            .Where(static accessor =&gt;
+                accessor.IsKind(SyntaxKind.InitAccessorDeclaration) ||
+                accessor.IsKind(SyntaxKind.SetAccessorDeclaration)
+            )
+            .Select(static accessor =&gt; accessor.Modifiers)
+            .FirstOrDefault();
+
+        return setterOrInitModifiers;
+    }
+}
+</code></pre>
+<h3 id="notable-details">Notable Details<a class="header-anchor" href="javascript:;" onclick="location.hash='#notable-details'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><p><strong>Context Binding</strong>:<br />
+Uses <code>IContextBindable.BindContext(...)</code> to store a reference to the <code>PropertyBitPackGeneratorContext</code>.</p>
+</li>
+<li><p><strong><code>ParseCore(...)</code></strong>:</p>
+<ul>
+<li>Calls <code>Context.TryParseAttribute(...)</code> to get an <code>IAttributeParsedResult</code>.</li>
+<li>Attempts to get the declared symbol (<code>IPropertySymbol</code>) from the <code>SemanticModel</code>.</li>
+<li>Builds a <code>BitFieldPropertyInfo</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="bitfieldpropertyinfoparser"><code>BitFieldPropertyInfoParser</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#bitfieldpropertyinfoparser'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>A final, <strong>concrete</strong> parser that subclasses <code>BaseBitFieldPropertyInfoParser</code>. It doesn�t override any logic, so the base functionality is applied directly:</p>
+<pre><code class="language-csharp">internal sealed class BitFieldPropertyInfoParser : BaseBitFieldPropertyInfoParser
+{
+}
+</code></pre>
+<hr />
+<h2 id="basebitfieldpropertyinfo-and-bitfieldpropertyinfo"><code>BaseBitFieldPropertyInfo</code> and <code>BitFieldPropertyInfo</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#basebitfieldpropertyinfo-and-bitfieldpropertyinfo'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>Parsed properties end up as <code>BaseBitFieldPropertyInfo</code> instances. The default is <code>BitFieldPropertyInfo</code>:</p>
+<pre><code class="language-csharp">internal abstract class BaseBitFieldPropertyInfo
+{
+    public abstract IAttributeParsedResult AttributeParsedResult { get; }
+    public abstract bool IsInit { get; }
+    public abstract bool HasInitOrSet { get; }
+    public abstract SyntaxTokenList SetterOrInitModifiers { get; }
+    public abstract IPropertySymbol PropertySymbol { get; }
+    public abstract PropertyDeclarationSyntax PropertyDeclarationSyntax { get; }
+
+    public ITypeSymbol PropertyType =&gt; PropertySymbol.Type;
+    public INamedTypeSymbol Owner =&gt; PropertySymbol.ContainingType;
+
+    public override string ToString()
+    {
+        var setterOrInitter = HasInitOrSet
+            ? IsInit
+                ? &quot;init;&quot;
+                : &quot;set;&quot;
+            : string.Empty;
+
+        if (HasInitOrSet)
+        {
+            setterOrInitter = $&quot;{SetterOrInitModifiers.ToFullString()} {setterOrInitter}&quot;;
+        }
+
+        return $&quot;{Owner} =&gt; [{AttributeParsedResult}] {PropertySymbol.Type.Name} {PropertySymbol.Name} {‎{ get; {setterOrInitter} }‎}&quot;;
+    }
+}
+
+internal sealed class BitFieldPropertyInfo(
+    PropertyDeclarationSyntax propertyDeclarationSyntax,
+    IAttributeParsedResult attributeParsedResult,
+    bool isInit,
+    bool hasInitOrSet,
+    SyntaxTokenList setterOrInitModifiers,
+    IPropertySymbol propertySymbol
+) : BaseBitFieldPropertyInfo
+{
+    public override PropertyDeclarationSyntax PropertyDeclarationSyntax { get; } = propertyDeclarationSyntax;
+    public override IAttributeParsedResult AttributeParsedResult { get; } = attributeParsedResult;
+    public override bool IsInit { get; } = isInit;
+    public override bool HasInitOrSet { get; } = hasInitOrSet;
+    public override SyntaxTokenList SetterOrInitModifiers { get; } = setterOrInitModifiers;
+    public override IPropertySymbol PropertySymbol { get; } = propertySymbol;
+}
+</code></pre>
+<h3 id="properties">Properties<a class="header-anchor" href="javascript:;" onclick="location.hash='#properties'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong><code>IAttributeParsedResult</code></strong>: The outcome of the attribute parsing phase (contains bits count, field info, etc.).</li>
+<li><strong><code>IsInit</code>/<code>HasInitOrSet</code></strong>: Tracks whether the property has an <code>init;</code> or <code>set;</code> accessor.</li>
+<li><strong><code>PropertySymbol</code></strong>: The Roslyn symbol for the property.</li>
+<li><strong><code>PropertyDeclarationSyntax</code></strong>: The original syntax node.</li>
+</ul>
+<hr />
+<h2 id="how-it-fits-together">How It Fits Together<a class="header-anchor" href="javascript:;" onclick="location.hash='#how-it-fits-together'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ol>
+<li><p><strong><code>PropertyBitPackGeneratorContext.ParseBitFieldProperty(...)</code></strong></p>
+<ul>
+<li>Loops over <strong>all</strong> <code>BitFieldPropertyParsers</code> in the context (including <code>BitFieldPropertyInfoParser</code>).</li>
+<li>Calls <code>Parse(...)</code>. The first parser that returns non-null is chosen.</li>
+</ul>
+</li>
+<li><p><strong>Parser</strong></p>
+<ul>
+<li>Checks if the property is a candidate.</li>
+<li>Calls the base <code>ParseCore(...)</code>, which uses <code>Context.TryParseAttribute(...)</code>.</li>
+</ul>
+</li>
+<li><p><strong>Generated Model</strong></p>
+<ul>
+<li>A <code>BitFieldPropertyInfo</code> is returned, combining attribute data + property symbol details.</li>
+</ul>
+</li>
+<li><p><strong>Aggregation &amp; Generation</strong></p>
+<ul>
+<li>The <code>BitFieldPropertyInfo</code> objects are aggregated by <code>IBitFieldPropertyAggregator</code>s and then turned into final C# source by <code>IPropertiesSyntaxGenerator</code>s.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ul>
+<li><strong>BitField Property Parsing</strong> is a crucial step that links <strong>attributes</strong> to <strong>property symbols</strong>.</li>
+<li><code>IBitFieldPropertyParser</code> checks if a property is recognized and constructs a data model for further processing.</li>
+<li><strong><code>BaseBitFieldPropertyInfoParser</code></strong> handles the heavy lifting of calling attribute parsers and extracting relevant property details.</li>
+<li>The default <code>BitFieldPropertyInfoParser</code> simply defers to the base logic, but you can <strong>extend or replace</strong> it with custom parsing.</li>
+</ul>
+<p>This modular approach keeps <strong>PropertyBitPack</strong> flexible and allows you to introduce specialized parsers for different use cases or advanced scenarios.</p>
+
+                </div>
+
+                <div class="not-prose"></div>
+                
+                    <div class="not-prose py-8">
+                        <a class="text-slate-500 font-semibold hover:text-indigo-600 flex items-center" href="https://github.com/Asaicraft/PropertyBitPack/blob/main/PropertyBitPackDocs/_pages/to_developers/bitfieldproperty-parser.md" target="_blank" rel="noopener noreferrer">
+                            Edit this page on GitHub<svg class="ml-1 inline-block w-4 h-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" data-v-1ed99556=""><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+                        </a>
+                    </div>
+
+                    <div class="not-prose my-20">
+                    </div>
+            </div>
+                
+                <div class="docmap hidden 2xl:block flex-none w-64 pl-8 mr-8">
+                    <div class="fixed bg-white dark:bg-black flex flex-col overflow-y-auto pt-10 px-8 pb-6" style="height:calc(100vh - 50px);">
+                        <div>
+                            <h5 class="text-slate-900 font-semibold mb-4 text-sm leading-6 dark:text-slate-100">
+                                On This Page
+                            </h5>
+                            <ul class="text-slate-700 text-sm leading-6">
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#overview'" data-id="overview" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Overview
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="key-components" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#key-components'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Key Components
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#parsing-flow'" data-id="parsing-flow" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Parsing Flow
+                                        </span>
+                                            <ul class="ml-4">
+                                                    <li data-id="methods" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#methods'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Methods
+                                                        </span>
+                                                    </li>
+                                                    <li data-id="notable-details" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#notable-details'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Notable Details
+                                                        </span>
+                                                    </li>
+                                                    <li data-id="properties" class="text-gray-500 hover:text-gray-900">
+                                                        <span v-hash="'#properties'" class="cursor-pointer flex text-sm transform transition-colors duration-200 py-2">
+                                                            <svg width="3" height="24" viewBox="0 -9 3 24" class="mr-2 overflow-visible"><path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                                                            Properties
+                                                        </span>
+                                                    </li>
+                                            </ul>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#how-it-fits-together'" data-id="how-it-fits-together" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            How It Fits Together
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#summary'" data-id="summary" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Summary
+                                        </span>
+                                    </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+        </div>
+    </div>    
+</div>
+
+<script>
+//doc instructions
+if (document.querySelector('.hide-title')) {
+    const el = document.querySelector('#doc section h1') 
+    if (el) el.style.display='none'
+}
+</script>
+
+<script type="module">
+import { ref } from "vue"
+import { mount } from "app.mjs"
+
+
+    const App = {
+        setup() {
+            function nav(url) {
+                window.open(url)
+            }
+            return { nav }
+        }
+    }
+    
+const Sidebar = {
+    setup() {
+        const open = ref(true)
+        return { open }
+    }
+}
+
+mount('#doc', App)
+mount('#sidebar', Sidebar)
+</script>
+
+<script src="lib/js/highlight.js"></script>
+<script>hljs.highlightAll()</script>
+<script src="lib/js/lite-yt-embed.js"></script>
+<script src="mjs/docs.mjs" type="module"></script>
+
+    </main>
+</div>
+
+
+
+<script type="module">
+import { init } from "app.mjs"
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js";
+
+mermaid.initialize({ startOnLoad: true });
+init()
+
+</script>
+
+
+
+</body>
+</html>
