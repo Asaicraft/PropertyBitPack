@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="https://asaicraft.github.io/PropertyBitPack/" />
     <link rel="icon" type="image/svg" href="img/logo.svg">
-    <title>Documentation</title>
+    <title>Architecture</title>
     <script>
     if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
     if (location.search === "?light") localStorage.removeItem('color-scheme') 
@@ -104,6 +104,7 @@ mount('#header', Header)
 
 
 
+
 <style>
 .active {
     color: #0ea5e9 !important;
@@ -122,71 +123,11 @@ mount('#header', Header)
             <div :class="['fixed bg-white dark:bg-black h-screen overflow-y-auto scrolling-touch overflow-hidden shadow lg:shadow-none transform transition-transform duration-200', open ? '' : 'translate-x-[-100%]']">
                 <nav class="sidebar lg:w-64 xl:w-80 px-1 pt-6 pb-16 overflow-y-auto font-medium text-sm lg:text-base sm:px-3 xl:px-5" aria-label="Sidebar">
                     <close-button title="Close Sidebar" class="lg:hidden -mr-2" v-on:close="open=false"></close-button>
-                                <a href="/PropertyBitPack/" class="block flex items-center whitespace-nowrap">
-                                    <span class="p-2 pl-3 font-display font-medium text-slate-900 dark:text-white">
-Introduction                                    </span>
+                                <a href="/to_developers/" class="block flex items-center whitespace-nowrap">
+<svg class='h-6 w-6 shrink-0 text-sky-500' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25'></path></svg>                                    <span class="p-2 pl-3 font-display font-medium text-slate-900 dark:text-white">
+To developers                                    </span>
                                 </a>
                         <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/what-is-razor-press" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        What is Razor Press?
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/structure" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Structure
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/ssg" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Static Site Generation
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/deployments" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Deployments
-                                    </a>
-                                </li>
-                        </ul>
-                                <h2 class="font-display font-medium text-slate-900 dark:text-white whitespace-nowrap">
-                                    Markdown
-                                </h2>
-                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/syntax" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Markdown Syntax
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/containers" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Markdown Containers
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/vue-in-markdown" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Using Vue in Markdown
-                                    </a>
-                                </li>
-                        </ul>
-                                <h2 class="font-display font-medium text-slate-900 dark:text-white whitespace-nowrap">
-                                    Features
-                                </h2>
-                        <ul role="list" class="mb-6 mt-2 ml-3 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-4 lg:space-y-4 lg:border-slate-200">
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/sidebars" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Sidebars
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/redirects" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Redirects
-                                    </a>
-                                </li>
-                                <li class="relative">
-                                    <a href="/PropertyBitPack/typesense" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:h-1.5 before:w-1.5 before:-translate-y-1/2 before:rounded-full text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300">
-                                        Typesense Real-Time Search
-                                    </a>
-                                </li>
                         </ul>
                 </nav>
             </div>
@@ -196,29 +137,168 @@ Introduction                                    </span>
                 
                     <section class="not-prose mb-16 md:mb-12">
                         <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-50 sm:text-5xl md:text-6xl">
-                            Documentation
+                            Architecture
                         </h1>
                     </section>
 
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <h2 id="servicestack-community">ServiceStack Community<a class="header-anchor" href="javascript:;" onclick="location.hash='#servicestack-community'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+                    <h1 id="to-developers">To Developers<a class="header-anchor" href="javascript:;" onclick="location.hash='#to-developers'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
+<p>Below is an overview of the internal architecture of <strong>PropertyBitPack</strong>, focusing on how it processes attributes, aggregates bit-packed properties, and generates source code. This documentation is intended for contributors who want to understand or extend the source generator logic.</p>
+<hr />
+<h2 id="high-level-architecture">High-Level Architecture<a class="header-anchor" href="javascript:;" onclick="location.hash='#high-level-architecture'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ol>
+<li><p><strong><code>PropertyBitPackGeneratorContext</code></strong> (abstract class)</p>
 <ul>
-<li><a href="https://servicestack.net/discord">servicestack.net/discord</a> - Join <strong>#ServiceStack</strong> Discord Channel</li>
-<li><a href="https://servicestack.net/discuss">servicestack.net/discuss</a> - ServiceStack Community GitHub Discussions
+<li>Defines arrays of <strong>parsers</strong> and <strong>generators</strong>:
 <ul>
-<li><a href="https://servicestack.net/ask">servicestack.net/ask</a> - Q &amp; A Community Support</li>
-<li><a href="https://servicestack.net/ideas">servicestack.net/ideas</a> - Submit Ideas &amp; Feature Requests</li>
+<li><code>AttributeParsers</code> (implementations of <code>IAttributeParser</code>)</li>
+<li><code>BitFieldPropertyParsers</code> (implementations of <code>IBitFieldPropertyParser</code>)</li>
+<li><code>BitFieldPropertyAggregators</code> (implementations of <code>IBitFieldPropertyAggregator</code>)</li>
+<li><code>PropertySyntaxGenerators</code> (implementations of <code>IPropertiesSyntaxGenerator</code>)</li>
+</ul>
+</li>
+<li>Provides methods to:
+<ul>
+<li>Identify candidate attributes</li>
+<li>Parse them into internal <code>BaseBitFieldPropertyInfo</code> representations</li>
+<li>Aggregate property info into requests (<code>IGenerateSourceRequest</code>)</li>
+<li>Generate final C# source code (<code>FileGeneratorRequest</code>)</li>
 </ul>
 </li>
 </ul>
-<h2 id="contributing">Contributing<a class="header-anchor" href="javascript:;" onclick="location.hash='#contributing'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+</li>
+<li><p><strong><code>PropertyBitPackGeneratorContextImplementation</code></strong></p>
 <ul>
-<li><a href="https://docs.servicestack.net/contributing">Contributing Guide</a> - Read our Contributing Guide</li>
-<li><a href="https://docs.google.com/forms/d/16Op0fmKaqYtxGL4sg7w_g-cXXyCoWjzppgkuqzOeKyk/viewform">Contribution License Agreement</a> - Please sign our CLA before Contributing</li>
+<li>A sealed nested class that constructs these arrays <strong>without constructor injection</strong> in the typical DI sense.</li>
+<li>Instead, after constructing arrays of parsers/generators, the method <code>BindToSelf()</code> iterates over each component.
+<ul>
+<li>If the component implements <code>IContextBindable</code>, it calls <code>BindContext(this)</code>, providing a direct link to the current context instance.</li>
 </ul>
-<p>Hello world!</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>PropertyBitPackSourceGenerator : IIncrementalGenerator</code></strong></p>
+<ul>
+<li>Holds a static instance of <code>PropertyBitPackGeneratorContext</code>.</li>
+<li>Uses <strong>incremental generation</strong>:
+<ul>
+<li>Filters candidate properties via <code>IsCandidateProperty(...)</code>.</li>
+<li>For each property, attempts to parse attached attributes.</li>
+<li>Aggregates bit-packed properties.</li>
+<li>Calls context methods to generate final source code.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Parsing Workflow</strong></p>
+<ol>
+<li><strong>Identify</strong> partial properties with certain attributes.</li>
+<li><strong>Check</strong> if any of the known attribute parsers (<code>IAttributeParser</code>) match.</li>
+<li><strong>Parse</strong> them into <code>BaseBitFieldPropertyInfo</code>.</li>
+<li><strong>Aggregate</strong> all recognized properties into <code>IGenerateSourceRequest</code> objects.</li>
+<li><strong>Generate</strong> the final <code>.cs</code> source files (property implementations) via <code>IPropertiesSyntaxGenerator</code>.</li>
+</ol>
+</li>
+</ol>
+<hr />
+<h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p><img src="docs/diagrams/propertybitpack-diagram.svg" alt="PropertyBitPack Diagram" /></p>
+<details>
+  <summary>Diagram source</summary>
+<pre><code>```mermaid
+flowchart LR
+    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
+    B --&gt;|BindToSelf| D[IContextBindable?]
+    B --&gt;|AttributeParsers| C[PropertyDeclaration]
+    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+    B --&gt;|PropertySyntaxGenerators| G[FileGeneratorRequest (CS)]
+
+    C --&gt; E
+    E --&gt; F
+    F --&gt; G
+```
+</code></pre>
+<details>
+<p><strong>Diagram Explanation</strong>:</p>
+<ol>
+<li><strong>IncrementalGenerator</strong> filters candidate properties.</li>
+<li><strong>PropertyBitPackGeneratorContextImplementation</strong>:
+<ul>
+<li>Holds arrays of parsers/generators.</li>
+<li>Calls <code>BindToSelf()</code>, so each component that implements <code>IContextBindable</code> can access the <strong>context</strong>.</li>
+</ul>
+</li>
+<li>The parsers/generators then handle attribute parsing, property analysis, and source code generation.</li>
+</ol>
+<hr />
+<h2 id="notable-classes-interfaces">Notable Classes &amp; Interfaces<a class="header-anchor" href="javascript:;" onclick="location.hash='#notable-classes-interfaces'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<h3 id="propertybitpackgeneratorcontextimplementation"><code>PropertyBitPackGeneratorContextImplementation</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpackgeneratorcontextimplementation'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal sealed class PropertyBitPackGeneratorContextImplementation : PropertyBitPackGeneratorContext
+{
+    public PropertyBitPackGeneratorContextImplementation(
+        ImmutableArray&lt;IAttributeParser&gt; attributeParsers,
+        ImmutableArray&lt;IBitFieldPropertyParser&gt; bitFieldPropertyParsers,
+        ImmutableArray&lt;IBitFieldPropertyAggregator&gt; bitFieldPropertyAggregators,
+        ImmutableArray&lt;IPropertiesSyntaxGenerator&gt; bitFieldPropertyGenerators
+    ) {
+        AttributeParsers = attributeParsers;
+        BitFieldPropertyParsers = bitFieldPropertyParsers;
+        BitFieldPropertyAggregators = bitFieldPropertyAggregators;
+        PropertySyntaxGenerators = bitFieldPropertyGenerators;
+
+        // Binds the context to all parsers/generators that require it
+        BindToSelf();
+    }
+    
+    internal void BindToSelf()
+    {
+        // If any component implements IContextBindable, pass it this context
+    }
+}
+</code></pre>
+<ul>
+<li><strong>No typical DI constructor injection</strong>. The arrays of components are assigned directly, then <code>BindToSelf()</code> ensures each component can hold a reference to the context if needed.</li>
+</ul>
+<h3 id="icontextbindable"><code>IContextBindable</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#icontextbindable'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<pre><code class="language-csharp">internal interface IContextBindable
+{
+    void BindContext(PropertyBitPackGeneratorContext context);
+}
+</code></pre>
+<ul>
+<li>Components (e.g., parsers, aggregators, syntax generators) implement <code>IContextBindable</code> to gain access to shared context data or services.</li>
+</ul>
+<h3 id="propertybitpacksourcegenerator"><code>PropertyBitPackSourceGenerator</code><a class="header-anchor" href="javascript:;" onclick="location.hash='#propertybitpacksourcegenerator'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
+<ul>
+<li><strong>Entry point</strong> for incremental generation. Creates a static <code>_context</code> using a <code>PropertyBitPackGeneratorContextBuilder</code>.</li>
+<li>Scans the syntax for candidate partial properties, matches attributes, and produces generated <code>.cs</code> files.</li>
+</ul>
+<hr />
+<h2 id="customizing-parsers-generators">Customizing Parsers &amp; Generators<a class="header-anchor" href="javascript:;" onclick="location.hash='#customizing-parsers-generators'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<p>To add or override behavior:</p>
+<ol>
+<li><strong>Implement</strong> a new <code>IAttributeParser</code>, <code>IBitFieldPropertyParser</code>, <code>IBitFieldPropertyAggregator</code>, or <code>IPropertiesSyntaxGenerator</code>.</li>
+<li><strong>Attach</strong> it to the context builder:
+<pre><code class="language-csharp">var builder = PropertyBitPackGeneratorContextBuilder.Create();
+builder.AttributeParsers.Add(new MyCustomAttributeParser());
+builder.BitFieldPropertyParsers.Add(new MyCustomBitFieldParser());
+// ...
+var context = builder.Build(); // Returns PropertyBitPackGeneratorContextImplementation
+</code></pre>
+</li>
+<li><strong>Use</strong> <code>BindToSelf()</code> to allow each component to <code>BindContext(...)</code> if it implements <code>IContextBindable</code>.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary<a class="header-anchor" href="javascript:;" onclick="location.hash='#summary'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
+<ul>
+<li><strong>PropertyBitPack</strong> uses a modular approach, allowing you to plug in new attribute parsers, property parsers, aggregators, and syntax generators.</li>
+<li><strong>Context binding</strong> is not done through traditional DI constructor injection; instead, <strong><code>BindToSelf()</code></strong> iterates over all registered components and calls <code>BindContext(this)</code> if they implement <code>IContextBindable</code>.</li>
+<li>This design keeps the architecture flexible and straightforward, enabling easy extension for advanced bit-packing scenarios.</li>
+</ul>
+<p>For questions or deeper discussion, feel free to join our <a href="https://discord.gg/RpxD2BeNsZ">Discord</a>!</p>
 
                 </div>
 
@@ -237,13 +317,28 @@ Introduction                                    </span>
                             </h5>
                             <ul class="text-slate-700 text-sm leading-6">
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#servicestack-community'" data-id="servicestack-community" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            ServiceStack Community
+                                        <span v-hash="'#high-level-architecture'" data-id="high-level-architecture" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            High-Level Architecture
                                         </span>
                                     </li>
                                     <li class="group text-gray-800 hover:text-gray-900">
-                                        <span v-hash="'#contributing'" data-id="contributing" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
-                                            Contributing
+                                        <span v-hash="'#mermaid-diagram'" data-id="mermaid-diagram" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Mermaid Diagram
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#notable-classes-interfaces'" data-id="notable-classes-interfaces" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Notable Classes &amp; Interfaces
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#customizing-parsers-generators'" data-id="customizing-parsers-generators" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Customizing Parsers &amp; Generators
+                                        </span>
+                                    </li>
+                                    <li class="group text-gray-800 hover:text-gray-900">
+                                        <span v-hash="'#summary'" data-id="summary" class="cursor-pointer font-medium block text-sm transform transition-colors duration-200 py-2">
+                                            Summary
                                         </span>
                                     </li>
                             </ul>
@@ -292,7 +387,6 @@ mount('#sidebar', Sidebar)
 <script>hljs.highlightAll()</script>
 <script src="lib/js/lite-yt-embed.js"></script>
 <script src="mjs/docs.mjs" type="module"></script>
-
 
     </main>
 </div>
