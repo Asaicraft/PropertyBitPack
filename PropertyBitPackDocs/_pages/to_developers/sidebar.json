@@ -43,6 +43,10 @@
       {
         "text": "ThrowHelper",
         "link": "PropertyBitPack/to_developers/throw-helper"
+      },
+      {
+        "text": "BitwiseSyntaxHelpers",
+        "link": "PropertyBitPack/to_developers/bitwise-syntax-helpers"
       }
     ]
   }
