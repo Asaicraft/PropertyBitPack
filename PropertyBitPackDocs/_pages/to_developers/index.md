@@ -2,8 +2,6 @@
 title: Architecture
 ---
 
-# To Developers
-
 Below is an overview of the internal architecture of **PropertyBitPack**, focusing on how it processes attributes, aggregates bit-packed properties, and generates source code. This documentation is intended for contributors who want to understand or extend the source generator logic.
 
 ---
