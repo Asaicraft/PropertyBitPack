@@ -204,24 +204,19 @@ To developers                                    </span>
 </ol>
 <hr />
 <h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<p><img src="docs/diagrams/propertybitpack-diagram.svg" alt="PropertyBitPack Diagram" /></p>
-<details>
-  <summary>Diagram source</summary>
-<pre><code>```mermaid
+<pre class="mermaid">
 flowchart LR
-    A[IncrementalGenerator] --&gt; B{PropertyBitPackGeneratorContextImplementation}
-    B --&gt;|BindToSelf| D[IContextBindable?]
-    B --&gt;|AttributeParsers| C[PropertyDeclaration]
-    B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B --&gt;|PropertySyntaxGenerators| G[FileGeneratorRequest (CS)]
+    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
+    B -->|BindToSelf| D[IContextBindable?]
+    B -->|AttributeParsers| C[PropertyDeclaration]
+    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
 
-    C --&gt; E
-    E --&gt; F
-    F --&gt; G
-```
-</code></pre>
-<details>
+    C --> E
+    E --> F
+    F --> G
+</pre>
 <p><strong>Diagram Explanation</strong>:</p>
 <ol>
 <li><strong>IncrementalGenerator</strong> filters candidate properties.</li>
@@ -395,7 +390,12 @@ mount('#sidebar', Sidebar)
 
 <script type="module">
 import { init } from "app.mjs"
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+mermaid.initialize({ startOnLoad: true });
 init()
+
+
 </script>
 
 

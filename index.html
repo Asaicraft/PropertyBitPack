@@ -281,7 +281,12 @@ mount('#getting-started', GettingStarted, { template:'razor-press' })
 
 <script type="module">
 import { init } from "app.mjs"
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+mermaid.initialize({ startOnLoad: true });
 init()
+
+
 </script>
 
 
