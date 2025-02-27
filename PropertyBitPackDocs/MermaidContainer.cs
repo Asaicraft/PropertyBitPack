@@ -37,11 +37,7 @@ public class MermaidContainer : HtmlObjectRenderer<CustomContainer>
 
                 renderer.Write("<pre>");
                 {
-                    renderer.Write("<code class=\"language-mermaid hljs\">");
-                    {
-                        renderer.Write(rawContent);
-                    }
-                    renderer.Write("</code>");
+                    renderer.Write(rawContent);
                 }
                 renderer.WriteLine("</pre>");
             }
