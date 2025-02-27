@@ -1,10 +1,24 @@
-![Build](https://github.com/Asaicraft/PropertyBitPack/actions/workflows/dotnet.yml/badge.svg?)
+﻿![Build](https://github.com/Asaicraft/PropertyBitPack/actions/workflows/dotnet.yml/badge.svg?)
 [![NuGet Stats](https://img.shields.io/nuget/v/PropertyBitPack.svg)](https://www.nuget.org/packages/PropertyBitPack?)
 [![Discord](https://img.shields.io/badge/chat-discord-purple.svg)](https://discord.gg/RpxD2BeNsZ)
 
 # PropertyBitPack
 
 PropertyBitPack is a Roslyn source generator that simplifies defining and managing bit-packed properties in C#. It allows developers to decorate properties with custom attributes to automatically generate efficient bit manipulation code.
+
+📖 **[Documentation](https://asaicraft.github.io/PropertyBitPack/)**
+
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Define Bit-Packed Boolean Properties](#define-bit-packed-boolean-properties)
+  - [Define Bit-Packed Properties with Mixed Types](#define-bit-packed-properties-with-mixed-types)
+  - [Define Bit-Packed Properties with Custom Bit Sizes](#define-bit-packed-properties-with-custom-bit-sizes)
+  - [Generate Custom Field Names](#generate-custom-field-names)
+  - [Define Bit-Packed Properties with Already Defined Fields](#define-bit-packed-properties-with-already-defined-fields)
+  - [ExtendedBitFieldAttribute](#extendedbitfieldattribute)
+  - [Define Read-Only Bit-Packed Properties](#define-read-only-bit-packed-properties)
+  - [ReadOnlyExtendedBitField](#readonlyextendedbitfield)
 
 ## Installation
 
