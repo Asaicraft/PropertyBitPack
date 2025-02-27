@@ -41,8 +41,8 @@
         "link": "PropertyBitPack/to_developers/immutable-array-builder"
       },
       {
-        "text": "Using Vue in Markdown",
-        "link": "PropertyBitPack/vue-in-markdown"
+        "text": "ThrowHelper",
+        "link": "PropertyBitPack/to_developers/throw-helper"
       }
     ]
   }
