@@ -203,37 +203,33 @@ To developers                                    </span>
 </ol>
 <hr />
 <h2 id="mermaid-diagram">Mermaid Diagram<a class="header-anchor" href="javascript:;" onclick="location.hash='#mermaid-diagram'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
-<div class="Mermaid"><pre class="mermaid"></pre>
+<div class="Mermaid"><pre class="mermaid"><p PropertyBitPackGeneratorContextImplementation="">flowchart LR
+A[IncrementalGenerator] --&gt; B
+B --&gt;|BindToSelf| D[IContextBindable?]
+B --&gt;|AttributeParsers| C[PropertyDeclaration]
+B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]</p>
+<pre><code>C --&gt; E
+E --&gt; F
+F --&gt; G
+</code></pre>
+</pre>
 <details><summary>source</summary>
-<pre><code class="language-mermaid"></code></pre>
+<pre><code class="language-mermaid"><p PropertyBitPackGeneratorContextImplementation="">flowchart LR
+A[IncrementalGenerator] --&gt; B
+B --&gt;|BindToSelf| D[IContextBindable?]
+B --&gt;|AttributeParsers| C[PropertyDeclaration]
+B --&gt;|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
+B --&gt;|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
+B --&gt;|PropertySyntaxGenerators| G[&quot;FileGeneratorRequest (CS)&quot;]</p>
+<pre><code>C --&gt; E
+E --&gt; F
+F --&gt; G
+</code></pre>
+</code></pre>
 </details>
 </div>
-<pre class="mermaid">
-flowchart LR
-    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-    B -->|BindToSelf| D[IContextBindable?]
-    B -->|AttributeParsers| C[PropertyDeclaration]
-    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
-
-    C --> E
-    E --> F
-    F --> G
-</pre>
-<pre class="mermaid">flowchart LR
-    A[IncrementalGenerator] --> B{PropertyBitPackGeneratorContextImplementation}
-    B -->|BindToSelf| D[IContextBindable?]
-    B -->|AttributeParsers| C[PropertyDeclaration]
-    B -->|BitFieldPropertyParsers| E[BaseBitFieldPropertyInfo]
-    B -->|BitFieldPropertyAggregators| F[IGenerateSourceRequest]
-    B -->|PropertySyntaxGenerators| G["FileGeneratorRequest (CS)"]
-
-    C --> E
-    E --> F
-    F --> G
-&lt;/pre>
-</pre>
 <p><strong>Diagram Explanation</strong>:</p>
 <ol>
 <li><strong>IncrementalGenerator</strong> filters candidate properties.</li>
