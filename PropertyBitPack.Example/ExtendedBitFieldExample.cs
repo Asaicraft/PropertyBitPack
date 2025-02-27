@@ -43,4 +43,9 @@ public partial class ExtendedBitFieldExample
     {
         return ((int)Math.Pow(2, 11)) + 123 * a;
     }
+
+    [ExtendedBitField(BitsCount = 6, GetterLargeSizeValueName = nameof(FullValue))]
+    public partial int ShortValue { get; set; }
+
+    public int FullValue => 9999;
 }

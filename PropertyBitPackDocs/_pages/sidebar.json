@@ -4,55 +4,43 @@
     "link": "PropertyBitPack/",
     "children": [
       {
-        "text": "What is Razor Press?",
-        "link": "PropertyBitPack/what-is-razor-press"
+        "text": "BitFieldAttribute",
+        "link": "PropertyBitPack/bit-field-attribute",
+        "children": [
+          {
+            "text": "BitFieldAttribute",
+            "link": "PropertyBitPack/bit-field-attribute"
+          },
+          {
+            "text": "Custom Field Name",
+            "link": "PropertyBitPack/bit-field-attribute-custom-field-name"
+          },
+          {
+            "text": "Reference To Existing Field",
+            "link": "PropertyBitPack/bit-field-attribute-reference-to-existing-field"
+          },
+          {
+            "text": "Custom Bit's Size",
+            "link": "PropertyBitPack/bit-field-attribute-custom-bits-size"
+          }
+        ]
       },
       {
-        "text": "Structure",
-        "link": "PropertyBitPack/structure"
+        "text": "ExtendedBitFieldAttribute",
+        "link": "PropertyBitPack/extended-bit-field-attribute"
       },
       {
-        "text": "Static Site Generation",
-        "link": "PropertyBitPack/ssg"
+        "text": "ReadOnlyBitFieldAttribute",
+        "link": "PropertyBitPack/read-only-bit-field-attribute"
       },
       {
-        "text": "Deployments",
-        "link": "PropertyBitPack/deployments"
+        "text": "ReadOnlyExtendedBitField",
+        "link": "PropertyBitPack/read-only-extended-bit-field-attribute"
       }
     ]
   },
   {
-    "text": "Markdown",
-    "children": [
-      {
-        "text": "Markdown Syntax",
-        "link": "PropertyBitPack/syntax"
-      },
-      {
-        "text": "Markdown Containers",
-        "link": "PropertyBitPack/containers"
-      },
-      {
-        "text": "Using Vue in Markdown",
-        "link": "PropertyBitPack/vue-in-markdown"
-      }
-    ]
-  },
-  {
-    "text": "Features",
-    "children": [
-      {
-        "text": "Sidebars",
-        "link": "PropertyBitPack/sidebars"
-      },
-      {
-        "text": "Redirects",
-        "link": "PropertyBitPack/redirects"
-      },
-      {
-        "text": "Typesense Real-Time Search",
-        "link": "PropertyBitPack/typesense"
-      }
-    ]
+    "text": "Diagnostic",
+    "link": "PropertyBitPack/diagnostics"
   }
 ]
