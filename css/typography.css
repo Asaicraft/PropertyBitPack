@@ -36,12 +36,21 @@
 }
 
 .dark .prose :where(.label-container):not(:where([class~="not-prose"] *)) {
-    background-color: rgb(30 58 138) !important;
+    fill: rgb(30 58 138) !important;
+}
+
+.dark .prose :where(.flowchart-link):not(:where([class~="not-prose"] *)) {
+    stroke: white !important;
+}
+
+.dark .prose :where(.edgeLabel p):not(:where([class~="not-prose"] *)) {
+    background-color: black !important;
 }
 
 .prose :where(pre):not(:where([class~="not-prose"] *)) > code {
     background-color: transparent;
 }
+
 
 /* override typography */
 :root {
