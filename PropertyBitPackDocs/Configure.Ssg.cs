@@ -106,8 +106,8 @@ public class AppConfig
             if (pos >= 0)
             {
                 var url = txt[(pos + "url = ".Length)..].LeftPart(".git").LeftPart('\n').Trim();
-                GitPagesBaseUrl = url.CombineWith($"blob/main/{srcDir.Name}");
-                GitPagesRawBaseUrl = url.Replace("github.com","raw.githubusercontent.com").CombineWith($"refs/heads/main/{srcDir.Name}");
+                GitPagesBaseUrl = url.CombineWith($"blob/master/{srcDir.Name}");
+                GitPagesRawBaseUrl = url.Replace("github.com","raw.githubusercontent.com").CombineWith($"refs/heads/master/{srcDir.Name}");
             }
         }
     }
