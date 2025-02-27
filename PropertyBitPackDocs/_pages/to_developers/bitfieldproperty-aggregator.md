@@ -169,7 +169,6 @@ internal sealed class ReadOnlyBitFieldAggregator : BaseBitFieldPropertyAggregato
 :::Mermaid
 ```
 classDiagram
-    %% Интерфейсы
     class IBitFieldPropertyAggregator {
       <<interface>>
       +Aggregate(properties: ILinkedList, readyRequests: ImmutableArrayBuilder, diagnostics: ImmutableArrayBuilder) : ImmutableArray
@@ -184,7 +183,6 @@ classDiagram
       +Name : string
     }
     
-    %% Абстрактный класс-агрегатор
     class BaseBitFieldPropertyAggregator {
       <<abstract>>
       - _context : PropertyBitPackGeneratorContext?
@@ -199,7 +197,6 @@ classDiagram
       +ToRequests(req: IFieldRequest, infos: ImmutableArray) : ImmutableArray
     }
     
-    %% Производные агрегаторы
     class BaseUnnamedFieldAggregator {
       <<abstract>>
       +SelectCandidatesCore() : void
@@ -223,7 +220,6 @@ classDiagram
       <<final>>
     }
     
-    %% Запросы на поле и связанные классы
     class FieldRequest {
       <<class>>
       - _name : string
@@ -266,7 +262,6 @@ classDiagram
       +ToString() : string
     }
     
-    %% Отношения
     IBitFieldPropertyAggregator <|.. BaseBitFieldPropertyAggregator
     BaseBitFieldPropertyAggregator <|-- BaseUnnamedFieldAggregator
     BaseBitFieldPropertyAggregator <|-- ExistingFieldAggregator

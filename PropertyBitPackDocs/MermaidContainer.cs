@@ -17,14 +17,16 @@ public class MermaidContainer : HtmlObjectRenderer<CustomContainer>
 
         var summary = obj.Arguments ?? "source";
 
+
         var rawContent = obj[0] is CodeBlock codeBlock
             ? codeBlock.Lines.ToString()
             : string.Empty;
 
+
         renderer.Write("<div").WriteAttributes(obj).Write('>');
         {
             renderer.Write("<pre class=\"mermaid\">");
-            renderer.Write(rawContent);
+            renderer.WriteEscape(rawContent);
             renderer.WriteLine("</pre>");
 
             renderer.EnsureLine();
@@ -37,7 +39,7 @@ public class MermaidContainer : HtmlObjectRenderer<CustomContainer>
 
                 renderer.Write("<pre>");
                 {
-                    renderer.Write(rawContent);
+                    renderer.WriteEscape(rawContent);
                 }
                 renderer.WriteLine("</pre>");
             }
