@@ -24,6 +24,18 @@
             "link": "PropertyBitPack/bit-field-attribute-custom-bits-size"
           }
         ]
+      },
+      {
+        "text": "ExtendedBitFieldAttribute",
+        "link": "PropertyBitPack/extended-bit-field-attribute"
+      },
+      {
+        "text": "ReadOnlyBitFieldAttribute",
+        "link": "PropertyBitPack/read-only-bit-field-attribute"
+      },
+      {
+        "text": "ReadOnlyExtendedBitField",
+        "link": "PropertyBitPack/read-only-extended-bit-field"
       }
     ]
   }

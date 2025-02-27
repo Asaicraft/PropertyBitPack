@@ -161,3 +161,6 @@ Error PRBITS001: The BitsCount for property 'LargeData' must be a positive integ
 ✔ **Automatic field allocation** based on total bits.  
 ✔ **Splits properties across multiple fields** if needed.  
 ✔ **Compilation error (`PRBITS001`)** if exceeding 64 bits without splitting.
+
+
+📖 **[Next: ReadOnly BitFields →](PropertyBitPack/extended-bit-field-attribute)**
