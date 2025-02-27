@@ -1,0 +1,29 @@
+﻿@page "./"
+@attribute [RenderStatic]
+@inject MarkdownPages Markdown
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+@await Html.PartialAsync("DocsPage", new Shared.DocsPage
+{
+   Brand = "Documentation",
+   Folder = "",
+   Slug = "index",
+   HideTitle = true,
+   HideDocumentMap = true,
+   DefaultMenu = new MarkdownMenu
+   {
+       Icon = Markdown.DefaultMenuIcon,
+       Text = "Home",
+       Link = "",
+   },
+}.Init(this, Markdown))
+
+<script type="module">
+import { mount } from "app.mjs"
+import GettingStarted from "./mjs/components/GettingStarted.mjs" 
+
+mount('#getting-started', GettingStarted, { template:'razor-press' })
+</script>

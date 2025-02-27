@@ -1,0 +1,58 @@
+[
+  {
+    "text": "Introduction",
+    "link": "PropertyBitPack/",
+    "children": [
+      {
+        "text": "What is Razor Press?",
+        "link": "PropertyBitPack/what-is-razor-press"
+      },
+      {
+        "text": "Structure",
+        "link": "PropertyBitPack/structure"
+      },
+      {
+        "text": "Static Site Generation",
+        "link": "PropertyBitPack/ssg"
+      },
+      {
+        "text": "Deployments",
+        "link": "PropertyBitPack/deployments"
+      }
+    ]
+  },
+  {
+    "text": "Markdown",
+    "children": [
+      {
+        "text": "Markdown Syntax",
+        "link": "PropertyBitPack/syntax"
+      },
+      {
+        "text": "Markdown Containers",
+        "link": "PropertyBitPack/containers"
+      },
+      {
+        "text": "Using Vue in Markdown",
+        "link": "PropertyBitPack/vue-in-markdown"
+      }
+    ]
+  },
+  {
+    "text": "Features",
+    "children": [
+      {
+        "text": "Sidebars",
+        "link": "PropertyBitPack/sidebars"
+      },
+      {
+        "text": "Redirects",
+        "link": "PropertyBitPack/redirects"
+      },
+      {
+        "text": "Typesense Real-Time Search",
+        "link": "PropertyBitPack/typesense"
+      }
+    ]
+  }
+]

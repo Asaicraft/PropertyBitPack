@@ -1,0 +1,51 @@
+﻿@inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="https://asaicraft.github.io/PropertyBitPack/" />
+    <link rel="icon" type="image/svg" href="img/logo.svg">
+    <title>@ViewData["Title"]</title>
+    <script>
+    if (location.search === "?dark") localStorage.setItem('color-scheme','dark') 
+    if (location.search === "?light") localStorage.removeItem('color-scheme') 
+    const cls = document.querySelector('html').classList
+    if (localStorage.getItem('color-scheme') === 'dark')
+        cls.add('dark')
+    else
+        cls.remove('dark')
+    </script>
+    <link rel="stylesheet" href="css/app.css">
+    @Html.ImportMap(new() {
+        ["app.mjs"] = ("/PropertyBitPack/mjs/app.mjs", "/PropertyBitPack/mjs/app.mjs"),
+        ["vue"] = ("/PropertyBitPack/lib/mjs/vue.mjs", "/PropertyBitPack/lib/mjs/vue.min.mjs"),
+        ["@servicestack/client"] = ("/PropertyBitPack/lib/mjs/servicestack-client.mjs", "/PropertyBitPack/lib/mjs/servicestack-client.min.mjs"),
+        ["@servicestack/vue"] = ("/PropertyBitPack/lib/mjs/servicestack-vue.mjs", "/PropertyBitPack/lib/mjs/servicestack-vue.min.mjs"),
+    })
+</head>
+<body class="bg-white dark:bg-black dark:text-white">
+@await Html.PartialAsync("Header")
+
+<div class="min-h-screen">
+    <main role="main" class="pt-16 pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+@await Html.PartialAsync("Footer")
+
+<script type="module">
+import { init } from "app.mjs"
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js";
+
+mermaid.initialize({ startOnLoad: true });
+init()
+
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

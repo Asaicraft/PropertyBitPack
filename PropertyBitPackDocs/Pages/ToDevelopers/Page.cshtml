@@ -1,0 +1,22 @@
+﻿@page "./to_developers/{slug}"
+
+@model PropertyBitPackDocs.Page
+@inject MarkdownPages Markdown
+
+@implements IRenderStatic<PropertyBitPackDocs.Page>
+@functions {
+    public List<Page> GetStaticProps(RenderContext ctx) => 
+        ctx.Resolve<MarkdownPages>().GetVisiblePages("to_developers").Map(page => new Page { Slug = page.Slug.RightPart('/') });
+}
+
+@await Html.PartialAsync("DocsPage", new Shared.DocsPage
+{
+    Slug = Model.Slug,
+    Folder = "to_developers",
+    DefaultMenu = new MarkdownMenu
+    {
+        Icon = Markdown.DefaultMenuIcon,
+        Text = "To developers",
+        Link = "/to_developers/",
+    },
+}.Init(this, Markdown))
