@@ -5,7 +5,6 @@ namespace PropertyBitPackDocs.Pages.ToDevelopers;
 
 public class Page : PageModel
 {
-    public void OnGet()
-    {
-    }
+    [FromRoute]
+    public string Slug { get; set; }
 }
