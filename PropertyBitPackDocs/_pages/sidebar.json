@@ -35,8 +35,12 @@
       },
       {
         "text": "ReadOnlyExtendedBitField",
-        "link": "PropertyBitPack/read-only-extended-bit-field"
+        "link": "PropertyBitPack/read-only-extended-bit-field-attribute"
       }
     ]
+  },
+  {
+    "text": "Diagnostic",
+    "link": "PropertyBitPack/diagnostics"
   }
 ]
