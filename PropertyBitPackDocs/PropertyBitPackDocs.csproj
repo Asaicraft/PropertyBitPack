@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="_pages\to_developers\bitfieldproperty-aggregator.md" />
-  </ItemGroup>
-  <ItemGroup>
     <Using Include="PropertyBitPackDocs" />
     <Using Include="ServiceStack" />
     <Using Include="ServiceStack.Mvc" />
