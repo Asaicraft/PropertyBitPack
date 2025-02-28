@@ -1,43 +1,37 @@
 [
   {
     "text": "Introduction",
-    "link": "PropertyBitPack/",
+    "link": "PropertyBitPack/"
+  },
+  {
+    "text": "BitFieldAttribute",
+    "link": "PropertyBitPack/bit-field-attribute",
     "children": [
       {
-        "text": "BitFieldAttribute",
-        "link": "PropertyBitPack/bit-field-attribute",
-        "children": [
-          {
-            "text": "BitFieldAttribute",
-            "link": "PropertyBitPack/bit-field-attribute"
-          },
-          {
-            "text": "Custom Field Name",
-            "link": "PropertyBitPack/bit-field-attribute-custom-field-name"
-          },
-          {
-            "text": "Reference To Existing Field",
-            "link": "PropertyBitPack/bit-field-attribute-reference-to-existing-field"
-          },
-          {
-            "text": "Custom Bit's Size",
-            "link": "PropertyBitPack/bit-field-attribute-custom-bits-size"
-          }
-        ]
+        "text": "Custom Field Name",
+        "link": "PropertyBitPack/bit-field-attribute-custom-field-name"
       },
       {
-        "text": "ExtendedBitFieldAttribute",
-        "link": "PropertyBitPack/extended-bit-field-attribute"
+        "text": "Reference To Existing Field",
+        "link": "PropertyBitPack/bit-field-attribute-reference-to-existing-field"
       },
       {
-        "text": "ReadOnlyBitFieldAttribute",
-        "link": "PropertyBitPack/read-only-bit-field-attribute"
-      },
-      {
-        "text": "ReadOnlyExtendedBitField",
-        "link": "PropertyBitPack/read-only-extended-bit-field-attribute"
+        "text": "Custom Bit's Size",
+        "link": "PropertyBitPack/bit-field-attribute-custom-bits-size"
       }
     ]
+  },
+  {
+    "text": "ExtendedBitFieldAttribute",
+    "link": "PropertyBitPack/extended-bit-field-attribute"
+  },
+  {
+    "text": "ReadOnlyBitFieldAttribute",
+    "link": "PropertyBitPack/read-only-bit-field-attribute"
+  },
+  {
+    "text": "ReadOnlyExtendedBitField",
+    "link": "PropertyBitPack/read-only-extended-bit-field-attribute"
   },
   {
     "text": "Diagnostic",
