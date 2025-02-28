@@ -3,10 +3,17 @@
 ## Docs
 
 Introduction
- - [BitFieldAttribute](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/bit-field-attribute.md)
- - [ExtendedBitFieldAttribute](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/extended-bit-field-attribute.md)
- - [ReadOnlyBitFieldAttribute](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/read-only-bit-field-attribute.md)
- - [ReadOnlyExtendedBitField](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/read-only-extended-bit-field-attribute.md)
+
+BitFieldAttribute
+ - [Custom Field Name](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/bit-field-attribute-custom-field-name.md)
+ - [Reference To Existing Field](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/bit-field-attribute-reference-to-existing-field.md)
+ - [Custom Bit&#x27;s Size](https://raw.githubusercontent.com/Asaicraft/PropertyBitPack/refs/heads/master/PropertyBitPackDocs/_pages/PropertyBitPack/bit-field-attribute-custom-bits-size.md)
+
+ExtendedBitFieldAttribute
+
+ReadOnlyBitFieldAttribute
+
+ReadOnlyExtendedBitField
 
 Diagnostic
 
