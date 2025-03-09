@@ -188,8 +188,7 @@ Diagnostic                                    </span>
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <h1 id="readonlybitfieldattribute">ReadOnlyBitFieldAttribute<a class="header-anchor" href="javascript:;" onclick="location.hash='#readonlybitfieldattribute'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
-<p><code>ReadOnlyBitFieldAttribute</code> extends the functionality of <code>BitFieldAttribute</code>. It provides the <strong>same bit-packing features</strong> while also <strong>generating constructors</strong> for initializing read-only bit-packed properties.</p>
+                    <p><code>ReadOnlyBitFieldAttribute</code> extends the functionality of <code>BitFieldAttribute</code>. It provides the <strong>same bit-packing features</strong> while also <strong>generating constructors</strong> for initializing read-only bit-packed properties.</p>
 <h2 id="what-is-readonlybitfieldattribute"><strong>What is ReadOnlyBitFieldAttribute?</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#what-is-readonlybitfieldattribute'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <p>✅ <strong>Inherits from <code>BitFieldAttribute</code></strong>, meaning it supports all standard bit-packing features<br />
 ✅ <strong>Generates constructors</strong> automatically for read-only properties<br />
@@ -329,7 +328,7 @@ public partial int Value2 { get; init; } // ✅ Init-only setter
 ⚠ The generator <strong>automatically creates constructors</strong> based on <code>ConstructorAccessModifier</code>.<br />
 ⚠ If a property <strong>exceeds the allocated bit size</strong>, compilation will <strong>fail with an error</strong>.<br />
 ⚠ <strong>By default, the constructor is <code>private</code></strong>. Use <code>ConstructorAccessModifier</code> to change visibility.</p>
-<p>📖 <strong><a href="PropertyBitPack/read-only-extended-bit-field-attribute">Next: ReadOnlyExtendedBitField →</a></strong></p>
+<p>📖 <strong><a href="read-only-extended-bit-field-attribute">Next: ReadOnlyExtendedBitField →</a></strong></p>
 
                 </div>
 

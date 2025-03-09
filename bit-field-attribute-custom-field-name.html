@@ -188,8 +188,7 @@ Diagnostic                                    </span>
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <h1 id="custom-field-name">Custom Field Name<a class="header-anchor" href="javascript:;" onclick="location.hash='#custom-field-name'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
-<p>By default, <code>BitFieldAttribute</code> <strong>automatically</strong> assigns a private backing field to store multiple bit-packed properties. However, you can explicitly <strong>specify a field name</strong> to group properties into a specific field.</p>
+                    <p>By default, <code>BitFieldAttribute</code> <strong>automatically</strong> assigns a private backing field to store multiple bit-packed properties. However, you can explicitly <strong>specify a field name</strong> to group properties into a specific field.</p>
 <h2 id="defining-a-custom-field-name"><strong>Defining a Custom Field Name</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#defining-a-custom-field-name'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <p>You can assign multiple properties to the <strong>same field</strong> using the <code>FieldName</code> parameter:</p>
 <pre><code class="language-csharp">public partial class Example
@@ -287,7 +286,7 @@ public partial bool Flag3 { get; set; }
 <p>✔ <strong>Manually assign properties to a field</strong> using <code>FieldName</code>.<br />
 ✔ <strong>Combine multiple properties</strong> into the same storage.<br />
 ✔ ❌ <strong>No automatic field splitting beyond 64 bits</strong> → You must manually create a second field.</p>
-<p>📖 <strong><a href="PropertyBitPack/bit-field-attribute-reference-to-existing-field">Next: Reference to Existing Field →</a></strong></p>
+<p>📖 <strong><a href="bit-field-attribute-reference-to-existing-field">Next: Reference to Existing Field →</a></strong></p>
 
                 </div>
 

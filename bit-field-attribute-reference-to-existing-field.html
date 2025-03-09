@@ -188,8 +188,7 @@ Diagnostic                                    </span>
                 <div class="not-prose"></div>
 
                 <div class="content">
-                    <h1 id="reference-to-existing-field">Reference to Existing Field<a class="header-anchor" href="javascript:;" onclick="location.hash='#reference-to-existing-field'" aria-label="Permalink">&ZeroWidthSpace;</a></h1>
-<p>Instead of allowing <code>BitFieldAttribute</code> to automatically generate a backing field, you can <strong>manually reference an existing field</strong> by specifying its name using <code>nameof</code>. This is useful when working with predefined data structures or when controlling memory layout.</p>
+                    <p>Instead of allowing <code>BitFieldAttribute</code> to automatically generate a backing field, you can <strong>manually reference an existing field</strong> by specifying its name using <code>nameof</code>. This is useful when working with predefined data structures or when controlling memory layout.</p>
 <h2 id="referencing-an-existing-field"><strong>Referencing an Existing Field</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#referencing-an-existing-field'" aria-label="Permalink">&ZeroWidthSpace;</a></h2>
 <p>You can explicitly tell <code>BitFieldAttribute</code> to store multiple properties in the same <strong>manually defined field</strong>.</p>
 <h3 id="example-using-an-existing-field"><strong>Example: Using an Existing Field</strong><a class="header-anchor" href="javascript:;" onclick="location.hash='#example-using-an-existing-field'" aria-label="Permalink">&ZeroWidthSpace;</a></h3>
@@ -270,7 +269,7 @@ If you exceed this, <strong>a compilation error will occur.</strong></p>
 ✔ <strong>Avoid unnecessary extra fields</strong> for better memory control.<br />
 ✔ <strong>Ensure total bit count stays within field size limits</strong>.<br />
 ✔ ❌ <strong>Exceeding the field’s capacity results in a compiler error (<code>PRBITS012</code>).</strong></p>
-<p>📖 <strong><a href="PropertyBitPack/bit-field-attribute-custom-bits-size">Next: Custom Bits Size →</a></strong></p>
+<p>📖 <strong><a href="bit-field-attribute-custom-bits-size">Next: Custom Bits Size →</a></strong></p>
 
                 </div>
 
