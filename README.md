@@ -19,6 +19,7 @@ PropertyBitPack is a Roslyn source generator that simplifies defining and managi
   - [ExtendedBitFieldAttribute](#extendedbitfieldattribute)
   - [Define Read-Only Bit-Packed Properties](#define-read-only-bit-packed-properties)
   - [ReadOnlyExtendedBitField](#readonlyextendedbitfield)
+  - [BitFieldUtils Overview](#bitfieldutils-overview)
 
 ## Installation
 
@@ -785,3 +786,39 @@ partial class SimpleReadOnlyExample
 ### ReadOnlyExtendedBitField
 
 `ReadOnlyExtendedBitFieldAttribute` provides functionality similar to `ReadOnlyBitFieldAttribute`, but for extended bit field scenarios.
+
+
+## BitFieldUtils Overview
+
+The **BitFieldUtils** class is a static helper that provides methods for extracting and updating bit‑packed data across various numeric types. These methods include:
+
+- **Boolean Values:**  
+  - `GetBoolValue` and `SetBoolValue` work on individual bits.
+
+- **Numeric Values:**  
+  - `GetByteValue` and `SetByteValue` for `byte`.  
+  - `GetSByteValue` and `SetSByteValue` for `sbyte`.  
+  - `GetShortValue` and `SetShortValue` for `short`.  
+  - `GetUShortValue` and `SetUShortValue` for `ushort`.  
+  - `GetIntValue` and `SetIntValue` for `int`.  
+  - `GetUIntValue` and `SetUIntValue` for `uint`.  
+  - `GetLongValue` and `SetLongValue` for `long`.  
+  - `GetULongValue` and `SetULongValue` for `ulong`.
+
+All these methods accept a C\# `Range` parameter so you can specify the bit range to work with using the full range syntax (e.g. `start..end`, `..end`, `start..`, `^start..^end`, etc.).
+
+## Example Usage
+
+```csharp
+// Setting and getting a boolean value in a byte:
+byte byteField = 0;
+int bitIndex = 3;
+BitFieldUtils.SetBoolValue(ref byteField, bitIndex, true);
+bool boolResult = BitFieldUtils.GetBoolValue(ref byteField, bitIndex);
+Console.WriteLine(boolResult); // Outputs: True
+
+// Extracting a 3-bit value from a byte field using a range:
+byte fieldValue = 0b10110100;
+byte extractedValue = BitFieldUtils.GetByteValue(ref fieldValue, 2..5);
+Console.WriteLine(Convert.ToString(extractedValue, 2)); // Outputs the 3-bit value in binary
+```

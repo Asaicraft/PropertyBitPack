@@ -34,6 +34,10 @@
     "link": "PropertyBitPack/read-only-extended-bit-field-attribute"
   },
   {
+    "text": "BitFieldUtils",
+    "link": "PropertyBitPack/bit-field-utils"
+  },
+  {
     "text": "Diagnostic",
     "link": "PropertyBitPack/diagnostics"
   }

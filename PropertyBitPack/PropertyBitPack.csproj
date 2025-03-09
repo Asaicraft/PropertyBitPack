@@ -39,4 +39,8 @@
     <Content Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
+  </ItemGroup>
+
 </Project>
