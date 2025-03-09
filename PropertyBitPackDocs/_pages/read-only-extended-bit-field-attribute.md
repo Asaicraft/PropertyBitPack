@@ -2,8 +2,6 @@
 title: ReadOnlyExtendedBitFieldAttribute
 ---
 
-# ReadOnlyExtendedBitFieldAttribute
-
 `ReadOnlyExtendedBitFieldAttribute` combines the functionality of **`ReadOnlyBitFieldAttribute`** and **`ExtendedBitFieldAttribute`**. It provides **bit-packing for read-only properties** while allowing values **larger than the allocated bit size** by redirecting to an external getter.
 
 ## **What is ReadOnlyExtendedBitFieldAttribute?**

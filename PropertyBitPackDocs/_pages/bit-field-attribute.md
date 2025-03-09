@@ -2,8 +2,6 @@
 title: BitFieldAttribute
 ---
 
-# BitFieldAttribute
-
 `BitFieldAttribute` allows multiple properties to be **packed into a single numeric field**, significantly reducing memory usage. It is useful in **game development, serialization, networking, and embedded systems**.
 
 ## Basic Usage
@@ -202,4 +200,4 @@ public partial class Example
 ✔ **Flexible Accessors** – Use `set`, `init`, or remove the setter entirely.  
 ✔ **Supports Modifiers** – Customize setters with `private`, `internal`, etc.  
 
-📖 **[Next: Custom Field Name →](PropertyBitPack/bit-field-attribute-custom-field-name)**
+📖 **[Next: Custom Field Name →](bit-field-attribute-custom-field-name)**

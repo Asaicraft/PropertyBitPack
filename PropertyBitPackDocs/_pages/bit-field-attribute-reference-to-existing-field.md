@@ -2,8 +2,6 @@
 title: Reference to Existing Field
 ---
 
-# Reference to Existing Field
-
 Instead of allowing `BitFieldAttribute` to automatically generate a backing field, you can **manually reference an existing field** by specifying its name using `nameof`. This is useful when working with predefined data structures or when controlling memory layout.
 
 ## **Referencing an Existing Field**
@@ -101,4 +99,4 @@ private long _data; // Now supports 64 bits
 ✔ **Ensure total bit count stays within field size limits**.  
 ✔ ❌ **Exceeding the field’s capacity results in a compiler error (`PRBITS012`).**
 
-📖 **[Next: Custom Bits Size →](PropertyBitPack/bit-field-attribute-custom-bits-size)**
+📖 **[Next: Custom Bits Size →](bit-field-attribute-custom-bits-size)**

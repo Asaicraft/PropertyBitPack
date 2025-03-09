@@ -2,8 +2,6 @@
 title: Custom Field Name
 ---
 
-# Custom Field Name
-
 By default, `BitFieldAttribute` **automatically** assigns a private backing field to store multiple bit-packed properties. However, you can explicitly **specify a field name** to group properties into a specific field.
 
 ## **Defining a Custom Field Name**
@@ -119,4 +117,4 @@ public partial bool Flag3 { get; set; }
 ✔ **Combine multiple properties** into the same storage.  
 ✔ ❌ **No automatic field splitting beyond 64 bits** → You must manually create a second field.  
 
-📖 **[Next: Reference to Existing Field →](PropertyBitPack/bit-field-attribute-reference-to-existing-field)**
+📖 **[Next: Reference to Existing Field →](bit-field-attribute-reference-to-existing-field)**
