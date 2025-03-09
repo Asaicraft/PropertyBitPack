@@ -2,8 +2,6 @@
 title: ExtendedBitFieldAttribute
 ---
 
-# ExtendedBitFieldAttribute
-
 `ExtendedBitFieldAttribute` extends the functionality of `BitFieldAttribute`. It provides the same features as `BitFieldAttribute` but **adds support for handling values that exceed the allocated bit size**.
 
 ## **What is ExtendedBitFieldAttribute?**
@@ -105,4 +103,4 @@ If `ShortValue` exceeds **2^6 = 64**, the getter **returns `FullValue` instead**
 ⚠ **If `GetterLargeSizeValueName` is missing**, the generator **will produce a compilation error**.  
 ⚠ **The getter method must return the same type** as the bit-packed property.  
 
-📖 **[Next: ReadOnly BitFields →](PropertyBitPack/read-only-bit-field-attribute)**
+📖 **[Next: ReadOnly BitFields →](read-only-bit-field-attribute)**

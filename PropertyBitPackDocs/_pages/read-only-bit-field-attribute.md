@@ -2,8 +2,6 @@
 title: ReadOnlyBitFieldAttribute
 ---
 
-# ReadOnlyBitFieldAttribute
-
 `ReadOnlyBitFieldAttribute` extends the functionality of `BitFieldAttribute`. It provides the **same bit-packing features** while also **generating constructors** for initializing read-only bit-packed properties.
 
 ## **What is ReadOnlyBitFieldAttribute?**
@@ -176,4 +174,4 @@ public partial int Value2 { get; init; } // ✅ Init-only setter
 ⚠ If a property **exceeds the allocated bit size**, compilation will **fail with an error**.  
 ⚠ **By default, the constructor is `private`**. Use `ConstructorAccessModifier` to change visibility.
 
-📖 **[Next: ReadOnlyExtendedBitField →](PropertyBitPack/read-only-extended-bit-field-attribute)**
+📖 **[Next: ReadOnlyExtendedBitField →](read-only-extended-bit-field-attribute)**

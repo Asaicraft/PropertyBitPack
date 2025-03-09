@@ -2,8 +2,6 @@
 title: Custom Bit's Size
 ---
 
-# Custom Bit's Size
-
 By default, **BitFieldAttribute** automatically determines the number of bits based on the property type. However, you can **explicitly specify the number of bits** using the `BitsCount` parameter.
 
 ## **Defining Custom Bit Sizes**
@@ -163,4 +161,4 @@ Error PRBITS001: The BitsCount for property 'LargeData' must be a positive integ
 ✔ **Compilation error (`PRBITS001`)** if exceeding 64 bits without splitting.
 
 
-📖 **[Next: ReadOnly BitFields →](PropertyBitPack/extended-bit-field-attribute)**
+📖 **[Next: ReadOnly BitFields →](extended-bit-field-attribute)**
