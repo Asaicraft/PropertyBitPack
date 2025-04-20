@@ -3,7 +3,7 @@ name: Publish NuGet Package
 on:
   push:
     tags:
-      - 'v*'  # Запускается при пуше тегов, начинающихся с "v" (например, v1.0.0)
+      - 'v*'  
 
 jobs:
   publish:
@@ -16,9 +16,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '9.0.x'  # Укажите нужную версию .NET (или нужную вам)
+          dotnet-version: '9.0.x'  
 
-      # Извлекаем версию из имени тега (удаляем префикс 'v')
       - name: Extract version from tag
         id: get_version
         run: |
